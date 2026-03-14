@@ -1,0 +1,52 @@
+<?php
+
+use App\Http\Controllers\InquiryController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PaymentDocumentController;
+use App\Http\Controllers\PageController;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', [PageController::class, 'home'])->name('home');
+Route::get('/experiences', [PageController::class, 'experiences'])->name('experiences.index');
+Route::get('/experiences/{slug}', [PageController::class, 'experience'])->name('experiences.show');
+Route::get('/packages', [PageController::class, 'packages'])->name('packages.index');
+Route::get('/packages/{slug}', [PageController::class, 'package'])->name('packages.show');
+Route::get('/collections/{slug}', [PageController::class, 'collection'])->name('collections.show');
+Route::get('/about', [PageController::class, 'about'])->name('about');
+Route::get('/corporate-events', [PageController::class, 'corporateEvents'])->name('corporate-events');
+Route::get('/contact', [PageController::class, 'contact'])->name('contact');
+Route::post('/inquiries', [InquiryController::class, 'store'])->name('inquiries.store');
+Route::get('/checkout/experiences/{slug}', [CheckoutController::class, 'experience'])->name('checkout.experiences.show');
+Route::post('/checkout/experiences/{slug}', [CheckoutController::class, 'startExperience'])->name('checkout.experiences.start');
+Route::get('/checkout/packages/{slug}', [CheckoutController::class, 'package'])->name('checkout.packages.show');
+Route::post('/checkout/packages/{slug}', [CheckoutController::class, 'startPackage'])->name('checkout.packages.start');
+Route::get('/payments/network/callback', [CheckoutController::class, 'callback'])->name('payments.network.callback');
+Route::get('/checkout/result/{transaction}', [CheckoutController::class, 'result'])->name('checkout.result');
+Route::get('/journal', [PageController::class, 'journal'])->name('journal');
+Route::get('/journal/{slug}', [PageController::class, 'article'])->name('journal.show');
+Route::get('/faq', [PageController::class, 'faq'])->name('faq');
+
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login.store');
+    Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
+    Route::post('/forgot-password', [AuthController::class, 'sendPasswordResetLink'])->name('password.email');
+    Route::get('/reset-password/{token}', [AuthController::class, 'showResetPassword'])->name('password.reset');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register'])->name('register.store');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/account', [AccountController::class, 'dashboard'])->name('account.dashboard');
+    Route::get('/account/orders/{transaction}', [AccountController::class, 'order'])->name('account.orders.show');
+    Route::get('/account/orders/{transaction}/invoice', [PaymentDocumentController::class, 'accountInvoice'])->name('account.orders.invoice');
+    Route::get('/account/profile', [AccountController::class, 'profile'])->name('account.profile');
+    Route::patch('/account/profile', [AccountController::class, 'updateProfile'])->name('account.profile.update');
+    Route::patch('/account/password', [AccountController::class, 'updatePassword'])->name('account.password.update');
+    Route::post('/account/feedback', [AccountController::class, 'storeFeedback'])->name('account.feedback.store');
+    Route::get('/admin/payment-transactions/{transaction}/invoice', [PaymentDocumentController::class, 'adminInvoice'])->name('admin.payment-transactions.invoice');
+});

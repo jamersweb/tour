@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+
+class Package extends Model
+{
+    protected $fillable = [
+        'title',
+        'slug',
+        'short_description',
+        'description',
+        'hero_image_path',
+        'gallery_images',
+        'duration',
+        'days',
+        'nights',
+        'location',
+        'group_size_min',
+        'group_size_max',
+        'price_from',
+        'sale_price',
+        'currency',
+        'highlights',
+        'inclusions',
+        'exclusions',
+        'itinerary',
+        'is_featured',
+        'is_active',
+        'seo_title',
+        'seo_description',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'gallery_images' => 'array',
+            'days' => 'integer',
+            'nights' => 'integer',
+            'group_size_min' => 'integer',
+            'group_size_max' => 'integer',
+            'price_from' => 'decimal:2',
+            'sale_price' => 'decimal:2',
+            'highlights' => 'array',
+            'inclusions' => 'array',
+            'exclusions' => 'array',
+            'itinerary' => 'array',
+            'is_featured' => 'boolean',
+            'is_active' => 'boolean',
+        ];
+    }
+
+    public function getHeroImageUrlAttribute(): ?string
+    {
+        return $this->resolveMediaPath($this->hero_image_path);
+    }
+
+    public function getGalleryImageUrlsAttribute(): array
+    {
+        return collect($this->gallery_images ?? [])
+            ->map(fn ($path) => $this->resolveMediaPath($path))
+            ->filter()
+            ->values()
+            ->all();
+    }
+
+    protected function resolveMediaPath(?string $path): ?string
+    {
+        if (! $path) {
+            return null;
+        }
+
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+
+        return Storage::disk('public')->url($path);
+    }
+}

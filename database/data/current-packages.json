@@ -1,0 +1,56 @@
+[
+  {
+    "slug": "ufc-fight-night-returns-to-abu-dhabi",
+    "title": "UFC Fight Night Returns to Abu Dhabi",
+    "short_description": "A polished Abu Dhabi event package combining UFC Fight Night access, a hotel stay, and breakfast for a short premium weekend.",
+    "description": "This event-led package is built for guests who want a straightforward Abu Dhabi fight weekend without piecing the logistics together themselves. It combines UFC Fight Night access at Etihad Arena with a one-night hotel stay and breakfast, making it a cleaner high-intent package rather than a generic event listing.",
+    "hero_image_path": "https://acutetourism.org/uploads/0000/7/2025/04/22/whatsapp-image-2025-04-18-at-200746.jpeg",
+    "gallery_images": [
+      "https://acutetourism.org/uploads/0000/7/2025/04/22/whatsapp-image-2025-04-18-at-200746.jpeg",
+      "https://acutetourism.org/uploads/0000/7/2025/04/25/super-yacht-miniatura.png"
+    ],
+    "duration": "2 Days",
+    "days": 2,
+    "nights": 1,
+    "location": "Abu Dhabi",
+    "group_size_min": 1,
+    "group_size_max": 200,
+    "price_from": 888,
+    "sale_price": 200,
+    "currency": "AED",
+    "highlights": [
+      "UFC Fight Night access at Etihad Arena",
+      "One-night Abu Dhabi hotel stay",
+      "Breakfast included",
+      "Compact event-weekend format with simplified logistics"
+    ],
+    "inclusions": [
+      "UFC Fight Night event ticket",
+      "1-night hotel accommodation in Abu Dhabi",
+      "Breakfast"
+    ],
+    "exclusions": [
+      "Flights and airport transfers",
+      "Personal expenses and optional upgrades",
+      "Meals not specifically listed"
+    ],
+    "itinerary": [
+      {
+        "title": "Arrival and Fight Night",
+        "dayLabel": "Day 1",
+        "description": "Arrive in Abu Dhabi, check in, and head to Etihad Arena for UFC Fight Night.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/04/25/super-yacht-miniatura.png"
+      },
+      {
+        "title": "Breakfast and Departure",
+        "dayLabel": "Day 2",
+        "description": "Enjoy breakfast, check out, and depart with the event weekend wrapped up in one package.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/04/22/whatsapp-image-2025-04-18-at-200746.jpeg"
+      }
+    ],
+    "is_featured": true,
+    "is_active": true,
+    "seo_title": "UFC Fight Night Returns to Abu Dhabi Package | Acute Tourism",
+    "seo_description": "Book an Abu Dhabi UFC Fight Night package with event access, one-night hotel stay, and breakfast."
+  }
+]
