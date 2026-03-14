@@ -60,7 +60,7 @@ class SiteSetting extends Model
                 'organization_type' => 'TravelAgency',
                 'site_tagline' => 'Premium Dubai experiences rebuilt on Laravel, Vue, and Inertia.',
                 'website_url' => 'https://acutetourism.org',
-                'logo_url' => 'https://acutetourism.org/logo.png',
+                'logo_url' => 'https://acutetourism.org/uploads/0000/7/2025/04/12/logo-sin-texto.png',
                 'social_links' => [
                     'https://www.instagram.com/acutetourism',
                     'https://www.facebook.com/acutetourism',

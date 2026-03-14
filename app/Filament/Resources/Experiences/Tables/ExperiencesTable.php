@@ -45,6 +45,9 @@ class ExperiencesTable
                     ->searchable(),
                 IconColumn::make('is_featured')
                     ->boolean(),
+                IconColumn::make('show_on_homepage')
+                    ->label('Home')
+                    ->boolean(),
                 IconColumn::make('is_private')
                     ->boolean(),
                 IconColumn::make('is_active')
@@ -62,6 +65,9 @@ class ExperiencesTable
                 TextColumn::make('sort_order')
                     ->numeric()
                     ->sortable(),
+                TextColumn::make('homepage_sort_order')
+                    ->numeric()
+                    ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('category')
@@ -72,6 +78,7 @@ class ExperiencesTable
                         'Water & Family' => 'Water & Family',
                     ]),
                 TernaryFilter::make('is_featured'),
+                TernaryFilter::make('show_on_homepage'),
                 TernaryFilter::make('is_active'),
             ])
             ->recordActions([

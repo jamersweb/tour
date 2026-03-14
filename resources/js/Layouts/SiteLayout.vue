@@ -12,9 +12,19 @@ const logoutForm = useForm({});
 
         <header class="site-header">
             <div class="container nav-row">
-                <Link class="brand-mark" :href="route('home')">
-                    <span class="brand-kicker">{{ page.props.site.brandKicker }}</span>
-                    <span class="brand-name">{{ page.props.site.brandName }}</span>
+                <Link class="brand-mark" :href="page.props.site.homeUrl">
+                    <div class="brand-lockup">
+                        <img
+                            v-if="page.props.site.logoUrl"
+                            class="brand-logo"
+                            :src="page.props.site.logoUrl"
+                            :alt="page.props.site.name"
+                        />
+                        <div>
+                            <span class="brand-kicker">{{ page.props.site.brandKicker }}</span>
+                            <span class="brand-name">{{ page.props.site.brandName }}</span>
+                        </div>
+                    </div>
                 </Link>
 
                 <nav class="primary-nav">
@@ -49,21 +59,63 @@ const logoutForm = useForm({});
         <footer class="site-footer">
             <div class="container footer-grid">
                 <div>
-                    <p class="footer-label">{{ page.props.site.name }}</p>
+                    <div class="footer-brand">
+                        <div class="brand-lockup footer-lockup">
+                            <img
+                                v-if="page.props.site.logoUrl"
+                                class="brand-logo footer-logo"
+                                :src="page.props.site.logoUrl"
+                                :alt="page.props.site.name"
+                            />
+                            <div>
+                                <span class="brand-kicker">{{ page.props.site.brandKicker }}</span>
+                                <span class="brand-name">{{ page.props.site.brandName }}</span>
+                            </div>
+                        </div>
+                    </div>
                     <p class="footer-copy">{{ page.props.site.footer.description }}</p>
+                    <p class="footer-meta">{{ page.props.site.footer.legalName }}</p>
                 </div>
 
                 <div>
-                    <p class="footer-label">Build Notes</p>
+                    <p class="footer-label">Explore</p>
                     <ul class="footer-list">
-                        <li v-for="note in page.props.site.footer.buildNotes" :key="note">{{ note }}</li>
+                        <li v-for="item in page.props.site.footerNavigation" :key="item.href">
+                            <Link class="footer-link" :href="item.href">{{ item.label }}</Link>
+                        </li>
                     </ul>
                 </div>
 
                 <div>
-                    <p class="footer-label">Next Milestones</p>
+                    <p class="footer-label">Contact</p>
                     <ul class="footer-list">
-                        <li v-for="milestone in page.props.site.footer.milestones" :key="milestone">{{ milestone }}</li>
+                        <li>
+                            <a class="footer-link" :href="`mailto:${page.props.site.contact.email}`">
+                                {{ page.props.site.contact.email }}
+                            </a>
+                        </li>
+                        <li>
+                            <a class="footer-link" :href="`tel:${page.props.site.contact.phone}`">
+                                {{ page.props.site.contact.phone }}
+                            </a>
+                        </li>
+                        <li>{{ page.props.site.contact.address }}</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <p class="footer-label">Connect</p>
+                    <ul class="footer-list">
+                        <li v-for="link in page.props.site.footer.socialLinks" :key="link.href">
+                            <a class="footer-link" :href="link.href" target="_blank" rel="noreferrer">
+                                {{ link.label }}
+                            </a>
+                        </li>
+                        <li>
+                            <a class="footer-link" :href="page.props.site.footer.website" target="_blank" rel="noreferrer">
+                                Official Website
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>

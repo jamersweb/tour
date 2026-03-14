@@ -17,7 +17,11 @@ defineProps({
     <section class="page-intro">
         <div class="container narrow">
             <p class="eyebrow">FAQ</p>
-            <h1 class="page-title">Launch questions answered in one place.</h1>
+            <h1 class="page-title">Questions around bookings, planning, payments, and concierge support.</h1>
+            <p class="page-copy">
+                This section answers the most common questions around packages, experiences,
+                payments, and how the Acute team handles planning and follow-up.
+            </p>
 
             <div v-if="featuredFaqs.length" class="faq-stack">
                 <article v-for="faq in featuredFaqs" :key="faq.question" class="faq-item">

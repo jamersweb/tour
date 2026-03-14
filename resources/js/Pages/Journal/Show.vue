@@ -47,11 +47,13 @@ defineProps({
 
             <div class="card-grid card-grid-three">
                 <article v-for="item in relatedArticles" :key="item.slug" class="info-card">
-                    <p class="card-tag">{{ item.category }}</p>
+                    <div class="showcase-meta">
+                        <span class="card-tag-ghost">{{ item.category }}</span>
+                        <span class="card-tag-accent">{{ item.readTime }}</span>
+                    </div>
                     <h3>{{ item.title }}</h3>
                     <p>{{ item.excerpt }}</p>
-                    <p>{{ item.readTime }}</p>
-                    <Link class="card-link" :href="`/journal/${item.slug}`">Read article</Link>
+                    <Link class="button-primary card-button" :href="`/journal/${item.slug}`">Read article</Link>
                 </article>
             </div>
         </div>

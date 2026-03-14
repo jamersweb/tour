@@ -1,5 +1,5 @@
 <script setup>
-import { useForm, usePage } from '@inertiajs/vue3';
+import { Link, useForm, usePage } from '@inertiajs/vue3';
 import SiteMeta from '../Components/SiteMeta.vue';
 import SiteLayout from '../Layouts/SiteLayout.vue';
 
@@ -35,30 +35,47 @@ const submit = () => {
     <SiteMeta :title="seo.title" :description="seo.description" />
 
     <section class="page-intro">
-        <div class="container narrow">
+        <div class="container">
             <p class="eyebrow">Contact</p>
-            <h1 class="page-title">Concierge-first contact layer.</h1>
+            <h1 class="page-title">Speak with concierge and get the right shortlist faster.</h1>
             <p class="page-copy">
-                This page will become the primary inquiry and fast-response entry point before full
-                checkout goes live.
+                Use this page for premium trip planning, package requests, group coordination, and
+                availability checks across the Dubai and Abu Dhabi catalog.
             </p>
 
             <div class="card-grid card-grid-three">
                 <article class="info-card">
                     <p class="card-tag">Email</p>
-                    <h3>{{ contact.email }}</h3>
+                    <h3>Sales Email</h3>
+                    <p>{{ contact.email }}</p>
                 </article>
                 <article class="info-card">
                     <p class="card-tag">Phone</p>
-                    <h3>{{ contact.phone }}</h3>
+                    <h3>Direct Line</h3>
+                    <p>{{ contact.phone }}</p>
                 </article>
                 <article class="info-card">
                     <p class="card-tag">Office</p>
-                    <h3>{{ contact.address }}</h3>
+                    <h3>Office Address</h3>
+                    <p>{{ contact.address }}</p>
                 </article>
                 <article v-if="contact.whatsappNumber" class="info-card">
                     <p class="card-tag">WhatsApp</p>
-                    <h3>{{ contact.whatsappNumber }}</h3>
+                    <h3>Fast Messaging</h3>
+                    <p>{{ contact.whatsappNumber }}</p>
+                </article>
+                <article v-if="contact.whatsappNumber" class="showcase-card recommendation-card">
+                    <p class="card-tag">Need a faster route?</p>
+                    <h3>Start on WhatsApp if you already know your travel date.</h3>
+                    <p>Best for quick coordination on guest counts, package fit, and same-day or next-day planning.</p>
+                    <a
+                        class="button-primary card-button"
+                        :href="`https://wa.me/${contact.whatsappNumber.replace(/[^0-9]/g, '')}`"
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        Open WhatsApp
+                    </a>
                 </article>
             </div>
 
@@ -118,6 +135,11 @@ const submit = () => {
                         {{ form.processing ? 'Sending...' : 'Submit Inquiry' }}
                     </button>
                 </form>
+            </div>
+
+            <div class="hero-actions">
+                <Link class="button-secondary" href="/experiences">Browse experiences</Link>
+                <Link class="button-secondary" href="/packages">Browse packages</Link>
             </div>
         </div>
     </section>

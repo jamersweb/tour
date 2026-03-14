@@ -30,19 +30,71 @@ class PageController extends Controller
             ]);
 
         $featuredExperiences = Experience::query()
-            ->where('is_featured', true)
             ->where('is_active', true)
-            ->orderBy('price_from')
-            ->limit(3)
-            ->get(['title', 'slug', 'category', 'price_from', 'currency', 'tag', 'hero_image_path'])
+            ->where('show_on_homepage', true)
+            ->orderBy('homepage_sort_order')
+            ->orderByDesc('is_featured')
+            ->orderBy('sort_order')
+            ->limit(16)
+            ->get(['title', 'slug', 'category', 'price_from', 'currency', 'tag', 'hero_image_path', 'short_description', 'duration', 'location'])
             ->map(fn (Experience $experience) => [
                 'title' => $experience->title,
                 'slug' => $experience->slug,
                 'category' => $experience->category,
                 'priceFrom' => $this->formatMoney($experience->price_from, $experience->currency),
                 'tag' => $experience->tag,
+                'summary' => $experience->short_description,
+                'duration' => $experience->duration,
+                'location' => $experience->location,
                 'heroImageUrl' => $experience->hero_image_url,
             ]);
+
+        if ($featuredExperiences->isEmpty()) {
+            $featuredExperiences = Experience::query()
+                ->where('is_active', true)
+                ->orderByDesc('is_featured')
+                ->orderBy('sort_order')
+                ->limit(16)
+                ->get(['title', 'slug', 'category', 'price_from', 'currency', 'tag', 'hero_image_path', 'short_description', 'duration', 'location'])
+                ->map(fn (Experience $experience) => [
+                    'title' => $experience->title,
+                    'slug' => $experience->slug,
+                    'category' => $experience->category,
+                    'priceFrom' => $this->formatMoney($experience->price_from, $experience->currency),
+                    'tag' => $experience->tag,
+                    'summary' => $experience->short_description,
+                    'duration' => $experience->duration,
+                    'location' => $experience->location,
+                    'heroImageUrl' => $experience->hero_image_url,
+                ]);
+        }
+
+        $packages = Package::query()
+            ->where('is_active', true)
+            ->orderByDesc('is_featured')
+            ->orderBy('title')
+            ->limit(3)
+            ->get()
+            ->map(fn (Package $package) => [
+                'title' => $package->title,
+                'slug' => $package->slug,
+                'summary' => $package->short_description,
+                'duration' => $package->duration,
+                'location' => $package->location,
+                'priceFrom' => $this->formatMoney($package->price_from, $package->currency),
+                'heroImageUrl' => $package->hero_image_url,
+            ]);
+
+        $heroGallery = $featuredExperiences
+            ->filter(fn (array $experience) => filled($experience['heroImageUrl']))
+            ->take(6)
+            ->map(fn (array $experience) => [
+                'title' => $experience['title'],
+                'slug' => $experience['slug'],
+                'image' => $experience['heroImageUrl'],
+                'tag' => $experience['tag'] ?: $experience['category'],
+            ])
+            ->values();
 
         return Inertia::render('Home', [
             'seo' => [
@@ -53,6 +105,7 @@ class PageController extends Controller
                 'eyebrow' => $settings->home_hero_eyebrow,
                 'title' => $settings->home_hero_title,
                 'description' => $settings->home_hero_description,
+                'videoUrl' => 'https://acutetourism.org/videos/hero-section-intro.mp4',
                 'primaryCta' => ['label' => $settings->home_primary_cta_label, 'href' => route('experiences.index')],
                 'secondaryCta' => ['label' => $settings->home_secondary_cta_label, 'href' => route('contact')],
             ],
@@ -62,10 +115,35 @@ class PageController extends Controller
                 'collectionsTitle' => $settings->home_collections_title,
                 'featuredEyebrow' => $settings->home_featured_eyebrow,
                 'featuredTitle' => $settings->home_featured_title,
+                'packagesEyebrow' => 'Featured Packages',
+                'packagesTitle' => 'Event-led and stay-inclusive products for higher-intent bookings.',
+                'recommendationsEyebrow' => 'Our Recommendation',
+                'recommendationsTitle' => 'Start with clearer buying paths, not a crowded catalog.',
+            ],
+            'stats' => [
+                ['label' => 'Experiences', 'value' => Experience::query()->where('is_active', true)->count()],
+                ['label' => 'Curated Collections', 'value' => Collection::query()->where('is_featured', true)->count()],
+                ['label' => 'Packages', 'value' => Package::query()->where('is_active', true)->count()],
             ],
             'collections' => $featuredCollections,
             'featuredExperiences' => $featuredExperiences,
+            'heroGallery' => $heroGallery,
+            'packages' => $packages,
             'trustPoints' => $settings->home_trust_points ?? [],
+            'recommendations' => [
+                [
+                    'title' => 'Lead with private and premium experiences',
+                    'copy' => 'Keep the homepage focused on high-intent desert, yacht, city, and family products instead of spreading attention across unrelated travel modules.',
+                ],
+                [
+                    'title' => 'Use landing-page structure, not marketplace clutter',
+                    'copy' => 'One clear hero, strong social proof, curated collections, 16 flagship experiences, and packages creates a better premium first impression.',
+                ],
+                [
+                    'title' => 'Sell through logistics clarity and concierge trust',
+                    'copy' => 'Premium buyers convert faster when pricing, pickup, duration, and follow-up channels feel reliable before checkout starts.',
+                ],
+            ],
         ]);
     }
 

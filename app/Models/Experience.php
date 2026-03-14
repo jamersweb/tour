@@ -26,6 +26,8 @@ class Experience extends Model
         'price_from',
         'currency',
         'is_featured',
+        'show_on_homepage',
+        'homepage_sort_order',
         'is_private',
         'is_active',
         'tag',
@@ -43,6 +45,7 @@ class Experience extends Model
             'inclusions' => 'array',
             'exclusions' => 'array',
             'is_featured' => 'boolean',
+            'show_on_homepage' => 'boolean',
             'is_private' => 'boolean',
             'is_active' => 'boolean',
         ];

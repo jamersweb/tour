@@ -36,9 +36,9 @@ const submit = () => {
 <template>
     <SiteMeta :title="seo.title" :description="seo.description" :image="seo.image" />
 
-    <section class="hero-section">
-        <div class="container hero-grid">
-            <div>
+    <section class="hero-section experience-hero">
+        <div class="container experience-hero-grid">
+            <div class="experience-story">
                 <p class="eyebrow">{{ experience.category }}</p>
                 <h1 class="hero-title">{{ experience.title }}</h1>
                 <p class="hero-copy">{{ experience.heroSummary || experience.shortDescription }}</p>
@@ -49,23 +49,36 @@ const submit = () => {
                     <span class="filter-chip active">{{ experience.location }}</span>
                     <span v-if="experience.isPrivate" class="filter-chip active">Private Available</span>
                 </div>
+
+                <div class="experience-metrics">
+                    <article class="landing-stat">
+                        <strong>{{ experience.priceFrom }}</strong>
+                        <span>Starting rate</span>
+                    </article>
+                    <article class="landing-stat">
+                        <strong>{{ experience.duration }}</strong>
+                        <span>Experience length</span>
+                    </article>
+                    <article class="landing-stat">
+                        <strong>{{ experience.location }}</strong>
+                        <span>Primary setting</span>
+                    </article>
+                </div>
             </div>
 
-            <div class="hero-panel">
-                <div v-if="experience.heroImageUrl" class="panel-media">
-                    <img :src="experience.heroImageUrl" :alt="experience.title" />
-                </div>
-                <p class="panel-label">From</p>
-                <h2 class="detail-price">{{ experience.priceFrom }}</h2>
-                <p class="hero-copy">Production checkout will use Network Payment Gateway after the inquiry-led phase.</p>
+            <div class="experience-stage">
+                <article class="hero-panel">
+                    <div v-if="experience.heroImageUrl" class="page-hero-media experience-hero-media">
+                        <img :src="experience.heroImageUrl" :alt="experience.title" />
+                    </div>
 
-                <div class="hero-actions">
-                    <a class="button-primary" href="#experience-inquiry">Plan this experience</a>
-                    <Link v-if="experience.priceFrom" class="button-secondary" :href="`/checkout/experiences/${experience.slug}`">
-                        Pay online
-                    </Link>
-                    <Link class="button-secondary" href="/experiences">Back to experiences</Link>
-                </div>
+                    <div class="hero-actions">
+                        <a class="button-primary" href="#experience-inquiry">Plan this experience</a>
+                        <Link v-if="experience.priceFrom" class="button-secondary" :href="`/checkout/experiences/${experience.slug}`">
+                            Pay online
+                        </Link>
+                    </div>
+                </article>
             </div>
         </div>
     </section>
@@ -74,20 +87,20 @@ const submit = () => {
         <div class="container detail-grid">
             <div class="detail-stack">
                 <article class="info-card">
-                    <p class="card-tag">Overview</p>
+                    <p class="card-tag">Why This Works</p>
                     <h3>{{ experience.shortDescription }}</h3>
                     <p>{{ experience.description }}</p>
                 </article>
 
                 <article class="info-card">
-                    <p class="card-tag">Highlights</p>
+                    <p class="card-tag">Experience Highlights</p>
                     <ul class="feature-list">
                         <li v-for="highlight in experience.highlights" :key="highlight">{{ highlight }}</li>
                     </ul>
                 </article>
 
                 <article v-if="experience.galleryImageUrls.length" class="info-card">
-                    <p class="card-tag">Gallery</p>
+                    <p class="card-tag">Visual Preview</p>
                     <div class="gallery-grid">
                         <div v-for="image in experience.galleryImageUrls" :key="image" class="gallery-card">
                             <img :src="image" :alt="experience.title" />
@@ -97,12 +110,13 @@ const submit = () => {
             </div>
 
             <div class="detail-stack">
-                <article class="info-card">
+                <article class="info-card experience-service-card">
                     <p class="card-tag">Service Notes</p>
+
                     <div class="meta-stack">
                         <div>
                             <strong>Pickup</strong>
-                            <p>{{ experience.pickupNote || 'Pickup details will be confirmed during planning.' }}</p>
+                            <p>{{ experience.pickupNote || 'Pickup details are confirmed after planning.' }}</p>
                         </div>
                         <div>
                             <strong>Collections</strong>
@@ -121,25 +135,25 @@ const submit = () => {
                 </article>
 
                 <article class="info-card">
-                    <p class="card-tag">Inclusions</p>
+                    <p class="card-tag">Included</p>
                     <ul class="feature-list">
                         <li v-for="item in experience.inclusions" :key="item">{{ item }}</li>
                     </ul>
                 </article>
 
                 <article class="info-card">
-                    <p class="card-tag">Exclusions</p>
+                    <p class="card-tag">Not Included</p>
                     <ul class="feature-list">
                         <li v-for="item in experience.exclusions" :key="item">{{ item }}</li>
                     </ul>
                 </article>
 
-                <article id="experience-inquiry" class="info-card">
+                <article id="experience-inquiry" class="info-card inquiry-card">
                     <p class="card-tag">Plan This Experience</p>
-                    <h3>Send a lead with the experience already attached.</h3>
+                    <h3>Ask for availability, timing, and the best-fit option.</h3>
                     <p class="hero-copy">
-                        This inquiry goes into the admin pipeline with
-                        <strong>{{ experience.title }}</strong> linked as the requested product.
+                        This request goes straight into the sales pipeline with
+                        <strong>{{ experience.title }}</strong> attached to the lead.
                     </p>
 
                     <div v-if="page.props.flash.success" class="success-banner">
@@ -211,20 +225,25 @@ const submit = () => {
     <section v-if="relatedExperiences.length" class="section-block section-contrast">
         <div class="container">
             <div class="section-heading">
-                <p class="eyebrow">Related Experiences</p>
-                <h2>Keep visitors inside the curated journey.</h2>
+                <p class="eyebrow">Recommended Next</p>
+                <h2>Keep the visitor inside a tighter premium shortlist.</h2>
             </div>
 
             <div class="card-grid card-grid-three">
-                <article v-for="item in relatedExperiences" :key="item.slug" class="info-card">
-                    <div v-if="item.heroImageUrl" class="card-media">
+                <article v-for="item in relatedExperiences" :key="item.slug" class="experience-tile">
+                    <div v-if="item.heroImageUrl" class="showcase-media experience-tile-media">
                         <img :src="item.heroImageUrl" :alt="item.title" />
                     </div>
-                    <p class="card-tag">{{ item.category }}</p>
+                    <div class="showcase-meta">
+                        <span class="card-tag-ghost">{{ item.category }}</span>
+                        <span class="card-tag-accent">{{ item.duration }}</span>
+                    </div>
                     <h3>{{ item.title }}</h3>
-                    <p>{{ item.duration }}</p>
-                    <p class="price-line">{{ item.priceFrom }}</p>
-                    <Link class="card-link" :href="`/experiences/${item.slug}`">View experience</Link>
+                    <div class="experience-tile-footer">
+                        <span>{{ item.category }}</span>
+                        <strong>{{ item.priceFrom }}</strong>
+                    </div>
+                    <Link class="button-primary card-button" :href="`/experiences/${item.slug}`">View experience</Link>
                 </article>
             </div>
         </div>

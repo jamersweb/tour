@@ -15,9 +15,9 @@ defineProps({
 <template>
     <SiteMeta :title="seo.title" :description="seo.description" :image="seo.image" />
 
-    <section class="hero-section">
-        <div class="container hero-grid">
-            <div>
+    <section class="hero-section experience-hero">
+        <div class="container experience-hero-grid">
+            <div class="experience-story">
                 <p class="eyebrow">Package</p>
                 <h1 class="hero-title">{{ packageItem.title }}</h1>
                 <p class="hero-copy">{{ packageItem.shortDescription }}</p>
@@ -30,21 +30,43 @@ defineProps({
                         {{ packageItem.days }}D / {{ packageItem.nights }}N
                     </span>
                 </div>
+
+                <div class="experience-metrics">
+                    <article class="landing-stat">
+                        <strong>{{ packageItem.priceFrom || 'On request' }}</strong>
+                        <span>Package rate</span>
+                    </article>
+                    <article class="landing-stat">
+                        <strong>{{ packageItem.duration || 'Flexible' }}</strong>
+                        <span>Duration</span>
+                    </article>
+                    <article class="landing-stat">
+                        <strong>{{ packageItem.location || 'Dubai / Abu Dhabi' }}</strong>
+                        <span>Destination</span>
+                    </article>
+                </div>
             </div>
 
-            <div class="hero-panel">
-                <div v-if="packageItem.heroImageUrl" class="panel-media">
+            <div class="experience-stage">
+                <div v-if="packageItem.heroImageUrl" class="page-hero-media experience-hero-media">
                     <img :src="packageItem.heroImageUrl" :alt="packageItem.title" />
                 </div>
-                <p class="panel-label">From</p>
-                <h2 v-if="packageItem.priceFrom" class="detail-price">{{ packageItem.priceFrom }}</h2>
-                <p v-if="packageItem.salePrice" class="meta-copy">Legacy sale price reference: {{ packageItem.salePrice }}</p>
 
-                <div class="hero-actions">
-                    <Link class="button-primary" :href="`/checkout/packages/${packageItem.slug}`">Pay online</Link>
-                    <Link class="button-secondary" href="/contact">Request this package</Link>
-                    <Link class="button-secondary" href="/packages">Back to packages</Link>
-                </div>
+                <article class="hero-panel experience-service-card">
+                    <p class="panel-label">Package Booking</p>
+                    <h2 v-if="packageItem.priceFrom" class="detail-price">{{ packageItem.priceFrom }}</h2>
+                    <p v-if="packageItem.salePrice" class="meta-copy">Reference sale price: {{ packageItem.salePrice }}</p>
+                    <p class="meta-copy">
+                        Built for event-led trips, short-stay planning, and cleaner buyer intent
+                        than one-off product browsing.
+                    </p>
+
+                    <div class="hero-actions">
+                        <Link class="button-primary" :href="`/checkout/packages/${packageItem.slug}`">Pay online</Link>
+                        <Link class="button-secondary" href="/contact">Request this package</Link>
+                        <Link class="button-secondary" href="/packages">Back to packages</Link>
+                    </div>
+                </article>
             </div>
         </div>
     </section>
@@ -52,13 +74,13 @@ defineProps({
     <section class="section-block">
         <div class="container detail-grid">
             <div class="detail-stack">
-                <article class="info-card">
+                <article class="info-card package-card">
                     <p class="card-tag">Overview</p>
                     <h3>{{ packageItem.shortDescription }}</h3>
                     <p>{{ packageItem.description }}</p>
                 </article>
 
-                <article v-if="packageItem.galleryImageUrls.length" class="info-card">
+                <article v-if="packageItem.galleryImageUrls.length" class="info-card package-card">
                     <p class="card-tag">Gallery</p>
                     <div class="gallery-grid">
                         <div v-for="image in packageItem.galleryImageUrls" :key="image" class="gallery-card">
@@ -67,7 +89,7 @@ defineProps({
                     </div>
                 </article>
 
-                <article v-if="packageItem.itinerary.length" class="info-card">
+                <article v-if="packageItem.itinerary.length" class="info-card package-card">
                     <p class="card-tag">Itinerary</p>
                     <div class="detail-stack">
                         <div v-for="stop in packageItem.itinerary" :key="`${stop.dayLabel}-${stop.title}`" class="itinerary-item">
@@ -83,21 +105,21 @@ defineProps({
             </div>
 
             <div class="detail-stack">
-                <article class="info-card">
+                <article class="info-card package-card">
                     <p class="card-tag">Highlights</p>
                     <ul class="feature-list">
                         <li v-for="highlight in packageItem.highlights" :key="highlight">{{ highlight }}</li>
                     </ul>
                 </article>
 
-                <article class="info-card">
+                <article class="info-card package-card">
                     <p class="card-tag">Inclusions</p>
                     <ul class="feature-list">
                         <li v-for="item in packageItem.inclusions" :key="item">{{ item }}</li>
                     </ul>
                 </article>
 
-                <article class="info-card">
+                <article class="info-card package-card">
                     <p class="card-tag">Exclusions</p>
                     <ul class="feature-list">
                         <li v-for="item in packageItem.exclusions" :key="item">{{ item }}</li>
@@ -115,7 +137,7 @@ defineProps({
             </div>
 
             <div class="card-grid card-grid-three">
-                <article v-for="item in relatedPackages" :key="item.slug" class="info-card">
+                <article v-for="item in relatedPackages" :key="item.slug" class="info-card package-card">
                     <div v-if="item.heroImageUrl" class="card-media">
                         <img :src="item.heroImageUrl" :alt="item.title" />
                     </div>
@@ -123,7 +145,7 @@ defineProps({
                     <h3>{{ item.title }}</h3>
                     <p>{{ item.summary }}</p>
                     <p class="meta-copy">{{ item.duration }}</p>
-                    <Link class="card-link" :href="`/packages/${item.slug}`">View package</Link>
+                    <Link class="button-primary card-button" :href="`/packages/${item.slug}`">View package</Link>
                 </article>
             </div>
         </div>

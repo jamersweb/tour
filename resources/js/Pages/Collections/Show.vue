@@ -14,11 +14,19 @@ defineProps({
 <template>
     <SiteMeta :title="seo.title" :description="seo.description" :image="seo.image" />
 
-    <section class="page-intro">
-        <div class="container narrow">
-            <p class="eyebrow">Collection</p>
-            <h1 class="page-title">{{ collection.title }}</h1>
-            <p class="page-copy">{{ collection.description }}</p>
+    <section class="hero-section">
+        <div class="container hero-grid">
+            <div>
+                <p class="eyebrow">Collection</p>
+                <h1 class="page-title">{{ collection.title }}</h1>
+                <p class="page-copy">{{ collection.description }}</p>
+
+                <div class="hero-actions">
+                    <Link class="button-primary" href="/experiences">Browse experiences</Link>
+                    <Link class="button-secondary" href="/contact">Plan this collection</Link>
+                </div>
+            </div>
+
             <div v-if="collection.heroImageUrl" class="page-hero-media">
                 <img :src="collection.heroImageUrl" :alt="collection.title" />
             </div>
@@ -32,16 +40,21 @@ defineProps({
                 <h2>{{ collection.summary }}</h2>
             </div>
 
-            <div class="card-grid card-grid-three">
-                <article v-for="experience in collection.experiences" :key="experience.title" class="info-card">
+            <div class="experience-masonry">
+                <article v-for="experience in collection.experiences" :key="experience.title" class="experience-tile">
                     <div v-if="experience.heroImageUrl" class="card-media">
                         <img :src="experience.heroImageUrl" :alt="experience.title" />
                     </div>
-                    <p class="card-tag">{{ experience.category }}</p>
+                    <div class="showcase-meta">
+                        <span class="card-tag-ghost">{{ experience.category }}</span>
+                        <span class="card-tag-accent">{{ experience.duration }}</span>
+                    </div>
                     <h3>{{ experience.title }}</h3>
-                    <p>{{ experience.duration }}</p>
-                    <p class="price-line">{{ experience.priceFrom }}</p>
-                    <Link class="card-link" :href="`/experiences/${experience.slug}`">View experience</Link>
+                    <div class="experience-tile-footer">
+                        <span>{{ experience.duration }}</span>
+                        <strong>{{ experience.priceFrom }}</strong>
+                    </div>
+                    <Link class="button-primary card-button" :href="`/experiences/${experience.slug}`">View experience</Link>
                 </article>
             </div>
         </div>

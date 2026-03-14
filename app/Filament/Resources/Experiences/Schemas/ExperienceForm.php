@@ -97,11 +97,18 @@ class ExperienceForm
                             ->required()
                             ->numeric()
                             ->default(0),
+                        TextInput::make('homepage_sort_order')
+                            ->numeric()
+                            ->default(0)
+                            ->helperText('Lower values appear first on the homepage grid.'),
                     ])
                     ->columns(2),
                 Section::make('Publishing')
                     ->schema([
                         Toggle::make('is_featured')
+                            ->required()
+                            ->inline(false),
+                        Toggle::make('show_on_homepage')
                             ->required()
                             ->inline(false),
                         Toggle::make('is_private')
@@ -111,7 +118,7 @@ class ExperienceForm
                             ->required()
                             ->inline(false),
                     ])
-                    ->columns(3),
+                    ->columns(4),
                 Section::make('SEO')
                     ->schema([
                         TextInput::make('seo_title')

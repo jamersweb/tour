@@ -19,39 +19,51 @@ defineProps({
     <section class="page-intro">
         <div class="container">
             <p class="eyebrow">Experiences</p>
-            <h1 class="page-title">Premium Dubai product architecture starts here.</h1>
+            <h1 class="page-title">Private, premium, and concierge-led Dubai experiences.</h1>
             <p class="page-copy">
-                This listing page is the replacement for the current broad template catalog. It is
-                designed for curated categories, cleaner filters, and stronger conversion paths.
+                Browse the curated collection across desert, yacht, city, and family categories.
+                Each listing is designed to move buyers into a clearer product page, not a crowded
+                marketplace maze.
             </p>
+
+            <div class="hero-actions">
+                <Link class="button-primary" href="/contact">Plan with concierge</Link>
+                <Link class="button-secondary" href="/packages">Browse packages</Link>
+            </div>
         </div>
     </section>
 
     <section class="section-block">
         <div class="container">
             <div class="tag-row">
-                <span class="filter-chip" :class="{ active: !activeCategory }">All</span>
-                <span
+                <Link class="filter-chip" :class="{ active: !activeCategory }" href="/experiences">All</Link>
+                <Link
                     v-for="category in categories"
                     :key="category"
                     class="filter-chip"
+                    :href="`/experiences?category=${encodeURIComponent(category)}`"
                     :class="{ active: activeCategory === category }"
                 >
                     {{ category }}
-                </span>
+                </Link>
             </div>
 
-            <div class="card-grid card-grid-three">
-                <article v-for="experience in experiences" :key="experience.title" class="info-card">
+            <div class="experience-masonry">
+                <article v-for="experience in experiences" :key="experience.title" class="experience-tile">
                     <div v-if="experience.heroImageUrl" class="card-media">
                         <img :src="experience.heroImageUrl" :alt="experience.title" />
                     </div>
-                    <p class="card-tag">{{ experience.category }}</p>
+                    <div class="showcase-meta">
+                        <span class="card-tag-ghost">{{ experience.category }}</span>
+                        <span class="card-tag-accent">{{ experience.duration }}</span>
+                    </div>
                     <h3>{{ experience.title }}</h3>
                     <p>{{ experience.summary }}</p>
-                    <p>{{ experience.duration }}</p>
-                    <p class="price-line">{{ experience.priceFrom }}</p>
-                    <Link class="card-link" :href="`/experiences/${experience.slug}`">View experience</Link>
+                    <div class="experience-tile-footer">
+                        <span>{{ experience.duration }}</span>
+                        <strong>{{ experience.priceFrom }}</strong>
+                    </div>
+                    <Link class="button-primary card-button" :href="`/experiences/${experience.slug}`">View experience</Link>
                 </article>
             </div>
         </div>

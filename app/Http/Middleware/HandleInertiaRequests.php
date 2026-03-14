@@ -18,6 +18,11 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         $settings = SiteSetting::current();
+        $logoUrl = $settings->logo_url;
+
+        if (! $logoUrl || str_ends_with($logoUrl, '/logo.png')) {
+            $logoUrl = 'https://acutetourism.org/uploads/0000/7/2025/04/12/logo-sin-texto.png';
+        }
 
         return [
             ...parent::share($request),
@@ -37,19 +42,21 @@ class HandleInertiaRequests extends Middleware
                 'brandKicker' => $settings->brand_kicker,
                 'brandName' => $settings->brand_name,
                 'tagline' => $settings->site_tagline,
+                'logoUrl' => $logoUrl,
+                'homeUrl' => route('home'),
                 'appUrl' => config('app.url'),
                 'currentUrl' => $request->url(),
                 'defaultMeta' => [
                     'title' => $settings->site_name,
                     'description' => 'Premium Dubai experiences with curated desert, yacht, city, and private itineraries.',
-                    'image' => $settings->logo_url,
+                    'image' => $logoUrl,
                 ],
                 'organization' => [
                     'name' => $settings->site_name,
                     'legalName' => $settings->company_legal_name ?: $settings->site_name,
                     'type' => $settings->organization_type ?: 'Organization',
                     'url' => $settings->website_url ?: config('app.url'),
-                    'logo' => $settings->logo_url,
+                    'logo' => $logoUrl,
                     'socialLinks' => $settings->social_links ?? [],
                     'contact' => [
                         'email' => $settings->contact_email,
@@ -67,8 +74,33 @@ class HandleInertiaRequests extends Middleware
                 'interestOptions' => $settings->interest_options ?? [],
                 'footer' => [
                     'description' => $settings->footer_description,
-                    'buildNotes' => $settings->footer_build_notes ?? [],
-                    'milestones' => $settings->footer_milestones ?? [],
+                    'legalName' => $settings->company_legal_name ?: $settings->site_name,
+                    'website' => $settings->website_url ?: config('app.url'),
+                    'socialLinks' => collect($settings->social_links ?? [])
+                        ->filter(fn ($url) => filled($url))
+                        ->map(function ($url) {
+                            $host = parse_url($url, PHP_URL_HOST) ?: $url;
+                            $label = str($host)
+                                ->replace('www.', '')
+                                ->before('.')
+                                ->headline()
+                                ->toString();
+
+                            return [
+                                'label' => $label,
+                                'href' => $url,
+                            ];
+                        })
+                        ->values()
+                        ->all(),
+                ],
+                'footerNavigation' => [
+                    ['label' => 'Experiences', 'href' => route('experiences.index')],
+                    ['label' => 'Packages', 'href' => route('packages.index')],
+                    ['label' => 'About', 'href' => route('about')],
+                    ['label' => 'Corporate Events', 'href' => route('corporate-events')],
+                    ['label' => 'Journal', 'href' => route('journal')],
+                    ['label' => 'Contact', 'href' => route('contact')],
                 ],
                 'primaryNavigation' => [
                     ['label' => 'Home', 'href' => route('home')],
