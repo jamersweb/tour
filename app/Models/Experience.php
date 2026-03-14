@@ -82,6 +82,6 @@ class Experience extends Model
             return $path;
         }
 
-        return Storage::disk('public')->url($path);
+        return Storage::disk('uploads')->url($path);
     }
 }

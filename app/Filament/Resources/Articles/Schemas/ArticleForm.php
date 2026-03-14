@@ -30,7 +30,7 @@ class ArticleForm
                     FileUpload::make('hero_image_path')
                         ->label('Hero image')
                         ->image()
-                        ->disk('public')
+                        ->disk('uploads')
                         ->directory('journal')
                         ->imageEditor(),
                 ]),

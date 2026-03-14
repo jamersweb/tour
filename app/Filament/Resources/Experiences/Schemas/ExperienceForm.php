@@ -58,14 +58,14 @@ class ExperienceForm
                         FileUpload::make('hero_image_path')
                             ->label('Hero image')
                             ->image()
-                            ->disk('public')
+                            ->disk('uploads')
                             ->directory('experiences')
                             ->imageEditor(),
                         FileUpload::make('gallery_images')
                             ->label('Gallery images')
                             ->image()
                             ->multiple()
-                            ->disk('public')
+                            ->disk('uploads')
                             ->directory('experiences/gallery')
                             ->reorderable(),
                     ])

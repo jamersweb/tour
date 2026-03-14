@@ -36,7 +36,7 @@ class CollectionForm
                         FileUpload::make('hero_image_path')
                             ->label('Hero image')
                             ->image()
-                            ->disk('public')
+                            ->disk('uploads')
                             ->directory('collections')
                             ->imageEditor(),
                     ]),

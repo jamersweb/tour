@@ -37,7 +37,7 @@ class Collection extends Model
             return $this->hero_image_path;
         }
 
-        return Storage::disk('public')->url($this->hero_image_path);
+        return Storage::disk('uploads')->url($this->hero_image_path);
     }
 
     public function experiences(): BelongsToMany
