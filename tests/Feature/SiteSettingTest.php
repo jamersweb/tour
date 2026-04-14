@@ -28,11 +28,11 @@ class SiteSettingTest extends TestCase
         $response->assertOk();
         $response->assertInertia(fn (Assert $page) => $page
             ->component('Home')
-            ->where('hero.eyebrow', 'Curated Dubai Experiences')
-            ->where('homeSections.trustHeading', 'Rebuild Focus')
+            ->where('hero.eyebrow', 'Tailor-Made Dubai & UAE Holidays')
+            ->where('homeSections.collectionsEyebrow', 'Destinations')
+            ->where('homeSections.collectionsTitle', 'Explore Other Emirates')
             ->where('site.organization.type', 'TravelAgency')
             ->where('site.organization.legalName', 'Acute Tourism LLC')
-            ->where('trustPoints.3', 'Planned Network Payment Gateway integration for production checkout')
         );
     }
 }

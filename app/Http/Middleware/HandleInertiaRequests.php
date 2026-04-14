@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\SiteSetting;
+use App\Support\NetworkPayments;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -12,6 +13,12 @@ class HandleInertiaRequests extends Middleware
 
     public function version(Request $request): ?string
     {
+        $manifest = public_path('build/manifest.json');
+
+        if (is_file($manifest)) {
+            return (string) @filemtime($manifest);
+        }
+
         return parent::version($request);
     }
 
@@ -21,11 +28,21 @@ class HandleInertiaRequests extends Middleware
         $logoUrl = $settings->logo_url;
 
         if (! $logoUrl || str_ends_with($logoUrl, '/logo.png')) {
-            $logoUrl = 'https://acutetourism.org/uploads/0000/7/2025/04/12/logo-sin-texto.png';
+            $logoUrl = 'https://acutetourism.org/uploads/0000/6/2025/03/19/5.png';
+        }
+
+        $footerLogoUrl = $settings->footer_logo_url;
+
+        if (! $footerLogoUrl || str_ends_with($footerLogoUrl, '/logo.png')) {
+            $footerLogoUrl = 'https://acutetourism.org/uploads/0000/6/2025/03/14/4-2.png';
         }
 
         return [
             ...parent::share($request),
+            'payments' => [
+                'networkEnabled' => (bool) config('payments.network.enabled'),
+                'networkCheckoutReady' => NetworkPayments::isCheckoutReady(),
+            ],
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
@@ -43,12 +60,13 @@ class HandleInertiaRequests extends Middleware
                 'brandName' => $settings->brand_name,
                 'tagline' => $settings->site_tagline,
                 'logoUrl' => $logoUrl,
+                'footerLogoUrl' => $footerLogoUrl,
                 'homeUrl' => route('home'),
                 'appUrl' => config('app.url'),
                 'currentUrl' => $request->url(),
                 'defaultMeta' => [
                     'title' => $settings->site_name,
-                    'description' => 'Premium Dubai experiences with curated desert, yacht, city, and private itineraries.',
+                    'description' => 'Exclusively curated holiday experiences in Dubai and the UAE — luxury stays, private transfers, and concierge-led planning.',
                     'image' => $logoUrl,
                 ],
                 'organization' => [
@@ -61,6 +79,7 @@ class HandleInertiaRequests extends Middleware
                     'contact' => [
                         'email' => $settings->contact_email,
                         'phone' => $settings->contact_phone,
+                        'phoneSecondary' => $settings->contact_phone_secondary,
                         'address' => $settings->contact_address,
                         'whatsappNumber' => $settings->whatsapp_number,
                     ],
@@ -68,6 +87,7 @@ class HandleInertiaRequests extends Middleware
                 'contact' => [
                     'email' => $settings->contact_email,
                     'phone' => $settings->contact_phone,
+                    'phoneSecondary' => $settings->contact_phone_secondary,
                     'address' => $settings->contact_address,
                     'whatsappNumber' => $settings->whatsapp_number,
                 ],
@@ -97,20 +117,36 @@ class HandleInertiaRequests extends Middleware
                 'footerNavigation' => [
                     ['label' => 'Experiences', 'href' => route('experiences.index')],
                     ['label' => 'Packages', 'href' => route('packages.index')],
+                    ['label' => 'Schengen Visa', 'href' => route('visa.schengen')],
                     ['label' => 'About', 'href' => route('about')],
                     ['label' => 'Corporate Events', 'href' => route('corporate-events')],
-                    ['label' => 'Journal', 'href' => route('journal')],
                     ['label' => 'Contact', 'href' => route('contact')],
                 ],
                 'primaryNavigation' => [
                     ['label' => 'Home', 'href' => route('home')],
-                    ['label' => 'Experiences', 'href' => route('experiences.index')],
-                    ['label' => 'Packages', 'href' => route('packages.index')],
-                    ['label' => 'About', 'href' => route('about')],
-                    ['label' => 'Corporate Events', 'href' => route('corporate-events')],
-                    ['label' => 'Journal', 'href' => route('journal')],
-                    ['label' => 'FAQ', 'href' => route('faq')],
-                    ['label' => 'Contact', 'href' => route('contact')],
+                    [
+                        'label' => 'Explore',
+                        'children' => [
+                            ['label' => 'Experiences', 'href' => route('experiences.index')],
+                            ['label' => 'Packages', 'href' => route('packages.index')],
+                            ['label' => 'Schengen Visa', 'href' => route('visa.schengen')],
+                        ],
+                    ],
+                    [
+                        'label' => 'Company',
+                        'children' => [
+                            ['label' => 'About', 'href' => route('about')],
+                            ['label' => 'Corporate Events', 'href' => route('corporate-events')],
+                        ],
+                    ],
+                    [
+                        'label' => 'Resources',
+                        'children' => [
+                            ['label' => 'Journal', 'href' => route('journal')],
+                            ['label' => 'FAQ', 'href' => route('faq')],
+                            ['label' => 'Contact', 'href' => route('contact')],
+                        ],
+                    ],
                 ],
             ],
         ];

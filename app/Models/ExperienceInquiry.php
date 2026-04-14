@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ExperienceInquiry extends Model
 {
@@ -45,6 +46,11 @@ class ExperienceInquiry extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function activityLogs(): HasMany
+    {
+        return $this->hasMany(ExperienceInquiryLog::class)->latest('created_at');
     }
 
     public function scopeOpenPipeline(Builder $query): Builder

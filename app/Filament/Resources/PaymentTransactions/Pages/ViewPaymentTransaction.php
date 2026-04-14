@@ -14,6 +14,15 @@ class ViewPaymentTransaction extends ViewRecord
 {
     protected static string $resource = PaymentTransactionResource::class;
 
+    public function mount(int|string $record): void
+    {
+        parent::mount($record);
+
+        $this->record->load([
+            'activityLogs' => fn ($query) => $query->latest('created_at')->with('user'),
+        ]);
+    }
+
     protected function getHeaderActions(): array
     {
         return [
@@ -57,6 +66,10 @@ class ViewPaymentTransaction extends ViewRecord
             Action::make('resendConfirmation')
                 ->label('Resend Confirmation')
                 ->icon('heroicon-o-envelope')
+                ->tooltip('Emails the booker and travelers only. Staff inboxes and admin alerts are not sent again.')
+                ->requiresConfirmation()
+                ->modalHeading('Resend confirmation emails?')
+                ->modalDescription('Sends the booking confirmation to the customer and listed travelers. Operations and admin notification emails are skipped.')
                 ->action(function (): void {
                     app(PaymentOperationsService::class)->resendConfirmation($this->record);
 

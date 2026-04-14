@@ -11,13 +11,29 @@ class NetworkNgeniusGateway
 {
     public function __construct(
         protected HttpFactory $http,
-    ) {
-    }
+    ) {}
 
-    public function createHostedOrder(PaymentTransaction $transaction, string $redirectUrl): array
-    {
+    /**
+     * Create a hosted payment session (N-Genius Online order).
+     *
+     * @see https://www.network.ae/en/merchant-solutions/ecommerce-payments/n-genius-online
+     * @see https://www.network.ae/en/merchant-solutions/ecommerce-payments/developers
+     */
+    public function createHostedOrder(
+        PaymentTransaction $transaction,
+        string $redirectUrl,
+        ?string $cancelRedirectUrl = null,
+    ): array {
         $config = $this->config();
         $accessToken = $this->accessToken();
+
+        $merchantAttributes = [
+            'redirectUrl' => $redirectUrl,
+        ];
+
+        if (filled($cancelRedirectUrl)) {
+            $merchantAttributes['cancelRedirectUrl'] = $cancelRedirectUrl;
+        }
 
         $response = $this->http->baseUrl($config['base_url'])
             ->withToken($accessToken)
@@ -34,9 +50,7 @@ class NetworkNgeniusGateway
                 ],
                 'language' => 'en',
                 'emailAddress' => $transaction->customer_email,
-                'merchantAttributes' => [
-                    'redirectUrl' => $redirectUrl,
-                ],
+                'merchantAttributes' => $merchantAttributes,
                 'reference' => $transaction->reference,
             ])
             ->throw()
@@ -72,16 +86,34 @@ class NetworkNgeniusGateway
             ->json();
     }
 
+    /**
+     * Health check: obtain an access token from the identity service (validates API key + secret + base URL).
+     *
+     * @throws RuntimeException
+     */
+    public function verifyCredentials(): string
+    {
+        return $this->accessToken();
+    }
+
     protected function accessToken(): string
     {
         $config = $this->config();
         $basic = base64_encode($config['api_key'].':'.$config['api_secret']);
+        $realm = $this->identityRealm($config);
+
+        $body = json_encode([
+            'grant_type' => 'client_credentials',
+            'realm' => $realm,
+        ], JSON_THROW_ON_ERROR);
 
         $response = $this->http->baseUrl($config['base_url'])
             ->withHeaders([
                 'Authorization' => 'Basic '.$basic,
                 'Accept' => 'application/vnd.ni-identity.v1+json',
+                'Content-Type' => 'application/vnd.ni-identity.v1+json',
             ])
+            ->withBody($body, 'application/vnd.ni-identity.v1+json')
             ->post('/identity/auth/access-token')
             ->throw()
             ->json();
@@ -93,6 +125,21 @@ class NetworkNgeniusGateway
         }
 
         return $token;
+    }
+
+    /**
+     * @param  array<string, mixed>  $config
+     */
+    protected function identityRealm(array $config): string
+    {
+        $explicit = $config['realm'] ?? null;
+        if (filled($explicit)) {
+            return (string) $explicit;
+        }
+
+        $base = (string) ($config['base_url'] ?? '');
+
+        return str_contains($base, 'sandbox') ? 'ni' : 'networkinternational';
     }
 
     protected function config(): array

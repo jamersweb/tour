@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ExperienceInquiries\Schemas;
 
+use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 
@@ -42,6 +43,21 @@ class ExperienceInquiryInfolist
                     ->placeholder('-'),
                 TextEntry::make('admin_notes')
                     ->placeholder('-')
+                    ->columnSpanFull(),
+                RepeatableEntry::make('activityLogs')
+                    ->label('Activity log (submissions, pipeline changes)')
+                    ->schema([
+                        TextEntry::make('created_at')->dateTime()->label('When'),
+                        TextEntry::make('action')->label('Action')->badge(),
+                        TextEntry::make('description')->placeholder('—')->columnSpanFull(),
+                        TextEntry::make('user.name')->label('By')->placeholder('Website visitor'),
+                        TextEntry::make('properties')
+                            ->label('Details')
+                            ->formatStateUsing(fn (?array $state): string => $state
+                                ? (string) json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+                                : '—')
+                            ->columnSpanFull(),
+                    ])
                     ->columnSpanFull(),
                 TextEntry::make('created_at')
                     ->dateTime()

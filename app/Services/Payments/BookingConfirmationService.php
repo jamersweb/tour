@@ -5,6 +5,7 @@ namespace App\Services\Payments;
 use App\Mail\BookingConfirmedMail;
 use App\Models\PaymentTransaction;
 use App\Models\PaymentTransactionTraveler;
+use App\Services\AdminBookingNotifier;
 use App\Services\Messaging\WhatsappNotificationService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -14,36 +15,58 @@ class BookingConfirmationService
 {
     public function __construct(
         protected WhatsappNotificationService $whatsapp,
-    ) {
-    }
+        protected AdminBookingNotifier $adminNotifier,
+        protected PaymentTransactionLogger $activityLogger,
+    ) {}
 
-    public function send(PaymentTransaction $transaction, bool $force = false): void
+    public function send(PaymentTransaction $transaction, bool $force = false, bool $notifyStaff = true): void
     {
         if (! $force && $transaction->confirmation_sent_at) {
             return;
         }
 
         $transaction->loadMissing('payable', 'travelers');
-        $emailedRecipients = [];
         $whatsappRecipients = [];
 
-        $this->sendEmailOnce(
-            $emailedRecipients,
-            $transaction->customer_email,
-            new BookingConfirmedMail($transaction, $transaction->customer_name)
-        );
+        try {
+            Mail::to($transaction->customer_email)->send(
+                new BookingConfirmedMail($transaction, $transaction->customer_name)
+            );
+        } catch (\Throwable $exception) {
+            Log::warning('Booking confirmation email to customer failed.', [
+                'transaction_id' => $transaction->id,
+                'message' => $exception->getMessage(),
+            ]);
+        }
 
         $travelerTimestamps = [];
+        $travelerEmailSentAt = [];
 
         foreach ($transaction->travelers as $traveler) {
-            $sentEmail = $this->sendEmailOnce(
-                $emailedRecipients,
-                $traveler->email,
-                new BookingConfirmedMail($transaction, $traveler->name, $traveler)
-            );
+            $key = mb_strtolower(trim((string) $traveler->email));
 
-            if ($sentEmail) {
-                $travelerTimestamps[$traveler->id]['email_sent_at'] = $sentEmail;
+            if ($key === '') {
+                continue;
+            }
+
+            if (isset($travelerEmailSentAt[$key])) {
+                $travelerTimestamps[$traveler->id]['email_sent_at'] = $travelerEmailSentAt[$key];
+
+                continue;
+            }
+
+            try {
+                Mail::to($traveler->email)->send(
+                    new BookingConfirmedMail($transaction, $traveler->name, $traveler)
+                );
+                $travelerEmailSentAt[$key] = now();
+                $travelerTimestamps[$traveler->id]['email_sent_at'] = $travelerEmailSentAt[$key];
+            } catch (\Throwable $exception) {
+                Log::warning('Booking confirmation email to traveler failed.', [
+                    'transaction_id' => $transaction->id,
+                    'traveler_id' => $traveler->id,
+                    'message' => $exception->getMessage(),
+                ]);
             }
         }
 
@@ -71,23 +94,25 @@ class BookingConfirmationService
             PaymentTransactionTraveler::query()->whereKey($travelerId)->update($attributes);
         }
 
+        if ($notifyStaff) {
+            $this->adminNotifier->paymentReceived($transaction);
+        }
+
         $transaction->forceFill([
             'confirmation_sent_at' => now(),
         ])->save();
-    }
 
-    protected function sendEmailOnce(array &$emailedRecipients, string $email, BookingConfirmedMail $mailable): ?Carbon
-    {
-        $recipientKey = mb_strtolower(trim($email));
-
-        if (isset($emailedRecipients[$recipientKey])) {
-            return null;
-        }
-
-        Mail::to($email)->send($mailable);
-        $emailedRecipients[$recipientKey] = true;
-
-        return now();
+        $this->activityLogger->record(
+            $transaction->fresh(),
+            $force ? 'booking_confirmation_resent' : 'booking_confirmation_sent',
+            $force
+                ? 'Booking confirmation emails resent to booker and travelers (staff copies skipped if configured).'
+                : 'Booking confirmation emails sent to booker and travelers; staff notifications dispatched when enabled.',
+            [
+                'notify_staff' => $notifyStaff,
+            ],
+            auth()->user(),
+        );
     }
 
     protected function sendWhatsappSafely(array &$whatsappRecipients, PaymentTransaction $transaction, string $name, ?string $phone): ?Carbon

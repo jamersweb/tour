@@ -62,11 +62,15 @@ const submit = () => {
 
             <div class="detail-stack">
                 <article class="info-card">
-                    <p class="card-tag">Pay With Network Payment Gateway</p>
+                    <p class="card-tag">Pay with N-Genius Online (Network International)</p>
                     <h3>{{ checkout.amount }}</h3>
                     <p class="hero-copy">
-                        This starts a hosted payment session. The payment gateway redirects back
-                        here after authorization.
+                        You complete card payment on Network’s secure hosted page, then return here
+                        so we can confirm your booking and send confirmation by email.
+                    </p>
+                    <p v-if="!page.props.payments?.networkCheckoutReady" class="meta-copy">
+                        Online payment is not fully configured (enable N-Genius and set outlet + API
+                        credentials). Submitting the form will fail until checkout is ready.
                     </p>
 
                     <div v-if="page.props.flash.error" class="error-banner">
@@ -105,11 +109,6 @@ const submit = () => {
                         </label>
 
                         <div class="field-group">
-                            <div class="field-heading">
-                                <span>Traveler Contacts</span>
-                                <small>Add contact details for each guest on this booking.</small>
-                            </div>
-
                             <small v-if="form.errors.traveler_contacts">{{ form.errors.traveler_contacts }}</small>
 
                             <div

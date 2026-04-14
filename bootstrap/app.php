@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Middleware\EnsureUserIsAdmin;
+use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\HandleLegacyRedirects;
+use App\Http\Middleware\PreventStaleHtmlCache;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -11,12 +15,21 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->alias([
+            'admin' => EnsureUserIsAdmin::class,
+        ]);
+
         $middleware->append([
-            \App\Http\Middleware\HandleLegacyRedirects::class,
+            HandleLegacyRedirects::class,
+        ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'payments/network/webhook',
         ]);
 
         $middleware->web(append: [
-            \App\Http\Middleware\HandleInertiaRequests::class,
+            PreventStaleHtmlCache::class,
+            HandleInertiaRequests::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

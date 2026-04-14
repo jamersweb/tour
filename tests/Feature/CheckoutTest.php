@@ -2,6 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Mail\BookingConfirmedMail;
+use App\Mail\CheckoutContinuePaymentMail;
+use App\Mail\StaffBookingPaidMail;
+use App\Mail\StaffNewPaymentTransactionMail;
 use App\Models\Experience;
 use App\Models\PaymentTransaction;
 use App\Services\Messaging\WhatsappNotificationService;
@@ -17,6 +21,24 @@ class CheckoutTest extends TestCase
     use RefreshDatabase;
 
     protected bool $seed = true;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->enableNetworkCheckoutForTests();
+    }
+
+    public function test_checkout_redirects_when_gateway_not_fully_configured(): void
+    {
+        config([
+            'payments.network.enabled' => false,
+        ]);
+
+        $experience = Experience::query()->where('slug', 'private-heritage-desert-safari')->firstOrFail();
+
+        $this->get("/checkout/experiences/{$experience->slug}")
+            ->assertRedirect(route('experiences.show', $experience->slug));
+    }
 
     public function test_experience_checkout_page_renders_for_priced_experience(): void
     {
@@ -34,6 +56,8 @@ class CheckoutTest extends TestCase
 
     public function test_checkout_start_creates_transaction_and_redirects_to_gateway(): void
     {
+        Mail::fake();
+
         $experience = Experience::query()->where('slug', 'private-heritage-desert-safari')->firstOrFail();
 
         $this->mock(NetworkNgeniusGateway::class, function (MockInterface $mock): void {
@@ -68,7 +92,7 @@ class CheckoutTest extends TestCase
 
         $response->assertRedirect('https://pay.example.test/session/123');
 
-        $this->assertDatabaseHas((new PaymentTransaction())->getTable(), [
+        $this->assertDatabaseHas((new PaymentTransaction)->getTable(), [
             'customer_name' => 'Bilal Ahmed',
             'customer_email' => 'bilal@example.com',
             'gateway_order_ref' => 'order-ref-123',
@@ -79,6 +103,9 @@ class CheckoutTest extends TestCase
             'name' => 'Hassan Ali',
             'email' => 'hassan@example.com',
         ]);
+
+        Mail::assertSent(CheckoutContinuePaymentMail::class, 1);
+        Mail::assertSent(StaffNewPaymentTransactionMail::class, 1);
     }
 
     public function test_checkout_callback_updates_transaction_status(): void
@@ -146,7 +173,8 @@ class CheckoutTest extends TestCase
         $this->assertSame('abc123', $transaction->gateway_payment_ref);
         $this->assertNotNull($transaction->paid_at);
         $this->assertNotNull($transaction->confirmation_sent_at);
-        Mail::assertSentCount(2);
+        Mail::assertSent(BookingConfirmedMail::class, 3);
+        Mail::assertSent(StaffBookingPaidMail::class, 1);
         $this->assertDatabaseHas('payment_transaction_travelers', [
             'payment_transaction_id' => $transaction->id,
             'email' => 'ayesha@example.com',

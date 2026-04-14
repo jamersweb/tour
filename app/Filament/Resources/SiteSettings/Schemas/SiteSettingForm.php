@@ -2,10 +2,10 @@
 
 namespace App\Filament\Resources\SiteSettings\Schemas;
 
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TagsInput;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class SiteSettingForm
@@ -24,7 +24,8 @@ class SiteSettingForm
                         ->maxLength(100)
                         ->helperText('Schema.org type like TravelAgency or LocalBusiness.'),
                     TextInput::make('website_url')->url()->maxLength(255),
-                    TextInput::make('logo_url')->url()->maxLength(255),
+                    TextInput::make('logo_url')->url()->maxLength(255)->label('Header logo URL'),
+                    TextInput::make('footer_logo_url')->url()->maxLength(255)->label('Footer logo URL'),
                     TagsInput::make('social_links')
                         ->placeholder('Add a public social profile URL')
                         ->columnSpanFull(),
@@ -34,8 +35,11 @@ class SiteSettingForm
             Section::make('Contact')
                 ->schema([
                     TextInput::make('contact_email')->email()->maxLength(255),
-                    TextInput::make('contact_phone')->maxLength(100),
-                    TextInput::make('whatsapp_number')->maxLength(100),
+                    TextInput::make('contact_phone')->maxLength(100)->label('Primary phone'),
+                    TextInput::make('contact_phone_secondary')->maxLength(100)->label('Secondary phone'),
+                    TextInput::make('whatsapp_number')
+                        ->maxLength(100)
+                        ->helperText('Used for wa.me links site-wide (digits are normalized automatically). Example: +971 58 516 1554'),
                     Textarea::make('contact_address')->rows(3)->columnSpanFull(),
                     TagsInput::make('interest_options')
                         ->placeholder('Add an inquiry interest option')

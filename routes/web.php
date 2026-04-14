@@ -1,18 +1,23 @@
 <?php
 
-use App\Http\Controllers\InquiryController;
-use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\PaymentDocumentController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\InquiryController;
+use App\Http\Controllers\NetworkWebhookController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\PaymentDocumentController;
+use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PageController::class, 'home'])->name('home');
+Route::get('/acute-landing', [PageController::class, 'acuteLanding'])->name('landing.acute');
 Route::get('/experiences', [PageController::class, 'experiences'])->name('experiences.index');
 Route::get('/experiences/{slug}', [PageController::class, 'experience'])->name('experiences.show');
 Route::get('/packages', [PageController::class, 'packages'])->name('packages.index');
 Route::get('/packages/{slug}', [PageController::class, 'package'])->name('packages.show');
+Route::get('/visa-services', [PageController::class, 'visaServices'])->name('visa.index');
+Route::get('/schengen-visa', [PageController::class, 'schengenVisa'])->name('visa.schengen');
 Route::get('/collections/{slug}', [PageController::class, 'collection'])->name('collections.show');
 Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/corporate-events', [PageController::class, 'corporateEvents'])->name('corporate-events');
@@ -23,10 +28,12 @@ Route::post('/checkout/experiences/{slug}', [CheckoutController::class, 'startEx
 Route::get('/checkout/packages/{slug}', [CheckoutController::class, 'package'])->name('checkout.packages.show');
 Route::post('/checkout/packages/{slug}', [CheckoutController::class, 'startPackage'])->name('checkout.packages.start');
 Route::get('/payments/network/callback', [CheckoutController::class, 'callback'])->name('payments.network.callback');
+Route::post('/payments/network/webhook', NetworkWebhookController::class)->name('payments.network.webhook');
 Route::get('/checkout/result/{transaction}', [CheckoutController::class, 'result'])->name('checkout.result');
 Route::get('/journal', [PageController::class, 'journal'])->name('journal');
 Route::get('/journal/{slug}', [PageController::class, 'article'])->name('journal.show');
 Route::get('/faq', [PageController::class, 'faq'])->name('faq');
+Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -48,5 +55,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/account/profile', [AccountController::class, 'updateProfile'])->name('account.profile.update');
     Route::patch('/account/password', [AccountController::class, 'updatePassword'])->name('account.password.update');
     Route::post('/account/feedback', [AccountController::class, 'storeFeedback'])->name('account.feedback.store');
-    Route::get('/admin/payment-transactions/{transaction}/invoice', [PaymentDocumentController::class, 'adminInvoice'])->name('admin.payment-transactions.invoice');
+    Route::middleware('admin')->group(function () {
+        Route::get('/admin/payment-transactions/{transaction}/invoice', [PaymentDocumentController::class, 'adminInvoice'])->name('admin.payment-transactions.invoice');
+    });
 });

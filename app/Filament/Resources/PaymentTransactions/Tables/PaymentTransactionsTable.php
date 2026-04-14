@@ -4,15 +4,18 @@ namespace App\Filament\Resources\PaymentTransactions\Tables;
 
 use App\Models\PaymentTransaction;
 use App\Services\Payments\PaymentOperationsService;
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
-use Filament\Tables\Actions\Action;
-use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class PaymentTransactionsTable
 {
@@ -33,63 +36,81 @@ class PaymentTransactionsTable
             TextColumn::make('confirmation_sent_at')->since()->placeholder('-'),
             TextColumn::make('gateway_order_ref')->toggleable(isToggledHiddenByDefault: true),
             TextColumn::make('created_at')->since()->sortable(),
-        ])->filters([
-            SelectFilter::make('status')->options([
-                'pending' => 'Pending',
-                'paid' => 'Paid',
-                'authorized' => 'Authorized',
-                'failed' => 'Failed',
-                'cancelled' => 'Cancelled',
-                'refunded' => 'Refunded',
-            ]),
-        ])->recordActions([
-            ViewAction::make(),
-            EditAction::make(),
-            ActionGroup::make([
-                Action::make('downloadInvoice')
-                    ->label('Invoice PDF')
-                    ->icon('heroicon-o-arrow-down-tray')
-                    ->url(fn (PaymentTransaction $record) => route('admin.payment-transactions.invoice', $record))
-                    ->openUrlInNewTab(),
-                Action::make('reconcile')
-                    ->icon('heroicon-o-check-badge')
+        ])
+            ->defaultSort('created_at', 'desc')
+            ->filters([
+                SelectFilter::make('status')->options([
+                    'pending' => 'Pending',
+                    'paid' => 'Paid',
+                    'authorized' => 'Authorized',
+                    'failed' => 'Failed',
+                    'cancelled' => 'Cancelled',
+                    'refunded' => 'Refunded',
+                ]),
+                Filter::make('created_between')
+                    ->label('Created date')
                     ->form([
-                        Textarea::make('notes')->rows(3),
+                        DatePicker::make('from')->label('From'),
+                        DatePicker::make('until')->label('Until'),
                     ])
-                    ->action(function (PaymentTransaction $record, array $data): void {
-                        app(PaymentOperationsService::class)->reconcile(
-                            $record,
-                            auth()->user(),
-                            status: 'paid',
-                            notes: $data['notes'] ?? null,
-                        );
-
-                        Notification::make()->title('Payment reconciled as paid.')->success()->send();
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when($data['from'] ?? null, fn (Builder $q, string $date) => $q->whereDate('created_at', '>=', $date))
+                            ->when($data['until'] ?? null, fn (Builder $q, string $date) => $q->whereDate('created_at', '<=', $date));
                     }),
-                Action::make('markRefunded')
-                    ->label('Refund')
-                    ->icon('heroicon-o-arrow-uturn-left')
-                    ->form([
-                        Textarea::make('notes')->rows(3)->required(),
-                    ])
-                    ->action(function (PaymentTransaction $record, array $data): void {
-                        app(PaymentOperationsService::class)->refund(
-                            $record,
-                            auth()->user(),
-                            notes: $data['notes'] ?? null,
-                        );
+            ])
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+                ActionGroup::make([
+                    Action::make('downloadInvoice')
+                        ->label('Invoice PDF')
+                        ->icon('heroicon-o-arrow-down-tray')
+                        ->url(fn (PaymentTransaction $record) => route('admin.payment-transactions.invoice', $record))
+                        ->openUrlInNewTab(),
+                    Action::make('reconcile')
+                        ->icon('heroicon-o-check-badge')
+                        ->form([
+                            Textarea::make('notes')->rows(3),
+                        ])
+                        ->action(function (PaymentTransaction $record, array $data): void {
+                            app(PaymentOperationsService::class)->reconcile(
+                                $record,
+                                auth()->user(),
+                                status: 'paid',
+                                notes: $data['notes'] ?? null,
+                            );
 
-                        Notification::make()->title('Payment marked as refunded.')->success()->send();
-                    }),
-                Action::make('resendConfirmation')
-                    ->label('Resend Confirmation')
-                    ->icon('heroicon-o-envelope')
-                    ->action(function (PaymentTransaction $record): void {
-                        app(PaymentOperationsService::class)->resendConfirmation($record);
+                            Notification::make()->title('Payment reconciled as paid.')->success()->send();
+                        }),
+                    Action::make('markRefunded')
+                        ->label('Refund')
+                        ->icon('heroicon-o-arrow-uturn-left')
+                        ->form([
+                            Textarea::make('notes')->rows(3)->required(),
+                        ])
+                        ->action(function (PaymentTransaction $record, array $data): void {
+                            app(PaymentOperationsService::class)->refund(
+                                $record,
+                                auth()->user(),
+                                notes: $data['notes'] ?? null,
+                            );
 
-                        Notification::make()->title('Confirmation resent.')->success()->send();
-                    }),
-            ]),
-        ])->toolbarActions([]);
+                            Notification::make()->title('Payment marked as refunded.')->success()->send();
+                        }),
+                    Action::make('resendConfirmation')
+                        ->label('Resend Confirmation')
+                        ->icon('heroicon-o-envelope')
+                        ->tooltip('Booker and travelers only; staff alerts are not sent again.')
+                        ->requiresConfirmation()
+                        ->modalHeading('Resend confirmation emails?')
+                        ->modalDescription('Sends the booking confirmation to the customer and travelers. Staff copies are skipped.')
+                        ->action(function (PaymentTransaction $record): void {
+                            app(PaymentOperationsService::class)->resendConfirmation($record);
+
+                            Notification::make()->title('Confirmation resent.')->success()->send();
+                        }),
+                ]),
+            ])->toolbarActions([]);
     }
 }

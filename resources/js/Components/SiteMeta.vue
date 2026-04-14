@@ -1,6 +1,7 @@
 <script setup>
 import { Head, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
+import JsonLdScript from './JsonLdScript.vue';
 
 const props = defineProps({
     title: {
@@ -40,15 +41,19 @@ const structuredData = computed(() =>
                 url: organization.value.url || canonicalUrl.value,
                 logo: organization.value.logo || undefined,
                 sameAs: organization.value.socialLinks?.length ? organization.value.socialLinks : undefined,
-                contactPoint:
-                    organization.value.contact?.email || organization.value.contact?.phone
-                        ? {
-                              '@type': 'ContactPoint',
-                              email: organization.value.contact.email || undefined,
-                              telephone: organization.value.contact.phone || undefined,
-                              contactType: 'customer service',
-                          }
-                        : undefined,
+                contactPoint: (() => {
+                    const c = organization.value.contact;
+                    if (!c?.email && !c?.phone) {
+                        return undefined;
+                    }
+                    const tel = [c.phone, c.phoneSecondary].filter(Boolean).join(' / ') || undefined;
+                    return {
+                        '@type': 'ContactPoint',
+                        email: c.email || undefined,
+                        telephone: tel,
+                        contactType: 'customer service',
+                    };
+                })(),
                 address: organization.value.contact?.address
                     ? {
                           '@type': 'PostalAddress',
@@ -85,6 +90,6 @@ const structuredData = computed(() =>
         <meta name="twitter:title" :content="fullTitle" />
         <meta name="twitter:description" :content="resolvedDescription" />
         <meta v-if="resolvedImage" name="twitter:image" :content="resolvedImage" />
-        <script type="application/ld+json" v-text="structuredData"></script>
+        <JsonLdScript :json="structuredData" />
     </Head>
 </template>

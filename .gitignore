@@ -15,6 +15,10 @@
 /node_modules
 /public/hot
 /public/storage
+
+# Local design / demo raster assets (optional)
+/public/schengen-*.png
+/public/visa-services-*.png
 /storage/*.key
 /storage/pail
 /vendor

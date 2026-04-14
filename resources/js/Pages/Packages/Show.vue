@@ -1,5 +1,6 @@
 <script setup>
-import { Link } from '@inertiajs/vue3';
+import { ref } from 'vue';
+import { Link, usePage } from '@inertiajs/vue3';
 import SiteMeta from '../../Components/SiteMeta.vue';
 import SiteLayout from '../../Layouts/SiteLayout.vue';
 
@@ -10,6 +11,24 @@ defineProps({
     packageItem: Object,
     relatedPackages: Array,
 });
+
+const page = usePage();
+const itineraryCardRef = ref(null);
+
+function onItineraryDayToggle(event) {
+    const el = event.target;
+    if (!(el instanceof HTMLDetailsElement) || !el.classList.contains('itinerary-day')) {
+        return;
+    }
+    if (!el.open) {
+        return;
+    }
+    itineraryCardRef.value?.querySelectorAll('details.itinerary-day').forEach((d) => {
+        if (d !== el) {
+            d.removeAttribute('open');
+        }
+    });
+}
 </script>
 
 <template>
@@ -62,7 +81,13 @@ defineProps({
                     </p>
 
                     <div class="hero-actions">
-                        <Link class="button-primary" :href="`/checkout/packages/${packageItem.slug}`">Pay online</Link>
+                        <Link
+                            v-if="packageItem.priceFrom && page.props.payments?.networkCheckoutReady"
+                            class="button-primary"
+                            :href="`/checkout/packages/${packageItem.slug}`"
+                        >
+                            Pay online
+                        </Link>
                         <Link class="button-secondary" href="/contact">Request this package</Link>
                         <Link class="button-secondary" href="/packages">Back to packages</Link>
                     </div>
@@ -89,17 +114,48 @@ defineProps({
                     </div>
                 </article>
 
-                <article v-if="packageItem.itinerary.length" class="info-card package-card">
+                <article
+                    v-if="packageItem.itinerary.length"
+                    ref="itineraryCardRef"
+                    class="info-card package-card package-itinerary-card"
+                >
                     <p class="card-tag">Itinerary</p>
-                    <div class="detail-stack">
-                        <div v-for="stop in packageItem.itinerary" :key="`${stop.dayLabel}-${stop.title}`" class="itinerary-item">
-                            <p class="card-tag">{{ stop.dayLabel }}</p>
-                            <h3>{{ stop.title }}</h3>
-                            <div v-if="stop.image" class="card-media">
-                                <img :src="stop.image" :alt="stop.title" />
+                    <div class="itinerary-accordion" role="list">
+                        <details
+                            v-for="(stop, index) in packageItem.itinerary"
+                            :key="`${stop.dayLabel}-${stop.title}-${index}`"
+                            class="itinerary-day"
+                            @toggle="onItineraryDayToggle"
+                        >
+                            <summary class="itinerary-day-summary">
+                                <span class="itinerary-day-meta">
+                                    <span class="itinerary-day-label">{{ stop.dayLabel || `Day ${index + 1}` }}</span>
+                                    <span class="itinerary-day-title">{{ stop.title }}</span>
+                                </span>
+                                <svg
+                                    class="itinerary-day-chevron"
+                                    width="14"
+                                    height="14"
+                                    viewBox="0 0 12 12"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        d="M2.5 4.5 6 8 9.5 4.5"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="1.35"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    />
+                                </svg>
+                            </summary>
+                            <div class="itinerary-day-body">
+                                <div v-if="stop.image" class="card-media itinerary-day-media">
+                                    <img :src="stop.image" :alt="stop.title" />
+                                </div>
+                                <p>{{ stop.description }}</p>
                             </div>
-                            <p>{{ stop.description }}</p>
-                        </div>
+                        </details>
                     </div>
                 </article>
             </div>

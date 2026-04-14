@@ -1,5 +1,529 @@
 [
   {
+    "slug": "dubai-decadence-family-holiday-10d9n",
+    "title": "Dubai Decadence Family Holiday Package",
+    "short_description": "10 days / 9 nights of pure luxury across Dubai and Abu Dhabi: culture, Burj Khalifa, desert safari, theme parks, and family-friendly hotels.",
+    "description": "Plan your perfect Dubai getaway with our exclusive holiday format. This flagship family package blends Dubai icons with an Abu Dhabi extension—Grand Mosque, palaces, and Yas Island theme parks—with private transfers and breakfasts throughout.",
+    "hero_image_path": "https://acutetourism.org/uploads/0000/7/2025/04/25/yacht-party-miniatura.png",
+    "gallery_images": [
+      "https://acutetourism.org/uploads/0000/7/2025/04/25/yacht-party-miniatura.png",
+      "https://acutetourism.org/uploads/0000/7/2025/03/29/desert-safari-premium-miniatura.png",
+      "https://acutetourism.org/uploads/0000/7/2025/03/19/ferrari-world-miniatura.png"
+    ],
+    "duration": "10 Days / 9 Nights",
+    "days": 10,
+    "nights": 9,
+    "location": "Dubai & Abu Dhabi",
+    "group_size_min": 2,
+    "group_size_max": 12,
+    "price_from": 18999,
+    "sale_price": null,
+    "currency": "AED",
+    "highlights": [
+      "Private airport transfers",
+      "Family-friendly hotel with breakfast",
+      "Burj Khalifa observation deck and desert safari with BBQ",
+      "Dubai city highlights, dhow cruise (Creek or Marina)",
+      "Abu Dhabi full-day tour: Grand Mosque, palace and cultural stops",
+      "Choice of Yas Island theme park tickets",
+      "Optional upgrades: luxury yacht parties or private celebrations"
+    ],
+    "inclusions": [
+      "Private airport transfers",
+      "Hotel accommodation with breakfast",
+      "Sightseeing and activities as per itinerary overview",
+      "Desert safari with BBQ dinner and entertainment where listed",
+      "Dhow cruise dinner as per programme",
+      "Guided Abu Dhabi day(s) as outlined"
+    ],
+    "exclusions": [
+      "International flights and visas",
+      "Meals not stated, personal expenses, tips",
+      "Theme park tickets unless confirmed in your final quote",
+      "Travel insurance"
+    ],
+    "itinerary": [
+      {
+        "title": "Arrival in Dubai",
+        "dayLabel": "Day 1",
+        "description": "Meet and greet, private transfer to your hotel, and time to settle in.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/04/25/yacht-party-miniatura.png"
+      },
+      {
+        "title": "Culture & dhow cruise",
+        "dayLabel": "Day 2",
+        "description": "Cultural tour or private walking tour, plus dhow cruise dinner along Dubai Creek or Dubai Marina.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/03/29/desert-safari-premium-miniatura.png"
+      },
+      {
+        "title": "Free day",
+        "dayLabel": "Day 3",
+        "description": "Flexible day for pool time, shopping, or optional add-ons.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/04/25/yacht-party-miniatura.png"
+      },
+      {
+        "title": "Burj Khalifa & desert safari",
+        "dayLabel": "Day 4",
+        "description": "Burj Khalifa observation deck for panoramic views, then desert safari with BBQ dinner.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/03/29/desert-safari-top-miniatura.png"
+      },
+      {
+        "title": "Transfer to Abu Dhabi",
+        "dayLabel": "Day 5",
+        "description": "Private road transfer to Abu Dhabi and hotel check-in.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/03/19/ferrari-world-miniatura.png"
+      },
+      {
+        "title": "Abu Dhabi highlights",
+        "dayLabel": "Day 6",
+        "description": "Full-day Abu Dhabi tour: Grand Mosque, palace stops, and cultural highlights.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/03/19/ferrari-world-miniatura.png"
+      },
+      {
+        "title": "Yas Island theme parks",
+        "dayLabel": "Day 7",
+        "description": "Choice of entry tickets (e.g. Ferrari World, SeaWorld, Warner Bros, Real Madrid, Yas Waterworld)—subject to availability.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/03/19/ferrari-world-miniatura.png"
+      },
+      {
+        "title": "Abu Dhabi free day",
+        "dayLabel": "Day 8",
+        "description": "Relax at the hotel or explore at your own pace.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/04/25/yacht-party-miniatura.png"
+      },
+      {
+        "title": "Return to Dubai",
+        "dayLabel": "Day 9",
+        "description": "Hotel check-out in Abu Dhabi and private transfer back to Dubai.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/04/25/yacht-party-miniatura.png"
+      },
+      {
+        "title": "Departure",
+        "dayLabel": "Day 10",
+        "description": "Private transfer to the airport for your outbound flight.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/04/22/whatsapp-image-2025-04-18-at-200746.jpeg"
+      }
+    ],
+    "is_featured": true,
+    "is_active": true,
+    "seo_title": "Dubai Decadence Family Holiday 10D/9N | Acute Tourism",
+    "seo_description": "Luxury Dubai and Abu Dhabi family holiday: Burj Khalifa, desert safari, dhow cruise, Yas theme parks, private transfers."
+  },
+  {
+    "slug": "dazzling-dubai-escape-8d7n",
+    "title": "Dazzling Dubai Escape",
+    "short_description": "8 days / 7 nights covering Dubai's top sights, Miracle Garden, Global Village, Abu Dhabi, and a Ferrari World or Warner Bros day.",
+    "description": "A balanced week-plus itinerary: full Dubai city touring, future-forward attractions, evening desert safari, dhow cruise, then Abu Dhabi before a full theme-park day on Yas Island.",
+    "hero_image_path": "https://acutetourism.org/uploads/0000/7/2025/04/25/yacht-party-miniatura.png",
+    "gallery_images": [
+      "https://acutetourism.org/uploads/0000/7/2025/04/25/yacht-party-miniatura.png",
+      "https://acutetourism.org/uploads/0000/7/2025/03/20/untitled-design.png"
+    ],
+    "duration": "8 Days / 7 Nights",
+    "days": 8,
+    "nights": 7,
+    "location": "Dubai & Abu Dhabi",
+    "group_size_min": 2,
+    "group_size_max": 10,
+    "price_from": 12499,
+    "sale_price": null,
+    "currency": "AED",
+    "highlights": [
+      "Private airport transfers",
+      "Family-friendly hotel with breakfast",
+      "Dubai city tour, Dubai Mall & Aquarium",
+      "Museum of the Future, Miracle Garden, Global Village",
+      "Burj Khalifa deck visit and desert safari with BBQ",
+      "Abu Dhabi full-day tour",
+      "Full day at Ferrari World, Warner Bros, or SeaWorld (as booked)",
+      "Dhow cruise dinner with traditional shows"
+    ],
+    "inclusions": [
+      "Private transfers as per programme",
+      "Hotel with daily breakfast",
+      "Tours and entries outlined in the itinerary summary",
+      "Desert safari with BBQ where listed",
+      "Dhow cruise dinner"
+    ],
+    "exclusions": [
+      "Flights and visas",
+      "Optional activities on free day",
+      "Meals not mentioned",
+      "Travel insurance"
+    ],
+    "itinerary": [
+      {
+        "title": "Arrival in Dubai",
+        "dayLabel": "Day 1",
+        "description": "Airport meet and private transfer to hotel.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/04/25/yacht-party-miniatura.png"
+      },
+      {
+        "title": "Dubai city & Dubai Mall",
+        "dayLabel": "Day 2",
+        "description": "Full-day Dubai city tour including Dubai Mall and Aquarium.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/03/20/untitled-design.png"
+      },
+      {
+        "title": "Icons & seasonal parks",
+        "dayLabel": "Day 3",
+        "description": "Museum of the Future, Dubai Miracle Garden, and Global Village (seasonal).",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/03/20/untitled-design.png"
+      },
+      {
+        "title": "Burj Khalifa & desert safari",
+        "dayLabel": "Day 4",
+        "description": "Observation deck visit plus evening desert safari with BBQ dinner.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/03/29/desert-safari-top-miniatura.png"
+      },
+      {
+        "title": "Free day",
+        "dayLabel": "Day 5",
+        "description": "Optional activities or shopping at leisure.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/04/25/yacht-party-miniatura.png"
+      },
+      {
+        "title": "Checkout & Abu Dhabi",
+        "dayLabel": "Day 6",
+        "description": "Hotel check-out in Dubai and Abu Dhabi city tour with mosque and cultural stops.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/03/19/ferrari-world-miniatura.png"
+      },
+      {
+        "title": "Yas Island parks",
+        "dayLabel": "Day 7",
+        "description": "Full day at Ferrari World, Warner Bros, or SeaWorld (per confirmation).",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/03/19/ferrari-world-miniatura.png"
+      },
+      {
+        "title": "Departure",
+        "dayLabel": "Day 8",
+        "description": "Private airport transfer for departure.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/04/22/whatsapp-image-2025-04-18-at-200746.jpeg"
+      }
+    ],
+    "is_featured": true,
+    "is_active": true,
+    "seo_title": "Dazzling Dubai Escape 8D/7N | Acute Tourism",
+    "seo_description": "Eight-day Dubai escape: city tour, Miracle Garden, Global Village, desert safari, Abu Dhabi, and Yas theme parks."
+  },
+  {
+    "slug": "golden-escape-dubai-holiday-7d6n",
+    "title": "Golden Escape Dubai Holiday Package",
+    "short_description": "7 days / 6 nights combining Dubai highlights, Marina dhow dinner, desert safari, and an Abu Dhabi city adventure.",
+    "description": "Golden Escape packs Burj Khalifa, desert safari, Marina dhow cruise, and a dedicated Abu Dhabi touring day into one relaxed week-long format with private transfers.",
+    "hero_image_path": "https://acutetourism.org/uploads/0000/7/2025/04/25/yacht-party-miniatura.png",
+    "gallery_images": [
+      "https://acutetourism.org/uploads/0000/7/2025/04/25/yacht-party-miniatura.png",
+      "https://acutetourism.org/uploads/0000/7/2025/03/29/desert-safari-premium-miniatura.png"
+    ],
+    "duration": "7 Days / 6 Nights",
+    "days": 7,
+    "nights": 6,
+    "location": "Dubai & Abu Dhabi",
+    "group_size_min": 2,
+    "group_size_max": 10,
+    "price_from": 10499,
+    "sale_price": null,
+    "currency": "AED",
+    "highlights": [
+      "Private airport transfers",
+      "Comfortable family-friendly hotel",
+      "Dubai city tour and Marina dhow cruise with dinner",
+      "Burj Khalifa observation deck",
+      "Evening desert safari with BBQ",
+      "Abu Dhabi full-day tour",
+      "Optional Ferrari World or Warner Bros add-on"
+    ],
+    "inclusions": [
+      "Airport transfers and inter-city transfer to Abu Dhabi as listed",
+      "Breakfast at hotel",
+      "Guided tours per programme",
+      "Dhow cruise dinner at Dubai Marina"
+    ],
+    "exclusions": [
+      "Flights",
+      "Visa fees",
+      "Optional theme park tickets unless added to quote",
+      "Personal expenses"
+    ],
+    "itinerary": [
+      {
+        "title": "Arrival in Dubai",
+        "dayLabel": "Day 1",
+        "description": "Private transfer to hotel.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/04/25/yacht-party-miniatura.png"
+      },
+      {
+        "title": "Dubai city & Marina cruise",
+        "dayLabel": "Day 2",
+        "description": "Dubai city tour followed by Marina dhow cruise with dinner.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/04/25/yacht-party-miniatura.png"
+      },
+      {
+        "title": "Burj Khalifa & desert",
+        "dayLabel": "Day 3",
+        "description": "Burj Khalifa observation deck, then desert safari with BBQ dinner.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/03/29/desert-safari-top-miniatura.png"
+      },
+      {
+        "title": "Free day in Dubai",
+        "dayLabel": "Day 4",
+        "description": "Relax or add optional experiences.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/04/25/yacht-party-miniatura.png"
+      },
+      {
+        "title": "Transfer to Abu Dhabi",
+        "dayLabel": "Day 5",
+        "description": "Road transfer to Abu Dhabi and hotel check-in.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/03/19/ferrari-world-miniatura.png"
+      },
+      {
+        "title": "Abu Dhabi adventure",
+        "dayLabel": "Day 6",
+        "description": "Abu Dhabi city tour adventure with major landmarks.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/03/19/ferrari-world-miniatura.png"
+      },
+      {
+        "title": "Departure",
+        "dayLabel": "Day 7",
+        "description": "Transfer to Dubai airport or as per flight routing.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/04/22/whatsapp-image-2025-04-18-at-200746.jpeg"
+      }
+    ],
+    "is_featured": true,
+    "is_active": true,
+    "seo_title": "Golden Escape Dubai Holiday 7D/6N | Acute Tourism",
+    "seo_description": "Seven-day Dubai and Abu Dhabi package with Marina dhow cruise, Burj Khalifa, desert safari, and Abu Dhabi touring."
+  },
+  {
+    "slug": "happy-family-holiday-dubai-6d5n",
+    "title": "Happy Family Holiday Dubai Package",
+    "short_description": "6 days / 5 nights: city tour, Marina cruise, desert safari, Abu Dhabi with Louvre and Qasr Al Watan, plus Global Village and Miracle Garden.",
+    "description": "Designed for families who want Dubai Parks fun, iconic gardens, and a full Abu Dhabi cultural day before departure.",
+    "hero_image_path": "https://acutetourism.org/uploads/0000/7/2025/04/25/yacht-party-miniatura.png",
+    "gallery_images": [
+      "https://acutetourism.org/uploads/0000/7/2025/04/25/yacht-party-miniatura.png",
+      "https://acutetourism.org/uploads/0000/19/2025/09/22/img-world.jpg"
+    ],
+    "duration": "6 Days / 5 Nights",
+    "days": 6,
+    "nights": 5,
+    "location": "Dubai & Abu Dhabi",
+    "group_size_min": 2,
+    "group_size_max": 10,
+    "price_from": 9499,
+    "sale_price": null,
+    "currency": "AED",
+    "highlights": [
+      "Private airport transfers",
+      "4- or 5-star family-friendly hotel",
+      "Half-day Dubai city tour and Marina dhow dinner",
+      "Burj Khalifa deck and desert safari",
+      "Dubai Parks (Motiongate & Legoland) day",
+      "Miracle Garden and Global Village",
+      "Abu Dhabi: Grand Mosque, Louvre, Qasr Al Watan"
+    ],
+    "inclusions": [
+      "Transfers and hotel with breakfast",
+      "Attractions as per agreed quote",
+      "Desert safari and dhow cruise where listed"
+    ],
+    "exclusions": [
+      "Flights and visas",
+      "Some attraction tickets subject to final package version",
+      "Personal expenses"
+    ],
+    "itinerary": [
+      {
+        "title": "Arrival in Dubai",
+        "dayLabel": "Day 1",
+        "description": "Private airport transfer and hotel check-in.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/04/25/yacht-party-miniatura.png"
+      },
+      {
+        "title": "City tour & cruise",
+        "dayLabel": "Day 2",
+        "description": "Half-day Dubai city tour plus Marina dhow cruise with dinner.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/04/25/yacht-party-miniatura.png"
+      },
+      {
+        "title": "Burj Khalifa & safari",
+        "dayLabel": "Day 3",
+        "description": "Observation deck visit and desert safari with BBQ dinner.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/03/29/desert-safari-top-miniatura.png"
+      },
+      {
+        "title": "Abu Dhabi culture day",
+        "dayLabel": "Day 4",
+        "description": "Abu Dhabi tour: Grand Mosque, Louvre Abu Dhabi, and Qasr Al Watan.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/03/19/ferrari-world-miniatura.png"
+      },
+      {
+        "title": "Parks or Global Village",
+        "dayLabel": "Day 5",
+        "description": "Choose your focus: Dubai Parks (Motiongate & Legoland), or Miracle Garden plus Global Village when open—confirm with your consultant.",
+        "image": "https://acutetourism.org/uploads/0000/19/2025/09/22/img-world.jpg"
+      },
+      {
+        "title": "Departure",
+        "dayLabel": "Day 6",
+        "description": "Private transfer to the airport.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/04/22/whatsapp-image-2025-04-18-at-200746.jpeg"
+      }
+    ],
+    "is_featured": false,
+    "is_active": true,
+    "seo_title": "Happy Family Holiday Dubai 6D/5N | Acute Tourism",
+    "seo_description": "Family Dubai package with parks, Global Village, Miracle Garden, Abu Dhabi cultural tour, and desert safari."
+  },
+  {
+    "slug": "platinum-holiday-experience-5d4n",
+    "title": "Platinum Holiday Experience",
+    "short_description": "5 days / 4 nights: Abu Dhabi culture first, then Dubai city tour, Marina dhow dinner, Burj Khalifa, and desert safari.",
+    "description": "A compact premium loop: start in Abu Dhabi for the Grand Mosque, Louvre, and Qasr Al Watan, then enjoy Dubai's skyline, cruise, and desert before departure.",
+    "hero_image_path": "https://acutetourism.org/uploads/0000/7/2025/04/25/yacht-party-miniatura.png",
+    "gallery_images": [
+      "https://acutetourism.org/uploads/0000/7/2025/04/25/yacht-party-miniatura.png",
+      "https://acutetourism.org/uploads/0000/7/2025/03/19/ferrari-world-miniatura.png"
+    ],
+    "duration": "5 Days / 4 Nights",
+    "days": 5,
+    "nights": 4,
+    "location": "Dubai & Abu Dhabi",
+    "group_size_min": 2,
+    "group_size_max": 8,
+    "price_from": 7999,
+    "sale_price": null,
+    "currency": "AED",
+    "highlights": [
+      "Private airport transfers",
+      "4- or 5-star hotel with daily breakfast",
+      "Full-day Abu Dhabi tour: mosque, Louvre, Qasr Al Watan",
+      "Half-day Dubai city tour and Marina dhow dinner",
+      "Burj Khalifa observation deck",
+      "Desert safari with BBQ and entertainment",
+      "Dubai Mall and Gold Souk shopping time"
+    ],
+    "inclusions": [
+      "Meet-and-greet transfers",
+      "Breakfast",
+      "Tours listed in programme",
+      "Professional guide on scheduled tours"
+    ],
+    "exclusions": [
+      "Flights",
+      "Visas",
+      "Meals not specified",
+      "Tips and personal expenses"
+    ],
+    "itinerary": [
+      {
+        "title": "Arrival",
+        "dayLabel": "Day 1",
+        "description": "Arrival and transfer to hotel.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/04/25/yacht-party-miniatura.png"
+      },
+      {
+        "title": "Abu Dhabi full day",
+        "dayLabel": "Day 2",
+        "description": "Full-day Abu Dhabi city tour with Grand Mosque, Louvre, and Qasr Al Watan.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/03/19/ferrari-world-miniatura.png"
+      },
+      {
+        "title": "Dubai & Marina cruise",
+        "dayLabel": "Day 3",
+        "description": "Dubai city tour and Marina dhow cruise dinner.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/04/25/yacht-party-miniatura.png"
+      },
+      {
+        "title": "Burj Khalifa & desert",
+        "dayLabel": "Day 4",
+        "description": "Burj Khalifa deck visit and desert safari adventure with BBQ dinner.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/03/29/desert-safari-top-miniatura.png"
+      },
+      {
+        "title": "Departure",
+        "dayLabel": "Day 5",
+        "description": "Check-out and airport transfer.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/04/22/whatsapp-image-2025-04-18-at-200746.jpeg"
+      }
+    ],
+    "is_featured": false,
+    "is_active": true,
+    "seo_title": "Platinum Holiday Experience 5D/4N | Acute Tourism",
+    "seo_description": "Five-day Dubai and Abu Dhabi platinum package with Louvre, Grand Mosque, Marina cruise, Burj Khalifa, and desert safari."
+  },
+  {
+    "slug": "dubai-delight-package-4d3n",
+    "title": "Dubai Delight Package",
+    "short_description": "4 days / 3 nights: city icons, Marina dhow dinner, Burj Khalifa, and desert safari—ideal for a first Dubai long weekend.",
+    "description": "Dubai Delight keeps logistics simple: premium hotel stay, guided city touring, Marina dinner cruise, observation deck visit, and a classic desert safari with entertainment.",
+    "hero_image_path": "https://acutetourism.org/uploads/0000/7/2025/04/25/yacht-party-miniatura.png",
+    "gallery_images": [
+      "https://acutetourism.org/uploads/0000/7/2025/04/25/yacht-party-miniatura.png",
+      "https://acutetourism.org/uploads/0000/7/2025/03/29/desert-safari-premium-miniatura.png"
+    ],
+    "duration": "4 Days / 3 Nights",
+    "days": 4,
+    "nights": 3,
+    "location": "Dubai",
+    "group_size_min": 1,
+    "group_size_max": 8,
+    "price_from": 5499,
+    "sale_price": null,
+    "currency": "AED",
+    "highlights": [
+      "Private airport transfers",
+      "Premium hotel with breakfast",
+      "Guided city tour: Burj Khalifa area, Palm Jumeirah, Dubai Marina",
+      "Desert safari with dune bashing, camel rides, and entertainment",
+      "Dhow cruise dinner (Creek or Marina)",
+      "Burj Khalifa observation deck"
+    ],
+    "inclusions": [
+      "Return airport transfers",
+      "Hotel accommodation with breakfast",
+      "Tours as outlined",
+      "Private transportation on scheduled days"
+    ],
+    "exclusions": [
+      "International flights",
+      "Visas",
+      "Lunch and dinner except where stated",
+      "Travel insurance"
+    ],
+    "itinerary": [
+      {
+        "title": "Arrival & check-in",
+        "dayLabel": "Day 1",
+        "description": "Private transfer from Dubai airport to hotel.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/04/25/yacht-party-miniatura.png"
+      },
+      {
+        "title": "City tour & dhow cruise",
+        "dayLabel": "Day 2",
+        "description": "Dubai city tour and Marina dhow cruise with dinner.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/04/25/yacht-party-miniatura.png"
+      },
+      {
+        "title": "Burj Khalifa & desert safari",
+        "dayLabel": "Day 3",
+        "description": "Observation deck visit plus desert safari with BBQ dinner.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/03/29/desert-safari-top-miniatura.png"
+      },
+      {
+        "title": "Departure",
+        "dayLabel": "Day 4",
+        "description": "Hotel check-out and airport transfer.",
+        "image": "https://acutetourism.org/uploads/0000/7/2025/04/22/whatsapp-image-2025-04-18-at-200746.jpeg"
+      }
+    ],
+    "is_featured": true,
+    "is_active": true,
+    "seo_title": "Dubai Delight Package 4D/3N | Acute Tourism",
+    "seo_description": "Four-day Dubai package with city tour, Marina dhow dinner, Burj Khalifa, and desert safari."
+  },
+  {
     "slug": "ufc-fight-night-returns-to-abu-dhabi",
     "title": "UFC Fight Night Returns to Abu Dhabi",
     "short_description": "A polished Abu Dhabi event package combining UFC Fight Night access, a hotel stay, and breakfast for a short premium weekend.",

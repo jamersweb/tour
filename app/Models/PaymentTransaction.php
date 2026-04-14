@@ -67,6 +67,11 @@ class PaymentTransaction extends Model
         return $this->hasMany(PaymentTransactionTraveler::class)->orderBy('position');
     }
 
+    public function activityLogs(): HasMany
+    {
+        return $this->hasMany(PaymentTransactionLog::class)->latest('created_at');
+    }
+
     public function reconciledBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reconciled_by');

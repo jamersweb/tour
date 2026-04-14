@@ -115,4 +115,21 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Booking / operations notifications
+    |--------------------------------------------------------------------------
+    |
+    | Dedicated inbox for staff copies (inquiries, checkout started, payment received).
+    | If empty, the site contact email from Site Settings is used.
+    |
+    | Admin users (is_admin) also receive the same alerts; addresses are deduplicated
+    | against this inbox so one email is not sent twice.
+    |
+    */
+
+    'bookings' => [
+        'notify_address' => env('BOOKING_NOTIFICATIONS_EMAIL'),
+    ],
+
 ];

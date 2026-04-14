@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\ExperienceInquiry;
+use App\Models\PaymentTransaction;
+use App\Observers\ExperienceInquiryObserver;
+use App\Observers\PaymentTransactionObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +23,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        PaymentTransaction::observe(PaymentTransactionObserver::class);
+        ExperienceInquiry::observe(ExperienceInquiryObserver::class);
     }
 }

@@ -5,7 +5,7 @@ import { router } from '@inertiajs/vue3';
 import { createApp, h } from 'vue';
 
 createInertiaApp({
-    title: (title) => (!title || title === 'Acute Tourism' ? 'Acute Tourism' : `${title} | Acute Tourism`),
+    title: (title) => (title && String(title).trim() ? title : 'Home'),
     resolve: (name) => {
         const pages = import.meta.glob('./Pages/**/*.vue', { eager: true });
 

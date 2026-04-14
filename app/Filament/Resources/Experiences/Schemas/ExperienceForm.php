@@ -3,12 +3,12 @@
 namespace App\Filament\Resources\Experiences\Schemas;
 
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class ExperienceForm
@@ -57,12 +57,14 @@ class ExperienceForm
                     ->schema([
                         FileUpload::make('hero_image_path')
                             ->label('Hero image')
+                            ->helperText('Main image for listings and the first slide on the public experience page.')
                             ->image()
                             ->disk('uploads')
                             ->directory('experiences')
                             ->imageEditor(),
                         FileUpload::make('gallery_images')
                             ->label('Gallery images')
+                            ->helperText('Additional photos for the experience page hero carousel (drag to reorder).')
                             ->image()
                             ->multiple()
                             ->disk('uploads')

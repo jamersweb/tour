@@ -1,0 +1,39 @@
+# Builds Vite assets when you cannot run `npm` locally (e.g. Hostinger has no Node).
+# GitHub → Actions → "Build frontend assets" → Run workflow → download the `public-build` artifact →
+# upload the folder contents to your server as `public/build/` (replace existing files).
+
+name: Build frontend assets
+
+on:
+    workflow_dispatch:
+    push:
+        branches: [main, master]
+        paths:
+            - 'resources/js/**'
+            - 'resources/css/**'
+            - 'package.json'
+            - 'package-lock.json'
+            - 'vite.config.js'
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+                  cache: 'npm'
+
+            - name: Install and build
+              run: |
+                  npm ci
+                  npm run build
+
+            - name: Upload public/build
+              uses: actions/upload-artifact@v4
+              with:
+                  name: public-build
+                  path: public/build/
+                  if-no-files-found: error

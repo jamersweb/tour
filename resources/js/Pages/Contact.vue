@@ -53,6 +53,7 @@ const submit = () => {
                     <p class="card-tag">Phone</p>
                     <h3>Direct Line</h3>
                     <p>{{ contact.phone }}</p>
+                    <p v-if="contact.phoneSecondary">{{ contact.phoneSecondary }}</p>
                 </article>
                 <article class="info-card">
                     <p class="card-tag">Office</p>
