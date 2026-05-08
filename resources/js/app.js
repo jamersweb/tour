@@ -4,6 +4,7 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { router } from '@inertiajs/vue3';
 import { createApp, h } from 'vue';
 
+// Force a fresh Vite asset hash when browser caches old bundles too aggressively.
 createInertiaApp({
     title: (title) => (title && String(title).trim() ? title : 'Home'),
     resolve: (name) => {

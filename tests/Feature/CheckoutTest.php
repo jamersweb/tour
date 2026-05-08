@@ -28,7 +28,7 @@ class CheckoutTest extends TestCase
         $this->enableNetworkCheckoutForTests();
     }
 
-    public function test_checkout_redirects_when_gateway_not_fully_configured(): void
+    public function test_checkout_page_renders_when_gateway_not_fully_configured(): void
     {
         config([
             'payments.network.enabled' => false,
@@ -37,7 +37,39 @@ class CheckoutTest extends TestCase
         $experience = Experience::query()->where('slug', 'private-heritage-desert-safari')->firstOrFail();
 
         $this->get("/checkout/experiences/{$experience->slug}")
-            ->assertRedirect(route('experiences.show', $experience->slug));
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Checkout/Show')
+                ->where('checkout.slug', $experience->slug));
+    }
+
+    public function test_checkout_start_fails_when_gateway_not_fully_configured(): void
+    {
+        config([
+            'payments.network.enabled' => false,
+        ]);
+
+        $experience = Experience::query()->where('slug', 'private-heritage-desert-safari')->firstOrFail();
+
+        $this->from("/checkout/experiences/{$experience->slug}")
+            ->post("/checkout/experiences/{$experience->slug}", [
+                'name' => 'Bilal Ahmed',
+                'email' => 'bilal@example.com',
+                'phone' => '+971500000001',
+                'travel_date' => now()->addWeek()->toDateString(),
+                'guest_count' => 1,
+                'traveler_contacts' => [
+                    [
+                        'name' => 'Bilal Ahmed',
+                        'email' => 'bilal@example.com',
+                        'phone' => '+971500000001',
+                    ],
+                ],
+            ])
+            ->assertRedirect("/checkout/experiences/{$experience->slug}")
+            ->assertSessionHas('error');
+
+        $this->assertDatabaseCount((new PaymentTransaction)->getTable(), 0);
     }
 
     public function test_experience_checkout_page_renders_for_priced_experience(): void
@@ -97,6 +129,8 @@ class CheckoutTest extends TestCase
             'customer_email' => 'bilal@example.com',
             'gateway_order_ref' => 'order-ref-123',
             'status' => 'pending',
+            'guest_count' => 2,
+            'amount' => (string) ($experience->price_from * 2),
         ]);
 
         $this->assertDatabaseHas('payment_transaction_travelers', [

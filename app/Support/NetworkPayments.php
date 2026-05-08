@@ -15,12 +15,23 @@ class NetworkPayments
             return false;
         }
 
-        foreach (['outlet_id', 'api_key', 'api_secret'] as $key) {
-            if (empty($config[$key])) {
-                return false;
-            }
+        if (empty($config['outlet_id']) || empty($config['api_key'])) {
+            return false;
         }
 
-        return true;
+        $apiKey = trim((string) $config['api_key']);
+        $apiSecret = trim((string) ($config['api_secret'] ?? ''));
+
+        if ($apiSecret !== '') {
+            return true;
+        }
+
+        if (str_contains($apiKey, ':')) {
+            return true;
+        }
+
+        $decoded = base64_decode($apiKey, true);
+
+        return $decoded !== false && str_contains($decoded, ':');
     }
 }

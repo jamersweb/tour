@@ -8,6 +8,7 @@ use App\Models\Experience;
 use App\Models\Faq;
 use App\Models\Package;
 use App\Models\SiteSetting;
+use App\Models\Tour;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -196,7 +197,7 @@ class PageController extends Controller
                 'recommendationsTitle' => 'Visa services & international travel',
                 'companyEyebrow' => 'Why travel with us',
                 'companyTitle' => 'We are the Best Company for your Visit',
-                'companyCopy' => 'From five-star desert camps to Schengen paperwork, one team handles your itinerary, documents, and on-ground support — so you spend less time coordinating and more time enjoying the trip.',
+                'companyCopy' => 'From five-star desert camps to Schengen paperwork, one team handles your itinerary, documents, and on-ground support, so you spend less time coordinating and more time enjoying the trip.',
                 'testimonialsEyebrow' => 'Reviews',
                 'testimonialsTitle' => 'What our travelers say',
             ],
@@ -229,21 +230,21 @@ class PageController extends Controller
             'serviceFocus' => [
                 [
                     'title' => 'Visa Services',
-                    'copy' => 'Schengen, UK, USA, Canada, Japan, and more — clear requirements, document checks, and step-by-step guidance before you book your trip.',
+                    'copy' => 'Schengen, UK, USA, Canada, Japan, and more, clear requirements, document checks, and step-by-step guidance before you book your trip.',
                     'href' => route('visa.index'),
                     'cta' => 'View visa services',
                     'tag' => 'Visa assistance',
                 ],
                 [
                     'title' => 'International Tour Packages',
-                    'copy' => 'Hand-picked holidays with hotels, transfers, and activities coordinated for you — fewer moving parts, more time to enjoy the journey.',
+                    'copy' => 'Hand-picked holidays with hotels, transfers, and activities coordinated for you, fewer moving parts, more time to enjoy the journey.',
                     'href' => route('packages.index'),
                     'cta' => 'Explore packages',
                     'tag' => 'Holiday packages',
                 ],
                 [
                     'title' => 'Luxury Experiences in Dubai',
-                    'copy' => 'Private desert camps, yacht days, and city experiences with concierge-style coordination — built around your dates and group.',
+                    'copy' => 'Private desert camps, yacht days, and city experiences with concierge-style coordination, built around your dates and group.',
                     'href' => route('experiences.index'),
                     'cta' => 'Browse experiences',
                     'tag' => 'Dubai & UAE',
@@ -263,7 +264,7 @@ class PageController extends Controller
                 [
                     'name' => 'Elena Rossi',
                     'tag' => 'UAE package holiday',
-                    'quote' => 'Hotels, transfers, and desert day were coordinated in one flow. One invoice, one point of contact — exactly what we wanted for a family trip.',
+                    'quote' => 'Hotels, transfers, and desert day were coordinated in one flow. One invoice, one point of contact, exactly what we wanted for a family trip.',
                 ],
             ],
         ]);
@@ -476,7 +477,15 @@ class PageController extends Controller
                 'heroSummary' => $experience->hero_summary,
                 'description' => $experience->description,
                 'heroImageUrl' => $experience->hero_image_url,
+                'heroVideoUrl' => $experience->hero_video_url,
                 'galleryImageUrls' => $experience->gallery_image_urls,
+                'galleryVideoUrls' => $experience->gallery_video_urls,
+                'mediaItems' => $this->mediaItems(
+                    $experience->hero_video_url,
+                    $experience->hero_image_url,
+                    $experience->gallery_video_urls,
+                    $experience->gallery_image_urls,
+                ),
                 'duration' => $experience->duration,
                 'location' => $experience->location,
                 'pickupNote' => $experience->pickup_note,
@@ -556,6 +565,33 @@ class PageController extends Controller
         ]);
     }
 
+    public function tours(): Response
+    {
+        $tours = Tour::query()
+            ->where('is_active', true)
+            ->orderByDesc('is_featured')
+            ->orderBy('title')
+            ->get()
+            ->values();
+
+        return Inertia::render('Tours/Index', [
+            'seo' => [
+                'title' => 'Tours',
+                'description' => 'Guided city, culture, and private tour products with direct booking from the detail page.',
+            ],
+            'tours' => $tours->map(fn (Tour $tour) => [
+                'title' => $tour->title,
+                'slug' => $tour->slug,
+                'category' => $tour->category,
+                'summary' => $tour->short_description,
+                'duration' => $tour->duration,
+                'location' => $tour->location,
+                'priceFrom' => $this->formatMoney($tour->price_from, $tour->currency),
+                'heroImageUrl' => $tour->hero_image_url,
+            ]),
+        ]);
+    }
+
     public function package(string $slug): Response
     {
         $package = Package::query()
@@ -590,7 +626,15 @@ class PageController extends Controller
                 'shortDescription' => $package->short_description,
                 'description' => $package->description,
                 'heroImageUrl' => $this->packageShowcaseImage($package, 0),
+                'heroVideoUrl' => $package->hero_video_url,
                 'galleryImageUrls' => $this->packageGalleryShowcaseImages($package),
+                'galleryVideoUrls' => $package->gallery_video_urls,
+                'mediaItems' => $this->mediaItems(
+                    $package->hero_video_url,
+                    $this->packageShowcaseImage($package, 0),
+                    $package->gallery_video_urls,
+                    $this->packageGalleryShowcaseImages($package),
+                ),
                 'duration' => $package->duration,
                 'days' => $package->days,
                 'nights' => $package->nights,
@@ -609,6 +653,64 @@ class PageController extends Controller
         ]);
     }
 
+    public function tour(string $slug): Response
+    {
+        $tour = Tour::query()
+            ->where('slug', $slug)
+            ->where('is_active', true)
+            ->firstOrFail();
+
+        $relatedTours = Tour::query()
+            ->where('is_active', true)
+            ->where('id', '!=', $tour->id)
+            ->orderByDesc('is_featured')
+            ->limit(3)
+            ->get()
+            ->values()
+            ->map(fn (Tour $item) => [
+                'title' => $item->title,
+                'slug' => $item->slug,
+                'category' => $item->category,
+                'duration' => $item->duration,
+                'priceFrom' => $this->formatMoney($item->price_from, $item->currency),
+                'heroImageUrl' => $item->hero_image_url,
+            ]);
+
+        return Inertia::render('Tours/Show', [
+            'seo' => [
+                'title' => $tour->seo_title ?: $tour->title,
+                'description' => $tour->seo_description ?: $tour->short_description,
+                'image' => $tour->hero_image_url,
+            ],
+            'tour' => [
+                'title' => $tour->title,
+                'slug' => $tour->slug,
+                'category' => $tour->category,
+                'shortDescription' => $tour->short_description,
+                'description' => $tour->description,
+                'heroImageUrl' => $tour->hero_image_url,
+                'heroVideoUrl' => $tour->hero_video_url,
+                'galleryImageUrls' => $tour->gallery_image_urls,
+                'galleryVideoUrls' => $tour->gallery_video_urls,
+                'mediaItems' => $this->mediaItems(
+                    $tour->hero_video_url,
+                    $tour->hero_image_url,
+                    $tour->gallery_video_urls,
+                    $tour->gallery_image_urls,
+                ),
+                'duration' => $tour->duration,
+                'location' => $tour->location,
+                'pickupNote' => $tour->pickup_note,
+                'priceFrom' => $this->formatMoney($tour->price_from, $tour->currency),
+                'isPrivate' => $tour->is_private,
+                'highlights' => $tour->highlights ?? [],
+                'inclusions' => $tour->inclusions ?? [],
+                'exclusions' => $tour->exclusions ?? [],
+            ],
+            'relatedTours' => $relatedTours,
+        ]);
+    }
+
     public function schengenVisa(): Response
     {
         $settings = SiteSetting::current();
@@ -616,7 +718,7 @@ class PageController extends Controller
         return Inertia::render('VisaLanding', [
             'seo' => [
                 'title' => 'Schengen Visa Dubai | Acute Tourism',
-                'description' => 'Travel with confidence: Schengen visa help from Dubai—document review, application guidance, appointment planning, and WhatsApp support. Inspired by professional visa & travel planning.',
+                'description' => 'Travel with confidence: Schengen visa help from Dubai with document review, application guidance, appointment planning, and practical travel support.',
             ],
             'contact' => [
                 'email' => $settings->contact_email,
@@ -629,12 +731,12 @@ class PageController extends Controller
             'hero' => [
                 'eyebrow' => 'Visa support & travel planning',
                 'title' => 'Travel with confidence',
-                'description' => 'Tourist visas, document guidance, and destination planning for travelers who want a smoother path from application to departure—starting with Schengen from Dubai.',
+                'description' => 'Tourist visas, document guidance, and destination planning for travelers who want a smoother path from application to departure, starting with Schengen from Dubai.',
                 'highlights' => [
                     'Schengen-focused consultation for UAE residents',
                     'Document checks and realistic timelines',
                     'Appointment planning and follow-up in one flow',
-                    'WhatsApp-first contact when you need speed',
+                    'Direct support with clear next steps when timing matters',
                 ],
                 'stats' => [
                     ['value' => '27+', 'label' => 'Schengen states'],
@@ -690,7 +792,7 @@ class PageController extends Controller
                 ['code' => 'AU', 'title' => 'Australia Visa', 'subtitle' => 'Australia', 'href' => url('/visa-services#australia-visa')],
                 ['code' => 'MY', 'title' => 'Malaysia Visa', 'subtitle' => 'Malaysia', 'href' => url('/visa-services#malaysia-visa')],
                 ['code' => 'VN', 'title' => 'Vietnam Visa', 'subtitle' => 'Vietnam', 'href' => url('/visa-services#vietnam-visa')],
-                ['code' => 'TR', 'title' => 'Turkey Visa', 'subtitle' => 'Türkiye', 'href' => url('/visa-services')],
+                ['code' => 'TR', 'title' => 'Turkey Visa', 'subtitle' => 'Turkey', 'href' => url('/visa-services')],
                 ['code' => 'EV', 'title' => 'Other eVisa help', 'subtitle' => 'Online routes', 'href' => url('/visa-services#evisa-assistance')],
             ],
             'visualGallery' => [
@@ -714,22 +816,22 @@ class PageController extends Controller
             'urgencyCards' => [
                 [
                     'eyebrow' => 'Fast track',
-                    'title' => 'Appointment in 24–48 hrs',
-                    'copy' => 'When your country, purpose, and travel month are already clear—we prioritize coordination.',
+                    'title' => 'Appointment in 24-48 hrs',
+                    'copy' => 'When your country, purpose, and travel month are already clear, we prioritize coordination.',
                     'badge' => 'Limited slots',
                     'image' => 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1200&q=80',
                 ],
                 [
                     'eyebrow' => 'Priority',
                     'title' => 'Within 7 days',
-                    'copy' => 'Active planning with documents still in progress—we align dates with your file readiness.',
+                    'copy' => 'Active planning with documents still in progress, and we align dates with your file readiness.',
                     'badge' => 'Quick coordination',
                     'image' => 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1200&q=80',
                 ],
                 [
                     'eyebrow' => 'Planned',
-                    'title' => '15–30 days',
-                    'copy' => 'Best when you want a stronger file before booking—not only the earliest slot.',
+                    'title' => '15-30 days',
+                    'copy' => 'Best when you want a stronger file before booking, not only the earliest slot.',
                     'badge' => 'Advised route',
                     'image' => 'https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=1200&q=80',
                 ],
@@ -767,7 +869,7 @@ class PageController extends Controller
             'processSteps' => [
                 [
                     'title' => 'Free consultation',
-                    'copy' => 'Share your travel goals—we assess route, timeline, and documentation before anything is filed.',
+                    'copy' => 'Share your travel goals and we assess route, timeline, and documentation before anything is filed.',
                 ],
                 [
                     'title' => 'Planning & documents',
@@ -838,11 +940,11 @@ class PageController extends Controller
             'faqItems' => [
                 [
                     'question' => 'What destinations do you cover?',
-                    'answer' => 'We assist with Schengen, UK, USA, Canada, Japan, Australia, Malaysia, Vietnam, Turkey, South Africa, and many eVisa routes—this page focuses on Schengen; see Visa Services for the full list.',
+                    'answer' => 'We assist with Schengen, UK, USA, Canada, Japan, Australia, Malaysia, Vietnam, Turkey, South Africa, and many eVisa routes. This page focuses on Schengen; see Visa Services for the full list.',
                 ],
                 [
                     'question' => 'How long does the visa process take?',
-                    'answer' => 'Processing times vary by embassy and season. Schengen visas often take roughly 5–15 business days once submitted; we set expectations early and track pending steps.',
+                    'answer' => 'Processing times vary by embassy and season. Schengen visas often take roughly 5-15 business days once submitted, and we set expectations early while tracking pending steps.',
                 ],
                 [
                     'question' => 'What is a Schengen visa?',
@@ -850,23 +952,23 @@ class PageController extends Controller
                 ],
                 [
                     'question' => 'What documents are usually required?',
-                    'answer' => 'Typically passport, UAE residence proof, application form, travel reservations, insurance, and financial or employment documents—see the checklist on this page.',
+                    'answer' => 'Typically passport, UAE residence proof, application form, travel reservations, insurance, and financial or employment documents. See the checklist on this page.',
                 ],
                 [
                     'question' => 'Can you guarantee approval?',
-                    'answer' => 'No—embassies decide outcomes. We provide document guidance, realistic planning, and follow-up so your file is as strong and complete as possible.',
+                    'answer' => 'No. Embassies decide outcomes. We provide document guidance, realistic planning, and follow-up so your file is as strong and complete as possible.',
                 ],
             ],
             'contactPoints' => [
-                ['label' => 'WhatsApp', 'value' => $settings->whatsapp_number ?: $settings->contact_phone],
+                ['label' => 'Company phone', 'value' => $settings->contact_phone],
                 [
-                    'label' => 'Phone',
+                    'label' => 'Additional phone',
                     'value' => $settings->contact_phone_secondary
-                        ? $settings->contact_phone.' · '.$settings->contact_phone_secondary
+                        ? $settings->contact_phone.' / '.$settings->contact_phone_secondary
                         : $settings->contact_phone,
                 ],
-                ['label' => 'Email', 'value' => $settings->contact_email],
-                ['label' => 'Office', 'value' => $settings->contact_address],
+                ['label' => 'Company email', 'value' => $settings->contact_email],
+                ['label' => 'Office address', 'value' => $settings->contact_address],
             ],
         ]);
     }
@@ -890,7 +992,7 @@ class PageController extends Controller
             'hero' => [
                 'eyebrow' => 'Visa Services',
                 'title' => 'Visa support for the destinations travellers ask for most.',
-                'description' => 'From Schengen and major western destinations to Australia, Malaysia, and Vietnam—clear categories, WhatsApp when you need a quick answer, and a dedicated Schengen page for full guidance.',
+                'description' => 'From Schengen and major western destinations to Australia, Malaysia, and Vietnam, with clear categories and a dedicated Schengen page for full guidance.',
             ],
             'visaCategories' => [
                 [
@@ -947,7 +1049,7 @@ class PageController extends Controller
                     'id' => 'australia-visa',
                     'title' => 'Australia Visa',
                     'tag' => 'Visitor',
-                    'copy' => 'Visitor and short-stay Australia visas for UAE residents—documentation, Genuine Temporary Entrant (GTE) framing, and realistic embassy timelines.',
+                    'copy' => 'Visitor and short-stay Australia visas for UAE residents with documentation support, Genuine Temporary Entrant (GTE) framing, and realistic embassy timelines.',
                 ],
                 [
                     'id' => 'malaysia-visa',
@@ -969,9 +1071,9 @@ class PageController extends Controller
                 ],
             ],
             'servicePoints' => [
-                'WhatsApp for quick questions and consultation booking',
+                'Direct contact for quick questions and consultation booking',
                 'Structured preparation: checklists, timelines, and consistent documentation',
-                'Dedicated Schengen page for step-by-step guidance and high-intent enquiries',
+                'Dedicated Schengen page for step-by-step guidance and high-intent requests',
                 'One overview of visa types so you can pick the right route before you apply',
             ],
         ]);
@@ -988,6 +1090,150 @@ class PageController extends Controller
                 'Refined travel experiences across Dubai and the UAE with precision and attention to detail.',
                 'Luxury hotel reservations, private airport transfers, guided tours, and exclusive desert experiences.',
                 'Strong local network for priority access, competitive value, and personalized itineraries.',
+            ],
+        ]);
+    }
+
+    public function cancellationPolicy(): Response
+    {
+        return Inertia::render('CancellationPolicy', [
+            'seo' => [
+                'title' => 'Cancellation Policy',
+                'description' => 'Review the Acute Tourism cancellation and refund policy for experiences, tours, packages, and related travel services.',
+            ],
+            'policySections' => [
+                [
+                    'title' => 'General Booking Policy',
+                    'body' => 'Cancellation terms can vary by product, supplier, transport arrangement, accommodation component, and how close the booking is to the service date. Acute Tourism aims to present the applicable terms as clearly as possible before payment or final confirmation.',
+                ],
+                [
+                    'title' => 'Experiences and Tours',
+                    'body' => 'Many standard experiences and tours may qualify for a full refund when cancelled at least 24 hours before the scheduled start time. Some products, however, may have stricter conditions because of ticket issuance, limited-capacity inventory, or third-party operating rules.',
+                ],
+                [
+                    'title' => 'Packages and Multi-Service Bookings',
+                    'body' => 'Packages that combine hotels, transfers, attraction tickets, or special event access may follow supplier-specific rules. Once any non-refundable component is committed, the refundable amount can change even if the overall booking is cancelled before travel.',
+                ],
+                [
+                    'title' => 'Late Cancellations and No-Shows',
+                    'body' => 'Cancellations made after the applicable cut-off time, failure to arrive at the pickup point, or missed participation because of delayed customer response may be treated as non-refundable unless the supplier confirms otherwise.',
+                ],
+                [
+                    'title' => 'Date Changes and Amendments',
+                    'body' => 'Requests to reschedule are handled case by case. Amendments depend on availability, the original supplier terms, and whether any new cost applies on the revised date. A change request should not be treated as confirmed until Acute Tourism provides written confirmation.',
+                ],
+                [
+                    'title' => 'Refund Processing',
+                    'body' => 'Where a refund is approved, the processing time depends on the payment method and the external provider involved. Acute Tourism can confirm the refund status from our side, but final posting time is also affected by the card issuer or payment channel.',
+                ],
+                [
+                    'title' => 'How to Request a Cancellation',
+                    'body' => 'To request a cancellation, reply using your booking reference or contact the Acute Tourism team directly with the lead traveler name, service date, and the item booked. This helps us validate the file and apply the correct supplier rule quickly.',
+                ],
+            ],
+        ]);
+    }
+
+    public function termsAndConditions(): Response
+    {
+        return Inertia::render('TermsAndConditions', [
+            'seo' => [
+                'title' => 'Terms and Conditions',
+                'description' => 'Review the Acute Tourism terms and conditions governing use of the website, bookings, payments, and related travel services.',
+            ],
+            'termsSections' => [
+                [
+                    'title' => 'Use of This Website',
+                    'body' => 'By accessing the Acute Tourism website, you agree to use it for lawful purposes only. The information on the site is intended to support travel discovery, planning, and booking inquiries, and should not be used in a way that disrupts site access, misrepresents intent, or interferes with operations.',
+                ],
+                [
+                    'title' => 'Bookings and Availability',
+                    'body' => 'All products, services, pricing, timing, and inclusions are subject to confirmation. A listing on the site does not guarantee final availability until the booking has been accepted, supplier space has been confirmed where required, and payment or deposit obligations have been satisfied.',
+                ],
+                [
+                    'title' => 'Pricing and Payment',
+                    'body' => 'Displayed pricing may change because of supplier revisions, ticket availability, seasonal demand, special-event dates, accommodation rules, or transport updates. Where a payment is required, the customer is responsible for ensuring that the traveler details, dates, and selected product are correct before submission.',
+                ],
+                [
+                    'title' => 'Product Descriptions',
+                    'body' => 'Acute Tourism aims to present accurate information about experiences, tours, packages, and travel services. However, some operational elements may change after publication, including route order, meeting points, duration, language arrangement, pickup windows, or supplier-managed inclusions.',
+                ],
+                [
+                    'title' => 'Customer Responsibilities',
+                    'body' => 'Customers are responsible for providing correct contact details, traveler names, date preferences, and any relevant travel information requested during inquiry or booking. Where identification, visas, attraction tickets, or arrival timing matter, the customer is responsible for providing accurate supporting details on time.',
+                ],
+                [
+                    'title' => 'Changes, Cancellations, and Refunds',
+                    'body' => 'Cancellation, amendment, and refund handling are governed by the applicable product terms, supplier rules, and payment conditions. Customers should review the dedicated cancellation policy and any product-specific conditions shown before purchase or final confirmation.',
+                ],
+                [
+                    'title' => 'Third-Party Suppliers',
+                    'body' => 'Many services offered through Acute Tourism rely on third-party providers such as attraction operators, transport companies, hotels, ticketing partners, and event suppliers. Acute Tourism coordinates these arrangements, but some performance obligations, restrictions, and operational decisions remain under the control of those providers.',
+                ],
+                [
+                    'title' => 'Limitation of Liability',
+                    'body' => 'Acute Tourism is not responsible for loss or disruption caused by customer-provided errors, late arrival, force majeure events, government restrictions, attraction closures, transport incidents, supplier interruptions, or any event outside reasonable operational control. Liability is limited to the extent permitted by applicable law.',
+                ],
+                [
+                    'title' => 'Intellectual Property and Content',
+                    'body' => 'The branding, layout, written copy, and site materials used on the Acute Tourism website may not be copied, republished, or reused for commercial purposes without permission, except where usage is otherwise permitted by law.',
+                ],
+                [
+                    'title' => 'Contact and Policy Updates',
+                    'body' => 'Acute Tourism may update these terms from time to time as the business, products, payment flow, or supplier structure evolves. Customers should review the latest version before submitting a booking or inquiry if they want the current terms on record.',
+                ],
+            ],
+        ]);
+    }
+
+    public function privacyPolicy(): Response
+    {
+        return Inertia::render('PrivacyPolicy', [
+            'seo' => [
+                'title' => 'Privacy Policy',
+                'description' => 'Review how Acute Tourism collects, uses, stores, and protects personal information provided through the website and booking process.',
+            ],
+            'privacySections' => [
+                [
+                    'title' => 'Information We Collect',
+                    'body' => 'Acute Tourism may collect personal information when you submit an inquiry, request a booking, complete a checkout, contact the team, or otherwise interact with the website. This may include your name, email address, phone number, travel date, guest count, and any trip-related details you provide voluntarily.',
+                ],
+                [
+                    'title' => 'How We Use Your Information',
+                    'body' => 'The information you provide is used to respond to inquiries, prepare travel quotations, coordinate bookings, issue confirmations, process payments, support customer communication, and improve the operational quality of the services offered through Acute Tourism.',
+                ],
+                [
+                    'title' => 'Bookings and Supplier Coordination',
+                    'body' => 'Where necessary to fulfill a request, relevant customer details may be shared with third-party suppliers such as hotels, attraction operators, transport providers, ticketing partners, and related service vendors. Only the information reasonably required for service delivery should be shared for that purpose.',
+                ],
+                [
+                    'title' => 'Payments and Transaction Data',
+                    'body' => 'Payment-related information may be processed through external payment providers or gateways. Acute Tourism may retain booking references, transaction records, traveler details, and operational notes needed for reconciliation, customer support, and lawful recordkeeping, but sensitive payment handling may also be governed by the payment provider’s own policies.',
+                ],
+                [
+                    'title' => 'Communication and Follow-Up',
+                    'body' => 'If you contact Acute Tourism or submit a booking request, the team may use your details to send confirmations, clarifications, itinerary updates, payment reminders, or operational messages connected to your request. Communication may continue where required to complete or support the service you asked for.',
+                ],
+                [
+                    'title' => 'Cookies and Website Usage',
+                    'body' => 'The site may use cookies, session handling, and technical logging to support security, authentication, error handling, and site functionality. These tools help maintain the website and improve user experience, but they also form part of how the platform operates and should be understood as part of normal website use.',
+                ],
+                [
+                    'title' => 'Data Retention',
+                    'body' => 'Personal data may be kept for as long as needed to provide requested services, meet operational obligations, resolve disputes, maintain internal records, or comply with legal, accounting, tax, or payment-related requirements.',
+                ],
+                [
+                    'title' => 'Data Protection and Security',
+                    'body' => 'Acute Tourism takes reasonable steps to protect information against unauthorized access, misuse, or accidental disclosure. However, no online transmission or storage environment should be treated as risk-free, and customers should avoid sending unnecessary sensitive data through informal channels.',
+                ],
+                [
+                    'title' => 'Third-Party Links and External Services',
+                    'body' => 'The website may link to external sites, services, or providers. Once you leave the Acute Tourism website or interact directly with an external platform, the privacy practices of that external party apply and should be reviewed independently.',
+                ],
+                [
+                    'title' => 'Policy Updates and Contact',
+                    'body' => 'Acute Tourism may revise this privacy policy as website features, legal obligations, booking systems, or supplier workflows evolve. If you need clarification about how your information is handled, contact the company directly using the published contact details.',
+                ],
             ],
         ]);
     }
@@ -1168,6 +1414,14 @@ class PageController extends Controller
 
     protected function packageShowcaseImage(Package $package, int $index): ?string
     {
+        if ($index === 0 && $package->hero_image_url) {
+            return $package->hero_image_url;
+        }
+
+        if ($index > 0 && ! empty($package->gallery_image_urls[$index - 1])) {
+            return $package->gallery_image_urls[$index - 1];
+        }
+
         $curatedImages = [
             'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1600&q=80',
             'https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=1600&q=80',
@@ -1181,6 +1435,10 @@ class PageController extends Controller
 
     protected function packageGalleryShowcaseImages(Package $package): array
     {
+        if (! empty($package->gallery_image_urls)) {
+            return $package->gallery_image_urls;
+        }
+
         $slugBasedGalleries = [
             'ufc-fight-night-returns-to-abu-dhabi' => [
                 'https://images.unsplash.com/photo-1544737151-6e4b8f7d5a0b?auto=format&fit=crop&w=1800&q=80',
@@ -1213,5 +1471,31 @@ class PageController extends Controller
         }
 
         return $images;
+    }
+
+    protected function mediaItems(?string $heroVideoUrl, ?string $heroImageUrl, array $galleryVideoUrls, array $galleryImageUrls): array
+    {
+        $items = [];
+
+        if ($heroVideoUrl) {
+            $items[] = ['type' => 'video', 'url' => $heroVideoUrl];
+        }
+
+        if ($heroImageUrl) {
+            $items[] = ['type' => 'image', 'url' => $heroImageUrl];
+        }
+
+        foreach ($galleryVideoUrls as $url) {
+            $items[] = ['type' => 'video', 'url' => $url];
+        }
+
+        foreach ($galleryImageUrls as $url) {
+            $items[] = ['type' => 'image', 'url' => $url];
+        }
+
+        return collect($items)
+            ->unique(fn (array $item) => $item['type'].'|'.$item['url'])
+            ->values()
+            ->all();
     }
 }

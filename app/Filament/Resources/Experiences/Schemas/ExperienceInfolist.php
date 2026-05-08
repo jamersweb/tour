@@ -45,6 +45,9 @@ class ExperienceInfolist
                 TextEntry::make('hero_summary')
                     ->placeholder('-')
                     ->columnSpanFull(),
+                TextEntry::make('hero_video_url')
+                    ->placeholder('-')
+                    ->columnSpanFull(),
                 TextEntry::make('highlights')
                     ->placeholder('-')
                     ->columnSpanFull(),
@@ -62,6 +65,9 @@ class ExperienceInfolist
                     ->placeholder('-'),
                 TextEntry::make('seo_description')
                     ->placeholder('-'),
+                TextEntry::make('gallery_videos')
+                    ->placeholder('-')
+                    ->columnSpanFull(),
             ]);
     }
 }

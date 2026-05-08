@@ -1,16 +1,56 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
-import WhatsappFloat from '../Components/WhatsappFloat.vue';
 
 const page = usePage();
 const logoutForm = useForm({});
 const headerRef = ref(null);
+const mobileNavOpen = ref(false);
+let revealObserver;
+
+function initRevealObserver() {
+    revealObserver?.disconnect();
+    document.documentElement.classList.add('has-motion');
+
+    const nodes = document.querySelectorAll('[data-reveal]');
+    revealObserver = new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry) => {
+                if (!entry.isIntersecting) {
+                    return;
+                }
+                entry.target.classList.add('is-visible');
+                revealObserver?.unobserve(entry.target);
+            });
+        },
+        { threshold: 0.14, rootMargin: '0px 0px -8% 0px' },
+    );
+
+    nodes.forEach((node) => {
+        const rect = node.getBoundingClientRect();
+        if (rect.top < window.innerHeight * 0.92) {
+            node.classList.add('is-visible');
+            return;
+        }
+        revealObserver.observe(node);
+    });
+}
 
 function closeNavDropdowns() {
     headerRef.value?.querySelectorAll('details.nav-group[open]').forEach((el) => {
         el.removeAttribute('open');
     });
+}
+
+function closeMobileNav() {
+    mobileNavOpen.value = false;
+}
+
+function toggleMobileNav() {
+    mobileNavOpen.value = !mobileNavOpen.value;
+    if (!mobileNavOpen.value) {
+        closeNavDropdowns();
+    }
 }
 
 /** Keep only one flyout open; native toggle runs before this (toggle fires after state change). */
@@ -36,6 +76,7 @@ function onDocumentPointerDown(event) {
     }
     if (!headerRef.value.contains(target)) {
         closeNavDropdowns();
+        closeMobileNav();
         return;
     }
     if (!target.closest('details.nav-group')) {
@@ -45,11 +86,13 @@ function onDocumentPointerDown(event) {
 
 function onWindowScroll() {
     closeNavDropdowns();
+    closeMobileNav();
 }
 
 function onDocumentKeydown(event) {
     if (event.key === 'Escape') {
         closeNavDropdowns();
+        closeMobileNav();
     }
 }
 
@@ -57,20 +100,24 @@ onMounted(() => {
     document.addEventListener('pointerdown', onDocumentPointerDown, true);
     document.addEventListener('keydown', onDocumentKeydown);
     window.addEventListener('scroll', onWindowScroll, { passive: true });
+    initRevealObserver();
 });
+
+watch(
+    () => page.url,
+    async () => {
+        await nextTick();
+        initRevealObserver();
+    },
+);
 
 onBeforeUnmount(() => {
     document.removeEventListener('pointerdown', onDocumentPointerDown, true);
     document.removeEventListener('keydown', onDocumentKeydown);
     window.removeEventListener('scroll', onWindowScroll);
+    revealObserver?.disconnect();
 });
 
-const footerWhatsappHref = computed(() => {
-    const raw = page.props.site?.contact?.whatsappNumber;
-    const number = raw ? String(raw).replace(/[^0-9]/g, '') : '';
-
-    return number ? `https://wa.me/${number}` : null;
-});
 </script>
 
 <template>
@@ -89,44 +136,56 @@ const footerWhatsappHref = computed(() => {
                     />
                 </Link>
 
-                <nav class="primary-nav" aria-label="Main">
-                    <template v-for="item in page.props.site.primaryNavigation" :key="item.label">
-                        <details v-if="item.children" class="nav-group" @toggle="onNavGroupToggle">
-                            <summary class="nav-group-trigger">
-                                {{ item.label }}
-                                <svg class="nav-group-chevron" width="11" height="11" viewBox="0 0 12 12" aria-hidden="true">
-                                    <path
-                                        d="M2.5 4.5 6 8 9.5 4.5"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        stroke-width="1.35"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                    />
-                                </svg>
-                            </summary>
-                            <ul class="nav-group-list">
-                                <li v-for="child in item.children" :key="child.href">
-                                    <Link class="nav-group-link" :href="child.href" @click="closeNavDropdowns">{{
-                                        child.label
-                                    }}</Link>
-                                </li>
-                            </ul>
-                        </details>
-                        <Link v-else class="nav-link" :href="item.href">{{ item.label }}</Link>
-                    </template>
-                </nav>
+                <button
+                    class="mobile-nav-toggle"
+                    type="button"
+                    :aria-expanded="mobileNavOpen ? 'true' : 'false'"
+                    aria-controls="site-primary-nav"
+                    @click="toggleMobileNav"
+                >
+                    <span>{{ mobileNavOpen ? 'Close' : 'Menu' }}</span>
+                </button>
 
-                <div class="header-actions">
-                    <Link v-if="page.props.auth.user" class="header-cta" :href="page.props.auth.user.dashboardUrl">My Account</Link>
-                    <Link v-else class="header-cta" href="/login">Login</Link>
-                    <button
-                        v-if="page.props.auth.user"
-                        class="button-secondary header-logout"
-                        @click="logoutForm.post('/logout')"
-                    >
-                        Logout
-                    </button>
+                <div class="site-header-panel" :class="{ 'is-open': mobileNavOpen }">
+                    <nav id="site-primary-nav" class="primary-nav" aria-label="Main">
+                        <template v-for="item in page.props.site.primaryNavigation" :key="item.label">
+                            <details v-if="item.children" class="nav-group" @toggle="onNavGroupToggle">
+                                <summary class="nav-group-trigger">
+                                    {{ item.label }}
+                                    <svg class="nav-group-chevron" width="11" height="11" viewBox="0 0 12 12" aria-hidden="true">
+                                        <path
+                                            d="M2.5 4.5 6 8 9.5 4.5"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="1.35"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                        />
+                                    </svg>
+                                </summary>
+                                <ul class="nav-group-list">
+                                    <li v-for="child in item.children" :key="child.href">
+                                        <Link class="nav-group-link" :href="child.href" @click="closeNavDropdowns(); closeMobileNav()">{{
+                                            child.label
+                                        }}</Link>
+                                    </li>
+                                </ul>
+                            </details>
+                            <Link v-else class="nav-link" :href="item.href" @click="closeMobileNav">{{ item.label }}</Link>
+                        </template>
+                    </nav>
+
+                    <div class="header-actions">
+                        <Link v-if="page.props.auth.user" class="header-cta" :href="page.props.auth.user.dashboardUrl" @click="closeMobileNav">My Account</Link>
+                        <Link v-else class="header-cta" href="/login" @click="closeMobileNav">Login</Link>
+                        <button
+                            v-if="page.props.auth.user"
+                            class="button-secondary header-logout"
+                            @click="logoutForm.post('/logout')"
+                        >
+                            Logout
+                        </button>
+                    </div>
                 </div>
             </div>
         </header>
@@ -179,11 +238,6 @@ const footerWhatsappHref = computed(() => {
                                 {{ page.props.site.contact.phoneSecondary }}
                             </a>
                         </li>
-                        <li v-if="footerWhatsappHref">
-                            <a class="footer-link" :href="footerWhatsappHref" target="_blank" rel="noreferrer">
-                                WhatsApp
-                            </a>
-                        </li>
                         <li>{{ page.props.site.contact.address }}</li>
                     </ul>
                 </div>
@@ -205,7 +259,5 @@ const footerWhatsappHref = computed(() => {
                 </div>
             </div>
         </footer>
-
-        <WhatsappFloat />
     </div>
 </template>

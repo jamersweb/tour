@@ -1,5 +1,5 @@
 <script setup>
-import { watch } from 'vue';
+import { computed } from 'vue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import SiteMeta from '../../Components/SiteMeta.vue';
 import SiteLayout from '../../Layouts/SiteLayout.vue';
@@ -18,27 +18,32 @@ const form = useForm({
     email: '',
     phone: '',
     travel_date: '',
-    guest_count: 2,
+    guest_count: 1,
     traveler_contacts: [
-        { name: '', email: '', phone: '' },
         { name: '', email: '', phone: '' },
     ],
 });
 
-const syncTravelerContacts = (count) => {
-    const nextCount = Math.max(1, Number.parseInt(count, 10) || 1);
-    const travelers = [...form.traveler_contacts];
+const totalAmount = computed(() => {
+    const guestCount = Math.max(1, Number.parseInt(form.guest_count, 10) || 1);
+    const unitAmount = Number.parseFloat(props.checkout.unitAmountValue || 0);
 
-    while (travelers.length < nextCount) {
-        travelers.push({ name: '', email: '', phone: '' });
-    }
-
-    form.traveler_contacts = travelers.slice(0, nextCount);
-};
-
-watch(() => form.guest_count, syncTravelerContacts, { immediate: true });
+    return `${props.checkout.currency} ${new Intl.NumberFormat('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    }).format(unitAmount * guestCount)}`;
+});
 
 const submit = () => {
+    const guestCount = Math.max(1, Number.parseInt(form.guest_count, 10) || 1);
+
+    form.guest_count = guestCount;
+    form.traveler_contacts = Array.from({ length: guestCount }, () => ({
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+    }));
+
     form.post(`/checkout/${props.checkout.type}s/${props.checkout.slug}`);
 };
 </script>
@@ -64,6 +69,7 @@ const submit = () => {
                 <article class="info-card">
                     <p class="card-tag">Pay with N-Genius Online (Network International)</p>
                     <h3>{{ checkout.amount }}</h3>
+                    <p class="meta-copy">Base price per guest</p>
                     <p class="hero-copy">
                         You complete card payment on Network’s secure hosted page, then return here
                         so we can confirm your booking and send confirmation by email.
@@ -108,44 +114,23 @@ const submit = () => {
                             <small v-if="form.errors.guest_count">{{ form.errors.guest_count }}</small>
                         </label>
 
-                        <div class="field-group">
-                            <small v-if="form.errors.traveler_contacts">{{ form.errors.traveler_contacts }}</small>
-
-                            <div
-                                v-for="(traveler, index) in form.traveler_contacts"
-                                :key="`traveler-${index}`"
-                                class="traveler-card"
-                            >
-                                <p class="card-tag">Guest {{ index + 1 }}</p>
-
-                                <label class="field">
-                                    <span>Name</span>
-                                    <input v-model="traveler.name" type="text" autocomplete="name" />
-                                    <small v-if="form.errors[`traveler_contacts.${index}.name`]">
-                                        {{ form.errors[`traveler_contacts.${index}.name`] }}
-                                    </small>
-                                </label>
-
-                                <label class="field">
-                                    <span>Email</span>
-                                    <input v-model="traveler.email" type="email" autocomplete="email" />
-                                    <small v-if="form.errors[`traveler_contacts.${index}.email`]">
-                                        {{ form.errors[`traveler_contacts.${index}.email`] }}
-                                    </small>
-                                </label>
-
-                                <label class="field">
-                                    <span>Phone</span>
-                                    <input v-model="traveler.phone" type="text" autocomplete="tel" />
-                                    <small v-if="form.errors[`traveler_contacts.${index}.phone`]">
-                                        {{ form.errors[`traveler_contacts.${index}.phone`] }}
-                                    </small>
-                                </label>
-                            </div>
+                        <div class="field">
+                            <span>Total Price</span>
+                            <strong class="detail-price">{{ totalAmount }}</strong>
                         </div>
 
-                        <button class="button-primary" type="submit" :disabled="form.processing">
-                            {{ form.processing ? 'Redirecting...' : 'Proceed to Payment' }}
+                        <button
+                            class="button-primary"
+                            type="submit"
+                            :disabled="form.processing || !page.props.payments?.networkCheckoutReady"
+                        >
+                            {{
+                                !page.props.payments?.networkCheckoutReady
+                                    ? 'Payment setup required'
+                                    : form.processing
+                                      ? 'Redirecting...'
+                                      : 'Proceed to Payment'
+                            }}
                         </button>
                     </form>
                 </article>

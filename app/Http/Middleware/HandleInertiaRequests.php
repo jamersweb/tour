@@ -66,7 +66,7 @@ class HandleInertiaRequests extends Middleware
                 'currentUrl' => $request->url(),
                 'defaultMeta' => [
                     'title' => $settings->site_name,
-                    'description' => 'Exclusively curated holiday experiences in Dubai and the UAE — luxury stays, private transfers, and concierge-led planning.',
+                    'description' => 'Exclusively curated holiday experiences in Dubai and the UAE â€” luxury stays, private transfers, and concierge-led planning.',
                     'image' => $logoUrl,
                 ],
                 'organization' => [
@@ -81,7 +81,7 @@ class HandleInertiaRequests extends Middleware
                         'phone' => $settings->contact_phone,
                         'phoneSecondary' => $settings->contact_phone_secondary,
                         'address' => $settings->contact_address,
-                        'whatsappNumber' => $settings->whatsapp_number,
+                        'whatsappNumber' => null,
                     ],
                 ],
                 'contact' => [
@@ -89,7 +89,7 @@ class HandleInertiaRequests extends Middleware
                     'phone' => $settings->contact_phone,
                     'phoneSecondary' => $settings->contact_phone_secondary,
                     'address' => $settings->contact_address,
-                    'whatsappNumber' => $settings->whatsapp_number,
+                    'whatsappNumber' => null,
                 ],
                 'interestOptions' => $settings->interest_options ?? [],
                 'footer' => [
@@ -116,9 +116,13 @@ class HandleInertiaRequests extends Middleware
                 ],
                 'footerNavigation' => [
                     ['label' => 'Experiences', 'href' => route('experiences.index')],
+                    ['label' => 'Tours', 'href' => route('tours.index')],
                     ['label' => 'Packages', 'href' => route('packages.index')],
                     ['label' => 'Schengen Visa', 'href' => route('visa.schengen')],
                     ['label' => 'About', 'href' => route('about')],
+                    ['label' => 'Cancellation Policy', 'href' => route('cancellation-policy')],
+                    ['label' => 'Terms & Conditions', 'href' => route('terms-and-conditions')],
+                    ['label' => 'Privacy Policy', 'href' => route('privacy-policy')],
                     ['label' => 'Corporate Events', 'href' => route('corporate-events')],
                     ['label' => 'Contact', 'href' => route('contact')],
                 ],
@@ -128,6 +132,7 @@ class HandleInertiaRequests extends Middleware
                         'label' => 'Explore',
                         'children' => [
                             ['label' => 'Experiences', 'href' => route('experiences.index')],
+                            ['label' => 'Tours', 'href' => route('tours.index')],
                             ['label' => 'Packages', 'href' => route('packages.index')],
                             ['label' => 'Schengen Visa', 'href' => route('visa.schengen')],
                         ],
@@ -144,6 +149,9 @@ class HandleInertiaRequests extends Middleware
                         'children' => [
                             ['label' => 'Journal', 'href' => route('journal')],
                             ['label' => 'FAQ', 'href' => route('faq')],
+                            ['label' => 'Cancellation Policy', 'href' => route('cancellation-policy')],
+                            ['label' => 'Terms & Conditions', 'href' => route('terms-and-conditions')],
+                            ['label' => 'Privacy Policy', 'href' => route('privacy-policy')],
                             ['label' => 'Contact', 'href' => route('contact')],
                         ],
                     ],

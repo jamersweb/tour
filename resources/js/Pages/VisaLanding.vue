@@ -40,11 +40,6 @@ const defaultInterest = computed(() => {
     return props.interestOptions?.[0] ?? 'General Planning';
 });
 
-const whatsappUrl = computed(() => {
-    const number = props.contact?.whatsappNumber?.replace(/[^0-9]/g, '');
-    return number ? `https://wa.me/${number}` : null;
-});
-
 const heroBackdrop = computed(() => props.visualGallery?.[0]?.image ?? '');
 
 const formDefaults = {
@@ -97,18 +92,6 @@ onBeforeUnmount(() => observer?.disconnect());
     <SiteMeta :title="seo.title" :description="seo.description" />
 
     <div class="visa-v2">
-        <a
-            v-if="whatsappUrl"
-            class="visa-whatsapp-float"
-            :href="whatsappUrl"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="WhatsApp consultation"
-        >
-            <span class="visa-whatsapp-rings"></span>
-            <span class="visa-whatsapp-label">WhatsApp</span>
-        </a>
-
         <!-- Hero: imagery + overlay (inspired by schengen.acutetourism.org) -->
         <section
             class="visa-v2-hero"
@@ -125,10 +108,8 @@ onBeforeUnmount(() => observer?.disconnect());
                 </ul>
 
                 <div class="visa-v2-hero__cta">
-                    <a v-if="whatsappUrl" class="button-primary visa-cta-primary" :href="whatsappUrl" target="_blank" rel="noreferrer">
-                        Book free consultation
-                    </a>
-                    <a class="button-secondary visa-cta-secondary" href="#visa-form">Send inquiry</a>
+                    <a class="button-primary visa-cta-primary" href="#visa-form">Start your request</a>
+                    <Link class="button-secondary visa-cta-secondary" href="/visa-services">All visa services</Link>
                 </div>
 
                 <div class="visa-v2-stats">
@@ -170,7 +151,7 @@ onBeforeUnmount(() => observer?.disconnect());
                     <p class="eyebrow">What we offer</p>
                     <h2>Service categories</h2>
                     <p class="visa-v2-section__sub">
-                        Planning, visas, and local experiences—organized so you are not juggling multiple vendors.
+                        Planning, visas, and local support organized so clients are not forced through fragmented vendor decisions.
                     </p>
                 </header>
                 <div class="visa-v2-offer-grid">
@@ -208,7 +189,7 @@ onBeforeUnmount(() => observer?.disconnect());
                         <span class="visa-v2-route-card__code">{{ route.code }}</span>
                         <span class="visa-v2-route-card__title">{{ route.title }}</span>
                         <span class="visa-v2-route-card__sub">{{ route.subtitle }}</span>
-                        <span class="visa-v2-route-card__cta">Apply</span>
+                        <span class="visa-v2-route-card__cta">View route</span>
                     </a>
                 </div>
             </div>
@@ -231,7 +212,7 @@ onBeforeUnmount(() => observer?.disconnect());
                         <h3>{{ card.title }}</h3>
                         <p>{{ card.copy }}</p>
                         <span class="card-tag-accent">{{ card.badge }}</span>
-                        <a v-if="whatsappUrl" class="button-primary card-button" :href="whatsappUrl" target="_blank" rel="noreferrer">WhatsApp</a>
+                        <a class="button-primary card-button" href="#visa-form">Start request</a>
                     </article>
                 </div>
             </div>
@@ -252,8 +233,8 @@ onBeforeUnmount(() => observer?.disconnect());
                     </article>
                 </div>
                 <div class="visa-v2-inline-cta">
-                    <a v-if="whatsappUrl" class="button-primary visa-cta-primary" :href="whatsappUrl" target="_blank" rel="noreferrer">WhatsApp us</a>
-                    <a class="button-secondary visa-cta-secondary" href="#visa-form">Inquiry form</a>
+                    <a class="button-primary visa-cta-primary" href="#visa-form">Start your request</a>
+                    <Link class="button-secondary visa-cta-secondary" href="/contact">Contact Acute Tourism</Link>
                 </div>
             </div>
         </section>
@@ -294,8 +275,8 @@ onBeforeUnmount(() => observer?.disconnect());
                     </article>
                 </div>
                 <div class="visa-v2-inline-cta">
-                    <a v-if="whatsappUrl" class="button-primary visa-cta-primary" :href="whatsappUrl" target="_blank" rel="noreferrer">Review my file</a>
-                    <a class="button-secondary visa-cta-secondary" href="#visa-form">Start inquiry</a>
+                    <a class="button-primary visa-cta-primary" href="#visa-form">Review my file</a>
+                    <Link class="button-secondary visa-cta-secondary" href="/contact">Contact Acute Tourism</Link>
                 </div>
             </div>
         </section>
@@ -350,7 +331,7 @@ onBeforeUnmount(() => observer?.disconnect());
                             <p class="eyebrow">Start your journey</p>
                             <h2>Ready to travel smarter?</h2>
                             <p class="visa-v2-section__sub">
-                                Book a free consultation. No hidden process—direct visa and travel support. Visit our office or message us on WhatsApp.
+                                Contact Acute Tourism for direct visa and travel support. Visit the office or use the inquiry form to start with clearer next steps.
                             </p>
                         </header>
                         <div class="visa-v2-contact-points">
@@ -360,7 +341,7 @@ onBeforeUnmount(() => observer?.disconnect());
                             </article>
                         </div>
                         <div class="visa-v2-inline-cta">
-                            <a v-if="whatsappUrl" class="button-primary visa-cta-primary" :href="whatsappUrl" target="_blank" rel="noreferrer">WhatsApp us</a>
+                            <Link class="button-primary visa-cta-primary" href="/contact">Contact Acute Tourism</Link>
                             <Link class="button-secondary visa-cta-secondary" href="/visa-services">All visa services</Link>
                         </div>
                     </div>
@@ -383,7 +364,7 @@ onBeforeUnmount(() => observer?.disconnect());
                                     <small v-if="form.errors.email">{{ form.errors.email }}</small>
                                 </label>
                                 <label class="field">
-                                    <span>Phone / WhatsApp</span>
+                                    <span>Phone</span>
                                     <input v-model="form.phone" type="text" autocomplete="tel" />
                                     <small v-if="form.errors.phone">{{ form.errors.phone }}</small>
                                 </label>
@@ -399,7 +380,7 @@ onBeforeUnmount(() => observer?.disconnect());
                                 <small v-if="form.errors.message">{{ form.errors.message }}</small>
                             </label>
                             <button class="button-primary visa-submit visa-cta-primary" type="submit" :disabled="form.processing">
-                                {{ form.processing ? 'Sending…' : 'Submit inquiry' }}
+                                {{ form.processing ? 'Sending...' : 'Submit request' }}
                             </button>
                         </form>
                     </article>

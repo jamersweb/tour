@@ -3,37 +3,31 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Storage;
 
-class Experience extends Model
+class Tour extends Model
 {
     protected $fillable = [
         'title',
         'slug',
         'category',
         'short_description',
-        'hero_summary',
         'description',
         'hero_image_path',
         'hero_video_url',
         'gallery_images',
         'gallery_videos',
-        'highlights',
-        'inclusions',
-        'exclusions',
         'duration',
         'location',
         'pickup_note',
         'price_from',
         'currency',
+        'highlights',
+        'inclusions',
+        'exclusions',
         'is_featured',
-        'show_on_homepage',
-        'homepage_sort_order',
         'is_private',
         'is_active',
-        'tag',
-        'sort_order',
         'seo_title',
         'seo_description',
     ];
@@ -41,14 +35,13 @@ class Experience extends Model
     protected function casts(): array
     {
         return [
-            'price_from' => 'decimal:2',
             'gallery_images' => 'array',
             'gallery_videos' => 'array',
+            'price_from' => 'decimal:2',
             'highlights' => 'array',
             'inclusions' => 'array',
             'exclusions' => 'array',
             'is_featured' => 'boolean',
-            'show_on_homepage' => 'boolean',
             'is_private' => 'boolean',
             'is_active' => 'boolean',
         ];
@@ -74,13 +67,6 @@ class Experience extends Model
             ->filter()
             ->values()
             ->all();
-    }
-
-    public function collections(): BelongsToMany
-    {
-        return $this->belongsToMany(Collection::class)
-            ->withPivot('sort_order')
-            ->withTimestamps();
     }
 
     protected function resolveMediaPath(?string $path): ?string

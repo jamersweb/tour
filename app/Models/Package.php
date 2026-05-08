@@ -13,7 +13,9 @@ class Package extends Model
         'short_description',
         'description',
         'hero_image_path',
+        'hero_video_url',
         'gallery_images',
+        'gallery_videos',
         'duration',
         'days',
         'nights',
@@ -37,6 +39,7 @@ class Package extends Model
     {
         return [
             'gallery_images' => 'array',
+            'gallery_videos' => 'array',
             'days' => 'integer',
             'nights' => 'integer',
             'group_size_min' => 'integer',
@@ -61,6 +64,14 @@ class Package extends Model
     {
         return collect($this->gallery_images ?? [])
             ->map(fn ($path) => $this->resolveMediaPath($path))
+            ->filter()
+            ->values()
+            ->all();
+    }
+
+    public function getGalleryVideoUrlsAttribute(): array
+    {
+        return collect($this->gallery_videos ?? [])
             ->filter()
             ->values()
             ->all();

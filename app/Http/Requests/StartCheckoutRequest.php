@@ -6,6 +6,37 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StartCheckoutRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        $guestCount = (int) ($this->input('guest_count') ?: 1);
+        $travelerContacts = $this->input('traveler_contacts');
+
+        if (! is_array($travelerContacts) || $travelerContacts === []) {
+            $guestCount = max(1, $guestCount);
+
+            $this->merge([
+                'guest_count' => $guestCount,
+                'traveler_contacts' => collect(range(1, $guestCount))
+                    ->map(fn () => [
+                        'name' => (string) $this->input('name', ''),
+                        'email' => (string) $this->input('email', ''),
+                        'phone' => (string) $this->input('phone', ''),
+                    ])
+                    ->all(),
+            ]);
+
+            return;
+        }
+
+        if (! $this->filled('guest_count')) {
+            $guestCount = count($travelerContacts);
+        }
+
+        $this->merge([
+            'guest_count' => max(1, $guestCount),
+        ]);
+    }
+
     public function authorize(): bool
     {
         return true;

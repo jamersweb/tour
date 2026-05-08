@@ -8,13 +8,14 @@ defineOptions({ layout: SiteLayout });
 
 const props = defineProps({
     seo: Object,
-    packageItem: Object,
-    relatedPackages: Array,
+    tour: Object,
+    relatedTours: Array,
 });
 
 const page = usePage();
 
-const mediaItems = computed(() => props.packageItem.mediaItems || []);
+const checkoutHref = computed(() => `/checkout/tours/${props.tour.slug}`);
+const mediaItems = computed(() => props.tour.mediaItems || []);
 
 const heroTiles = computed(() => {
     if (!mediaItems.value.length) {
@@ -25,20 +26,15 @@ const heroTiles = computed(() => {
 });
 
 const importantNotices = computed(() => [
-    'Please keep your contact number active after booking so final coordination can be shared easily.',
-    'Hotel, transfers, and operating sequence may vary slightly depending on date and availability.',
-    'Carry passport or valid identification where required for included attractions.',
+    'Please share your contact number during booking for pickup and coordination updates.',
+    'Start time and exact meeting point are reconfirmed after booking.',
+    'Carry valid identification where required for venue or attraction access.',
 ]);
-
-const contactPhone = '(+971) 58 516 1554';
-const contactEmail = 'info@acutetourism.org';
 const bookingHighlights = computed(() => [
-    props.packageItem.duration,
-    props.packageItem.location,
+    props.tour.duration,
+    props.tour.location,
     'Instant payment confirmation',
 ].filter(Boolean));
-
-const checkoutHref = computed(() => `/checkout/packages/${props.packageItem.slug}`);
 
 const form = useForm({
     name: '',
@@ -53,7 +49,7 @@ const form = useForm({
 
 const totalAmount = computed(() => {
     const guestCount = Math.max(1, Number.parseInt(form.guest_count, 10) || 1);
-    const rawAmount = String(props.packageItem.priceFrom || '0').replace(/[^0-9.]/g, '');
+    const rawAmount = String(props.tour.priceFrom || '0').replace(/[^0-9.]/g, '');
     const unitAmount = Number.parseFloat(rawAmount || '0');
 
     return `AED ${new Intl.NumberFormat('en-US', {
@@ -85,14 +81,14 @@ const submit = () => {
                 <nav class="experience-breadcrumb" aria-label="Breadcrumb">
                     <Link href="/">Home</Link>
                     <span class="experience-breadcrumb__sep" aria-hidden="true">/</span>
-                    <Link href="/packages">Packages</Link>
+                    <Link href="/tours">Tours</Link>
                     <span class="experience-breadcrumb__sep" aria-hidden="true">/</span>
-                    <span class="experience-breadcrumb__current">{{ packageItem.title }}</span>
+                    <span class="experience-breadcrumb__current">{{ tour.title }}</span>
                 </nav>
 
                 <div class="experience-operator-head experience-operator-head--stack">
-                    <p class="experience-operator-head__eyebrow">Package</p>
-                    <h1 class="experience-operator-head__title">{{ packageItem.title }}</h1>
+                    <p class="experience-operator-head__eyebrow">{{ tour.category || 'Tour' }}</p>
+                    <h1 class="experience-operator-head__title">{{ tour.title }}</h1>
                     <div class="experience-operator-reviews">
                         <span class="experience-operator-reviews__stars">★★★★★</span>
                         <strong>5</strong>
@@ -124,7 +120,7 @@ const submit = () => {
                                     v-else
                                     class="experience-operator-mosaic__media"
                                     :src="item.url"
-                                    :alt="packageItem.title"
+                                    :alt="tour.title"
                                     loading="eager"
                                     decoding="async"
                                 />
@@ -136,57 +132,40 @@ const submit = () => {
 
                         <article class="experience-operator-section experience-operator-section--overview">
                             <div class="experience-operator-section__head">
-                                <span class="experience-operator-section__kicker">Package overview</span>
+                                <span class="experience-operator-section__kicker">Tour overview</span>
                                 <h2>Overview</h2>
                             </div>
-                            <p class="experience-operator-section__lede">{{ packageItem.description || packageItem.shortDescription }}</p>
+                            <p class="experience-operator-section__lede">{{ tour.description || tour.shortDescription }}</p>
                         </article>
 
-                        <article v-if="packageItem.highlights?.length" class="experience-operator-section">
+                        <article v-if="tour.highlights?.length" class="experience-operator-section">
                             <div class="experience-operator-section__head">
                                 <span class="experience-operator-section__kicker">What stands out</span>
                                 <h2>Notable Highlights</h2>
                             </div>
                             <ul class="experience-operator-list experience-operator-list--chips">
-                                <li v-for="highlight in packageItem.highlights" :key="highlight">{{ highlight }}</li>
+                                <li v-for="highlight in tour.highlights" :key="highlight">{{ highlight }}</li>
                             </ul>
                         </article>
 
-                        <article v-if="packageItem.inclusions?.length" class="experience-operator-section">
+                        <article v-if="tour.inclusions?.length" class="experience-operator-section">
                             <div class="experience-operator-section__head">
                                 <span class="experience-operator-section__kicker">Included in your booking</span>
                                 <h2>What's Included</h2>
                             </div>
                             <ul class="experience-operator-list experience-operator-list--checks">
-                                <li v-for="item in packageItem.inclusions" :key="item">{{ item }}</li>
+                                <li v-for="item in tour.inclusions" :key="item">{{ item }}</li>
                             </ul>
                         </article>
 
-                        <article v-if="packageItem.exclusions?.length" class="experience-operator-section">
+                        <article v-if="tour.exclusions?.length" class="experience-operator-section">
                             <div class="experience-operator-section__head">
                                 <span class="experience-operator-section__kicker">Plan ahead</span>
                                 <h2>What's Not Included</h2>
                             </div>
                             <ul class="experience-operator-list experience-operator-list--muted">
-                                <li v-for="item in packageItem.exclusions" :key="item">{{ item }}</li>
+                                <li v-for="item in tour.exclusions" :key="item">{{ item }}</li>
                             </ul>
-                        </article>
-
-                        <article v-if="packageItem.itinerary?.length" class="experience-operator-section">
-                            <div class="experience-operator-section__head">
-                                <span class="experience-operator-section__kicker">Day-by-day planning</span>
-                                <h2>Itinerary</h2>
-                            </div>
-                            <div class="experience-operator-itinerary">
-                                <article
-                                    v-for="(stop, index) in packageItem.itinerary"
-                                    :key="`${stop.dayLabel}-${stop.title}-${index}`"
-                                    class="experience-operator-itinerary__item"
-                                >
-                                    <strong>{{ stop.dayLabel || `Day ${index + 1}` }}: {{ stop.title }}</strong>
-                                    <p>{{ stop.description }}</p>
-                                </article>
-                            </div>
                         </article>
 
                         <article class="experience-operator-section">
@@ -194,18 +173,7 @@ const submit = () => {
                                 <span class="experience-operator-section__kicker">Booking terms</span>
                                 <h2>Cancellation Policy</h2>
                             </div>
-                            <p>For a full refund, cancel at least 24 hours in advance of the start date of the experience.</p>
-                        </article>
-
-                        <article class="experience-operator-section">
-                            <div class="experience-operator-section__head">
-                                <span class="experience-operator-section__kicker">Need help?</span>
-                                <h2>Contact Us</h2>
-                            </div>
-                            <p>
-                                If you have questions about this tour or need help making your booking, we would be happy to help.
-                                Just call {{ contactPhone }} or email {{ contactEmail }}.
-                            </p>
+                            <p>For a full refund, cancel at least 24 hours in advance of the start date of the tour.</p>
                         </article>
 
                         <article class="experience-operator-section">
@@ -223,25 +191,18 @@ const submit = () => {
                         <article class="experience-operator-booking">
                             <p class="experience-operator-booking__badge">Best Seller</p>
                             <p class="experience-operator-booking__label">From</p>
-                            <h2 v-if="packageItem.priceFrom" class="experience-operator-booking__price">
-                                {{ packageItem.priceFrom }} <span>per person</span>
+                            <h2 v-if="tour.priceFrom" class="experience-operator-booking__price">
+                                {{ tour.priceFrom }} <span>per person</span>
                             </h2>
                             <p v-else class="experience-operator-booking__price experience-operator-booking__price--muted">
                                 Current pricing is available at checkout.
                             </p>
                             <p class="experience-operator-booking__copy">
-                                Secure your package from this page and continue straight to payment when your travel date is set.
+                                Book the tour from this page and continue directly into payment once your date and guest count are ready.
                             </p>
                             <ul class="experience-operator-booking__summary">
                                 <li v-for="item in bookingHighlights" :key="item">{{ item }}</li>
                             </ul>
-
-                            <div class="experience-operator-booking__contact">
-                                <h3>Contact us</h3>
-                                <p>If you have questions about this package or need help making your booking, we would be happy to help.</p>
-                                <p><strong>{{ contactPhone }}</strong></p>
-                                <p>{{ contactEmail }}</p>
-                            </div>
                         </article>
 
                         <article id="detail-booking-form" class="experience-operator-enquiry">
@@ -292,7 +253,7 @@ const submit = () => {
                                 </div>
 
                                 <p class="experience-operator-enquiry__note">
-                                    Hotel, transfer, and final operating details are reconfirmed after payment.
+                                    Pickup timing and final meeting details are confirmed after payment.
                                 </p>
 
                                 <button
@@ -315,23 +276,23 @@ const submit = () => {
             </div>
         </section>
 
-        <section v-if="relatedPackages.length" class="section-block section-contrast">
+        <section v-if="relatedTours.length" class="section-block section-contrast">
             <div class="container">
                 <div class="section-heading">
-                    <p class="eyebrow">Related packages</p>
+                    <p class="eyebrow">Similar tours</p>
                     <h2>You may also like</h2>
                 </div>
 
                 <div class="card-grid card-grid-three">
-                    <article v-for="item in relatedPackages" :key="item.slug" class="info-card package-card">
+                    <article v-for="item in relatedTours" :key="item.slug" class="info-card package-card">
                         <div v-if="item.heroImageUrl" class="card-media">
                             <img :src="item.heroImageUrl" :alt="item.title" />
                         </div>
-                        <p class="card-tag">Package</p>
+                        <p class="card-tag">{{ item.category || 'Tour' }}</p>
                         <h3>{{ item.title }}</h3>
-                        <p>{{ item.summary }}</p>
                         <p class="meta-copy">{{ item.duration }}</p>
-                        <Link class="button-primary card-button" :href="`/packages/${item.slug}`">View package</Link>
+                        <p v-if="item.priceFrom" class="detail-price">{{ item.priceFrom }}</p>
+                        <Link class="button-primary card-button" :href="`/tours/${item.slug}`">View tour</Link>
                     </article>
                 </div>
             </div>

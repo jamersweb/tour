@@ -7,6 +7,7 @@ use App\Mail\CheckoutContinuePaymentMail;
 use App\Models\Experience;
 use App\Models\Package;
 use App\Models\PaymentTransaction;
+use App\Models\Tour;
 use App\Services\AdminBookingNotifier;
 use App\Services\Payments\BookingConfirmationService;
 use App\Services\Payments\NetworkNgeniusGateway;
@@ -14,6 +15,7 @@ use App\Services\Payments\NetworkPaymentSynchronizer;
 use App\Services\Payments\PaymentTransactionLogger;
 use App\Support\NetworkPayments;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -21,6 +23,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class CheckoutController extends Controller
 {
@@ -32,15 +35,6 @@ class CheckoutController extends Controller
             ->firstOrFail();
 
         abort_if(! $experience->price_from, 404);
-
-        if (! NetworkPayments::isCheckoutReady()) {
-            return redirect()
-                ->route('experiences.show', $slug)
-                ->with(
-                    'error',
-                    'Online payment is not available right now. Please plan this experience or contact us to complete your booking.',
-                );
-        }
 
         return Inertia::render('Checkout/Show', [
             'seo' => [
@@ -69,15 +63,6 @@ class CheckoutController extends Controller
 
         abort_if(! $package->price_from, 404);
 
-        if (! NetworkPayments::isCheckoutReady()) {
-            return redirect()
-                ->route('packages.show', $slug)
-                ->with(
-                    'error',
-                    'Online payment is not available right now. Please contact us to book this package.',
-                );
-        }
-
         return Inertia::render('Checkout/Show', [
             'seo' => [
                 'title' => 'Checkout',
@@ -96,7 +81,34 @@ class CheckoutController extends Controller
         ]);
     }
 
-    public function startExperience(StartCheckoutRequest $request, string $slug, NetworkNgeniusGateway $gateway): RedirectResponse
+    public function tour(string $slug): InertiaResponse|RedirectResponse
+    {
+        $tour = Tour::query()
+            ->where('slug', $slug)
+            ->where('is_active', true)
+            ->firstOrFail();
+
+        abort_if(! $tour->price_from, 404);
+
+        return Inertia::render('Checkout/Show', [
+            'seo' => [
+                'title' => 'Checkout',
+                'description' => "Complete checkout for {$tour->title}.",
+            ],
+            'checkout' => $this->checkoutPayload(
+                label: 'Tour Checkout',
+                type: 'tour',
+                slug: $tour->slug,
+                title: $tour->title,
+                summary: $tour->short_description,
+                amount: $tour->price_from,
+                currency: $tour->currency,
+                image: $tour->hero_image_url,
+            ),
+        ]);
+    }
+
+    public function startExperience(StartCheckoutRequest $request, string $slug, NetworkNgeniusGateway $gateway): Response
     {
         $experience = Experience::query()
             ->where('slug', $slug)
@@ -106,7 +118,7 @@ class CheckoutController extends Controller
         return $this->startCheckout($request, $gateway, $experience);
     }
 
-    public function startPackage(StartCheckoutRequest $request, string $slug, NetworkNgeniusGateway $gateway): RedirectResponse
+    public function startPackage(StartCheckoutRequest $request, string $slug, NetworkNgeniusGateway $gateway): Response
     {
         $package = Package::query()
             ->where('slug', $slug)
@@ -114,6 +126,16 @@ class CheckoutController extends Controller
             ->firstOrFail();
 
         return $this->startCheckout($request, $gateway, $package);
+    }
+
+    public function startTour(StartCheckoutRequest $request, string $slug, NetworkNgeniusGateway $gateway): Response
+    {
+        $tour = Tour::query()
+            ->where('slug', $slug)
+            ->where('is_active', true)
+            ->firstOrFail();
+
+        return $this->startCheckout($request, $gateway, $tour);
     }
 
     public function callback(
@@ -203,16 +225,32 @@ class CheckoutController extends Controller
             return route('checkout.packages.show', $payable->slug);
         }
 
+        if ($payable instanceof Tour) {
+            return route('checkout.tours.show', $payable->slug);
+        }
+
         return null;
     }
 
-    protected function startCheckout(StartCheckoutRequest $request, NetworkNgeniusGateway $gateway, Model $payable): RedirectResponse
+    protected function startCheckout(StartCheckoutRequest $request, NetworkNgeniusGateway $gateway, Model $payable): Response
     {
         $activityLogger = app(PaymentTransactionLogger::class);
 
         abort_if(! $payable->price_from, 422, 'This item is not currently configured for online payment.');
 
+        if (! NetworkPayments::isCheckoutReady()) {
+            $message = $payable instanceof Experience
+                ? 'Online payment is not available right now. Please plan this experience or contact us to complete your booking.'
+                : 'Online payment is not available right now. Please contact us to book this package.';
+
+            return back()->with('error', $message);
+        }
+
         $validated = $request->validated();
+        $guestCount = (int) ($validated['guest_count'] ?? 1);
+        $unitAmount = (float) $payable->price_from;
+        $totalAmount = round($unitAmount * max(1, $guestCount), 2);
+
         $transaction = PaymentTransaction::query()->create([
             'payable_type' => $payable::class,
             'payable_id' => $payable->getKey(),
@@ -223,9 +261,9 @@ class CheckoutController extends Controller
             'customer_email' => $validated['email'],
             'customer_phone' => $validated['phone'] ?? null,
             'travel_date' => $validated['travel_date'] ?? null,
-            'guest_count' => $validated['guest_count'] ?? null,
-            'amount' => $payable->price_from,
-            'amount_minor' => (int) round(((float) $payable->price_from) * 100),
+            'guest_count' => $guestCount,
+            'amount' => $totalAmount,
+            'amount_minor' => (int) round($totalAmount * 100),
             'currency' => $payable->currency,
         ]);
 
@@ -264,10 +302,15 @@ class CheckoutController extends Controller
                 $cancelUrl,
             );
         } catch (\Throwable $exception) {
-            Log::warning('N-Genius createHostedOrder failed.', [
+            $logContext = [
                 'transaction_id' => $transaction->id,
                 'message' => $exception->getMessage(),
-            ]);
+            ];
+            if ($exception instanceof RequestException && $exception->response) {
+                $logContext['gateway_status'] = $exception->response->status();
+                $logContext['gateway_body'] = $exception->response->body();
+            }
+            Log::warning('N-Genius createHostedOrder failed.', $logContext);
 
             $transaction->update([
                 'status' => 'failed',
@@ -324,18 +367,22 @@ class CheckoutController extends Controller
             ]);
         }
 
-        return redirect()->away($gatewayOrder['payment_url']);
+        return Inertia::location($gatewayOrder['payment_url']);
     }
 
     protected function checkoutPayload(string $label, string $type, string $slug, string $title, ?string $summary, string $amount, string $currency, ?string $image): array
     {
+        $unitAmount = (float) $amount;
+
         return [
             'label' => $label,
             'type' => $type,
             'slug' => $slug,
             'title' => $title,
             'summary' => $summary,
-            'amount' => "{$currency} ".number_format((float) $amount, 2),
+            'unitAmountValue' => $unitAmount,
+            'currency' => $currency,
+            'amount' => "{$currency} ".number_format($unitAmount, 2),
             'image' => $image,
         ];
     }

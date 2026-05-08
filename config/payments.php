@@ -27,8 +27,14 @@ return [
         'currency' => env('NETWORK_PAYMENT_CURRENCY', 'AED'),
         // PURCHASE = sale. Use AUTH for authorize-only flows (capture later in portal).
         'action' => env('NETWORK_PAYMENT_ACTION', 'PURCHASE'),
-        // Identity token body: sandbox uses "ni", production uses "networkinternational" (see Network docs).
+        // Identity: production often accepts an empty POST body with Basic auth (see Network curl samples). Sandbox may need realmName — set true to force {"realmName":...}.
+        'identity_send_realm_name' => env('NETWORK_PAYMENT_IDENTITY_SEND_REALM_NAME'),
+        // When identity_send_realm_name is true/unset for sandbox, realmName value (default ni / networkinternational from base_url).
         'realm' => env('NETWORK_PAYMENT_REALM', env('NGENIUS_REALM')),
+        // Hosted order merchantAttributes (matches common working Postman payloads).
+        'skip_confirmation_page' => env('NETWORK_PAYMENT_SKIP_CONFIRMATION_PAGE', true),
+        'payment_attempts' => env('NETWORK_PAYMENT_PAYMENT_ATTEMPTS', 3),
+        'show_payer_name' => env('NETWORK_PAYMENT_SHOW_PAYER_NAME'),
 
         /*
         | Outbound webhook (Network → your app). Set a long random value and send it as header

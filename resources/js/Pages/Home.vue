@@ -31,18 +31,25 @@ const reduceMotion = ref(
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
 );
 
-/** Doubled list only for desktop marquee; single pass for swipe / reduced-motion. */
-const ribbonItems = computed(() => {
-    if (mobileMediaRibbon.value || reduceMotion.value) {
-        return props.heroGallery;
-    }
+const heroAvatars = computed(() => props.heroGallery.slice(0, 4));
+const mustDoCards = computed(() => props.mustDoExperiences.slice(0, 4));
+const topRatedCards = computed(() => (
+    props.topRatedExperiences && props.topRatedExperiences.length > 0
+        ? props.topRatedExperiences
+        : props.mustDoExperiences
+).slice(0, 4));
+const collectionCards = computed(() => props.collections.slice(0, 4));
+const momentCards = computed(() => props.heroGallery.slice(0, 6));
+const collectionPreviewImages = [
+    props.heroGallery[0]?.image,
+    props.heroGallery[1]?.image,
+    props.heroGallery[3]?.image,
+    props.heroGallery[4]?.image,
+].filter(Boolean);
 
-    return [...props.heroGallery, ...props.heroGallery];
-});
-
-const showTopRated = computed(
-    () => props.topRatedExperiences && props.topRatedExperiences.length > 0,
-);
+function collectionImage(collection, index) {
+    return collection.heroImageUrl || collectionPreviewImages[index % collectionPreviewImages.length] || props.hero.heroImageUrl;
+}
 
 function serviceFocusWhatsappUrl(item) {
     const raw = page.props.site?.contact?.whatsappNumber;
@@ -98,261 +105,294 @@ onUnmounted(() => detachMediaListeners());
 <template>
     <SiteMeta :title="seo.title" :description="seo.description" />
 
-    <!-- Full-viewport video hero -->
-    <section class="home-hero-video" aria-label="Welcome">
-        <div class="home-hero-video__media">
-            <video
-                v-if="hero.videoUrl"
-                ref="videoRef"
-                class="home-hero-video__el"
-                :src="hero.videoUrl"
-                :poster="hero.heroImageUrl || undefined"
-                autoplay
-                muted
-                loop
-                playsinline
-            ></video>
-            <img
-                v-else
-                class="home-hero-video__el home-hero-video__el--img"
-                :src="hero.heroImageUrl"
-                :alt="hero.title"
-            />
-        </div>
-        <div class="home-hero-video__scrim" aria-hidden="true"></div>
-        <div class="home-hero-video__content">
-            <p class="home-hero-video__eyebrow">{{ hero.eyebrow }}</p>
-            <h1 class="home-hero-video__title">{{ hero.title }}</h1>
-            <p class="home-hero-video__lead">{{ hero.description }}</p>
-            <div class="home-hero-video__actions">
-                <Link class="button-primary home-hero-video__btn-primary" :href="hero.primaryCta.href">
-                    {{ hero.primaryCta.label }}
-                </Link>
-                <Link class="button-secondary home-hero-video__btn-secondary" :href="hero.secondaryCta.href">
-                    {{ hero.secondaryCta.label }}
-                </Link>
-                <Link
-                    v-if="hero.tertiaryCta"
-                    class="button-secondary home-hero-video__btn-secondary"
-                    :href="hero.tertiaryCta.href"
-                >
-                    {{ hero.tertiaryCta.label }}
-                </Link>
+    <section class="home-dashboard">
+        <section class="home-hero-video home-dashboard-hero" aria-label="Welcome">
+            <div class="home-hero-video__media">
+                <video
+                    v-if="hero.videoUrl"
+                    ref="videoRef"
+                    class="home-hero-video__el"
+                    :src="hero.videoUrl"
+                    :poster="hero.heroImageUrl || undefined"
+                    autoplay
+                    muted
+                    loop
+                    playsinline
+                ></video>
+                <img
+                    v-else
+                    class="home-hero-video__el home-hero-video__el--img"
+                    :src="hero.heroImageUrl"
+                    :alt="hero.title"
+                />
             </div>
-        </div>
-    </section>
-
-    <!-- 1: white — Curated Travel Moments -->
-    <section v-if="heroGallery.length" class="section-strip section-strip--light media-ribbon-section">
-        <div class="container">
-            <div class="section-heading section-heading--home">
-                <p class="eyebrow">{{ homeSections.ribbonEyebrow }}</p>
-                <h2>{{ homeSections.ribbonTitle }}</h2>
-            </div>
-            <div
-                class="media-ribbon-shell"
-                tabindex="0"
-                role="region"
-                :aria-label="`${homeSections.ribbonTitle}: swipe sideways for more experiences`"
-            >
-                <div class="media-ribbon-track">
+            <div class="home-hero-video__scrim" aria-hidden="true"></div>
+            <div class="home-hero-video__content home-dashboard-hero__content home-hero-motion">
+                <p class="home-hero-video__eyebrow">{{ hero.eyebrow }}</p>
+                <h1 class="home-hero-video__title">{{ hero.title }}</h1>
+                <p class="home-hero-video__lead">{{ hero.description }}</p>
+                <div class="home-hero-video__proof">
+                    <div class="home-hero-video__avatars" aria-hidden="true">
+                        <span
+                            v-for="item in heroAvatars"
+                            :key="item.slug"
+                            class="home-hero-video__avatar"
+                        >
+                            <img :src="item.image" :alt="item.title" />
+                        </span>
+                    </div>
+                    <div class="home-hero-video__proof-copy">
+                        <strong>2.5k+</strong>
+                        <span>Dubai</span>
+                    </div>
+                </div>
+                <div class="home-hero-video__actions">
+                    <Link class="home-hero-video__cta home-hero-video__cta--solid" :href="hero.primaryCta.href">
+                        {{ hero.primaryCta.label }}
+                    </Link>
+                    <Link class="home-hero-video__cta home-hero-video__cta--ghost" :href="hero.secondaryCta.href">
+                        {{ hero.secondaryCta.label }}
+                    </Link>
                     <Link
-                        v-for="(item, index) in ribbonItems"
-                        :key="`${item.slug}-${index}`"
-                        class="media-ribbon-card"
-                        :href="`/experiences/${item.slug}`"
+                        v-if="hero.tertiaryCta"
+                        class="home-hero-video__cta home-hero-video__cta--ghost"
+                        :href="hero.tertiaryCta.href"
                     >
-                        <img :src="item.image" :alt="item.title" />
-                        <div class="media-ribbon-overlay">
-                            <span class="media-ribbon-tag">{{ item.tag }}</span>
-                            <strong>{{ item.title }}</strong>
-                        </div>
+                        {{ hero.tertiaryCta.label }}
                     </Link>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- 2: royal — Explore Other Emirates -->
-    <section class="section-strip section-strip--royal">
-        <div class="container">
-            <div class="section-heading section-heading--home section-heading--on-dark">
-                <p class="eyebrow">{{ homeSections.collectionsEyebrow }}</p>
-                <h2>{{ homeSections.collectionsTitle }}</h2>
+        <section class="home-dashboard-section home-dashboard-section--light" data-reveal>
+            <div class="container home-dashboard-stack">
+                <div class="home-dashboard-heading">
+                    <div>
+                        <h2>Dubai's <em>Must-Do</em> Experiences</h2>
+                    </div>
+                    <Link class="home-dashboard-more" href="/experiences">Explore More</Link>
+                </div>
+                <div class="home-dashboard-grid home-dashboard-grid--four home-dashboard-grid--featured">
+                    <article
+                        v-for="experience in mustDoCards"
+                        :key="experience.slug"
+                        class="home-dashboard-card"
+                    >
+                        <Link class="home-dashboard-card__media" :href="`/experiences/${experience.slug}`">
+                            <img v-if="experience.heroImageUrl" :src="experience.heroImageUrl" :alt="experience.title" />
+                            <span class="home-dashboard-badge">{{ experience.tag || experience.category }}</span>
+                        </Link>
+                        <div class="home-dashboard-card__body">
+                            <h3>{{ experience.title }}</h3>
+                            <p>{{ experience.summary }}</p>
+                            <div class="home-dashboard-card__meta">
+                                <span>{{ experience.location || experience.duration }}</span>
+                                <strong>{{ experience.priceFrom }}</strong>
+                            </div>
+                            <Link class="home-dashboard-card__button" :href="`/experiences/${experience.slug}`">Book Now</Link>
+                        </div>
+                    </article>
+                </div>
             </div>
-            <div class="collection-rail collection-rail--home">
-                <Link
-                    v-for="collection in collections"
-                    :key="collection.slug"
-                    class="collection-pill collection-pill--on-dark"
-                    :href="collection.href || `/collections/${collection.slug}`"
-                >
-                    <span>{{ collection.name }}</span>
-                    <small>{{ collection.summary }}</small>
-                </Link>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- 3: white — Dubai's Must-Do (service pillars) -->
-    <section class="section-strip section-strip--light">
-        <div class="container">
-            <div class="section-heading section-heading--home">
-                <p class="eyebrow">{{ homeSections.mustDoEyebrow }}</p>
-                <h2>{{ homeSections.mustDoTitle }}</h2>
+        <section class="home-dashboard-section home-dashboard-section--light" data-reveal>
+            <div class="container home-dashboard-stack">
+                <div class="home-dashboard-heading">
+                    <div>
+                        <h2>Top-Rated Dubai Experiences</h2>
+                    </div>
+                    <Link class="home-dashboard-more" href="/experiences">Explore More</Link>
+                </div>
+                <div class="home-dashboard-grid home-dashboard-grid--four home-dashboard-grid--featured">
+                    <article
+                        v-for="experience in topRatedCards"
+                        :key="experience.slug"
+                        class="home-dashboard-card"
+                    >
+                        <Link class="home-dashboard-card__media" :href="`/experiences/${experience.slug}`">
+                            <img v-if="experience.heroImageUrl" :src="experience.heroImageUrl" :alt="experience.title" />
+                            <span class="home-dashboard-badge">{{ experience.tag || experience.category }}</span>
+                        </Link>
+                        <div class="home-dashboard-card__body">
+                            <h3>{{ experience.title }}</h3>
+                            <p>{{ experience.summary }}</p>
+                            <div class="home-dashboard-card__meta">
+                                <span>{{ experience.location || experience.duration }}</span>
+                                <strong>{{ experience.priceFrom }}</strong>
+                            </div>
+                            <Link class="home-dashboard-card__button" :href="`/experiences/${experience.slug}`">Book Now</Link>
+                        </div>
+                    </article>
+                </div>
             </div>
-            <div class="card-grid card-grid-three">
-                <article
-                    v-for="item in serviceFocus"
-                    :key="item.title"
-                    class="showcase-card recommendation-card service-focus-card"
-                >
-                    <p class="card-tag">{{ item.tag }}</p>
-                    <h3>{{ item.title }}</h3>
-                    <p>{{ item.copy }}</p>
-                    <div class="service-focus-card__actions">
-                        <Link class="button-primary card-button" :href="item.href">{{ item.cta }}</Link>
-                        <a
-                            v-if="serviceFocusWhatsappUrl(item)"
-                            class="button-secondary card-button service-focus-card__whatsapp"
-                            :href="serviceFocusWhatsappUrl(item)"
-                            target="_blank"
-                            rel="noreferrer"
+        </section>
+
+        <section class="home-dashboard-section home-dashboard-section--light" data-reveal>
+            <div class="container home-dashboard-stack">
+                <div class="home-dashboard-heading">
+                    <div>
+                        <h2>Explore Other <em>Emirates</em></h2>
+                    </div>
+                    <Link class="home-dashboard-more" href="/experiences">Explore More</Link>
+                </div>
+                <div class="home-dashboard-grid home-dashboard-grid--four">
+                    <article
+                        v-for="(collection, index) in collectionCards"
+                        :key="collection.slug"
+                        class="home-dashboard-card home-dashboard-card--compact"
+                    >
+                        <Link class="home-dashboard-card__media" :href="collection.href || `/collections/${collection.slug}`">
+                            <img :src="collectionImage(collection, index)" :alt="collection.name" />
+                        </Link>
+                        <div class="home-dashboard-card__body">
+                            <h3>{{ collection.name }}</h3>
+                            <p>{{ collection.summary }}</p>
+                            <Link class="home-dashboard-card__button" :href="collection.href || `/collections/${collection.slug}`">Explore More</Link>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section v-if="momentCards.length" class="home-dashboard-section home-dashboard-section--light" data-reveal>
+            <div class="container home-dashboard-stack">
+                <div class="home-dashboard-heading">
+                    <div>
+                        <h2>Curated <em>Travel</em> Moments</h2>
+                    </div>
+                </div>
+                <div class="home-dashboard-moments">
+                    <div class="home-dashboard-mosaic">
+                        <Link
+                            v-for="item in momentCards.slice(0, 5)"
+                            :key="item.slug"
+                            class="home-dashboard-mosaic__item"
+                            :href="`/experiences/${item.slug}`"
                         >
-                            Book now — WhatsApp
-                        </a>
+                            <img :src="item.image" :alt="item.title" />
+                        </Link>
                     </div>
-                </article>
+                    <div class="home-dashboard-feature-video">
+                        <img :src="momentCards[5]?.image || momentCards[0]?.image" :alt="momentCards[0]?.title || 'Travel moment'" />
+                        <div class="home-dashboard-feature-video__overlay">
+                            <strong>{{ momentCards[0]?.title }}</strong>
+                            <span>{{ momentCards[0]?.tag }}</span>
+                        </div>
+                        <Link class="home-dashboard-feature-video__button" href="/experiences">See More</Link>
+                    </div>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- 4: royal — Top-Rated Dubai Experiences -->
-    <section class="section-strip section-strip--royal home-top-rated-section">
-        <div class="container">
-            <div class="section-heading section-heading--home section-heading--on-dark">
-                <p class="eyebrow">{{ homeSections.topRatedEyebrow }}</p>
-                <h2>{{ homeSections.topRatedTitle }}</h2>
+        <section class="home-dashboard-section home-dashboard-section--light" data-reveal>
+            <div class="container home-dashboard-stack">
+                <div class="home-dashboard-heading">
+                    <div>
+                        <h2>Our Top <em>Holiday</em> Packages</h2>
+                    </div>
+                    <Link class="home-dashboard-more" href="/packages">Explore More</Link>
+                </div>
+                <div class="home-dashboard-grid home-dashboard-grid--four">
+                    <article v-for="item in packages" :key="item.slug" class="home-dashboard-card home-dashboard-card--package">
+                        <Link class="home-dashboard-card__media" :href="`/packages/${item.slug}`">
+                            <img v-if="item.heroImageUrl" :src="item.heroImageUrl" :alt="item.title" />
+                        </Link>
+                        <div class="home-dashboard-card__body">
+                            <h3>{{ item.title }}</h3>
+                            <p>{{ item.summary }}</p>
+                            <div class="home-dashboard-card__meta">
+                                <span>{{ item.duration }}<span v-if="item.location"> | {{ item.location }}</span></span>
+                                <strong>{{ item.priceFrom }}</strong>
+                            </div>
+                            <Link class="home-dashboard-card__button home-dashboard-card__button--light" :href="`/packages/${item.slug}`">Learn More</Link>
+                        </div>
+                    </article>
+                </div>
             </div>
-            <div v-if="showTopRated" class="experience-masonry experience-masonry--on-dark">
-                <article v-for="experience in topRatedExperiences" :key="experience.slug" class="experience-tile experience-tile--on-dark">
-                    <div v-if="experience.heroImageUrl" class="showcase-media experience-tile-media">
-                        <img :src="experience.heroImageUrl" :alt="experience.title" />
-                    </div>
-                    <div class="showcase-meta">
-                        <span class="card-tag-ghost">{{ experience.category }}</span>
-                        <span class="card-tag-accent">{{ experience.tag || experience.duration }}</span>
-                    </div>
-                    <h3>{{ experience.title }}</h3>
-                    <p>{{ experience.summary }}</p>
-                    <div class="experience-tile-footer">
-                        <span>{{ experience.location || experience.duration }}</span>
-                        <strong>{{ experience.priceFrom }}</strong>
-                    </div>
-                    <Link class="button-primary card-button" :href="`/experiences/${experience.slug}`">View experience</Link>
-                </article>
-            </div>
-            <div v-else class="experience-masonry experience-masonry--on-dark">
-                <article
-                    v-for="experience in mustDoExperiences"
-                    :key="`fallback-${experience.slug}`"
-                    class="experience-tile experience-tile--on-dark"
-                >
-                    <div v-if="experience.heroImageUrl" class="showcase-media experience-tile-media">
-                        <img :src="experience.heroImageUrl" :alt="experience.title" />
-                    </div>
-                    <div class="showcase-meta">
-                        <span class="card-tag-ghost">{{ experience.category }}</span>
-                        <span class="card-tag-accent">{{ experience.tag || experience.duration }}</span>
-                    </div>
-                    <h3>{{ experience.title }}</h3>
-                    <p>{{ experience.summary }}</p>
-                    <div class="experience-tile-footer">
-                        <span>{{ experience.location || experience.duration }}</span>
-                        <strong>{{ experience.priceFrom }}</strong>
-                    </div>
-                    <Link class="button-primary card-button" :href="`/experiences/${experience.slug}`">View experience</Link>
-                </article>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- 5: white — Packages -->
-    <section class="section-strip section-strip--light">
-        <div class="container package-showcase">
-            <div class="section-heading section-heading--home">
-                <p class="eyebrow">{{ homeSections.packagesEyebrow }}</p>
-                <h2>{{ homeSections.packagesTitle }}</h2>
-            </div>
-            <div class="card-grid card-grid-three">
-                <article v-for="item in packages" :key="item.slug" class="info-card package-card">
-                    <div v-if="item.heroImageUrl" class="card-media">
-                        <img :src="item.heroImageUrl" :alt="item.title" />
+        <section class="home-dashboard-section home-dashboard-section--light" data-reveal>
+            <div class="container home-dashboard-stack">
+                <div class="home-dashboard-heading">
+                    <div>
+                        <h2>We are the Best <em>Company</em> for your Visit</h2>
+                        <p class="home-dashboard-subcopy">{{ homeSections.companyCopy }}</p>
                     </div>
-                    <p class="card-tag">Package</p>
-                    <h3>{{ item.title }}</h3>
-                    <p>{{ item.summary }}</p>
-                    <p class="meta-copy">
-                        {{ item.duration }}<span v-if="item.location"> | {{ item.location }}</span>
-                    </p>
-                    <p v-if="item.priceFrom" class="price-line">{{ item.priceFrom }}</p>
-                    <Link class="button-primary card-button" :href="`/packages/${item.slug}`">View package</Link>
-                </article>
+                </div>
+                <div class="home-dashboard-company">
+                    <div class="home-dashboard-company__feature">
+                        <img v-if="momentCards[0]" :src="momentCards[0].image" :alt="momentCards[0].title" />
+                        <div class="home-dashboard-company__feature-stat">
+                            <strong>4000+</strong>
+                            <span>Customer Reviews</span>
+                        </div>
+                    </div>
+                    <div class="home-dashboard-company__side">
+                        <div class="home-dashboard-company__mini">
+                            <img v-if="momentCards[1]" :src="momentCards[1].image" :alt="momentCards[1].title" />
+                            <div>
+                                <strong>12</strong>
+                                <span>years of experience</span>
+                            </div>
+                        </div>
+                        <div class="home-dashboard-company__mini">
+                            <img v-if="momentCards[2]" :src="momentCards[2].image" :alt="momentCards[2].title" />
+                            <div>
+                                <strong>40+</strong>
+                                <span>partners and services</span>
+                            </div>
+                        </div>
+                        <div class="home-dashboard-company__copy">
+                            <h3>See What They Say <em>About Us</em></h3>
+                            <p>{{ testimonials[0]?.quote }}</p>
+                            <Link class="home-dashboard-card__button" href="/contact">Read More</Link>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- 6: royal — Visa & travel -->
-    <section class="section-strip section-strip--royal">
-        <div class="container">
-            <div class="section-heading section-heading--home section-heading--on-dark">
-                <p class="eyebrow">{{ homeSections.recommendationsEyebrow }}</p>
-                <h2>{{ homeSections.recommendationsTitle }}</h2>
+        <section class="home-dashboard-section home-dashboard-section--light home-dashboard-section--reviews" data-reveal>
+            <div class="container home-dashboard-stack">
+                <div class="home-dashboard-heading">
+                    <div>
+                        <h2>What our travelers say</h2>
+                    </div>
+                </div>
+                <div class="home-dashboard-grid home-dashboard-grid--three">
+                    <article v-for="t in testimonials" :key="t.name" class="home-dashboard-review">
+                        <p class="home-dashboard-review__stars">★★★★★</p>
+                        <p class="home-dashboard-review__quote">“{{ t.quote }}”</p>
+                        <div class="home-dashboard-review__author">
+                            <strong>{{ t.name }}</strong>
+                            <span>{{ t.tag }}</span>
+                        </div>
+                    </article>
+                </div>
             </div>
-            <div class="card-grid card-grid-three">
-                <article
-                    v-for="item in recommendations"
-                    :key="item.title"
-                    class="showcase-card recommendation-card visa-home-card visa-home-card--on-dark"
-                >
-                    <p class="card-tag">{{ item.tag }}</p>
-                    <h3>{{ item.title }}</h3>
-                    <p>{{ item.summary }}</p>
-                    <Link class="button-primary card-button" :href="item.href">View service</Link>
-                </article>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- 7: white — Company trust -->
-    <section class="section-strip section-strip--light">
-        <div class="container concierge-band concierge-band--home">
-            <div>
-                <p class="eyebrow">{{ homeSections.companyEyebrow }}</p>
-                <h2 class="section-heading-title">{{ homeSections.companyTitle }}</h2>
-                <p class="page-copy">{{ homeSections.companyCopy }}</p>
+        <section class="home-dashboard-section home-dashboard-section--royal" data-reveal>
+            <div class="container home-dashboard-stack">
+                <div class="home-dashboard-heading home-dashboard-heading--dark">
+                    <div>
+                        <h2>Visa services &amp; international travel</h2>
+                    </div>
+                </div>
+                <div class="home-dashboard-grid home-dashboard-grid--three">
+                    <article
+                        v-for="item in recommendations"
+                        :key="item.title"
+                        class="home-dashboard-service-card"
+                    >
+                        <p class="home-dashboard-service-card__tag">{{ item.tag }}</p>
+                        <h3>{{ item.title }}</h3>
+                        <p>{{ item.summary }}</p>
+                        <Link class="home-dashboard-card__button" :href="item.href">View service</Link>
+                    </article>
+                </div>
             </div>
-            <div class="hero-actions">
-                <Link class="button-primary" href="/visa-services">Visa services</Link>
-                <Link class="button-secondary" href="/packages">Browse packages</Link>
-            </div>
-        </div>
-    </section>
-
-    <!-- 8: royal — Reviews -->
-    <section class="section-strip section-strip--royal section-strip--reviews">
-        <div class="container">
-            <div class="section-heading section-heading--home section-heading--on-dark">
-                <p class="eyebrow">{{ homeSections.testimonialsEyebrow }}</p>
-                <h2>{{ homeSections.testimonialsTitle }}</h2>
-            </div>
-            <div class="card-grid card-grid-three">
-                <article v-for="t in testimonials" :key="t.name" class="testimonial-card">
-                    <p class="testimonial-card__quote">“{{ t.quote }}”</p>
-                    <p class="testimonial-card__name">{{ t.name }}</p>
-                    <p class="testimonial-card__tag">{{ t.tag }}</p>
-                </article>
-            </div>
-        </div>
+        </section>
     </section>
 </template>

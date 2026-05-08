@@ -7,7 +7,7 @@ defineOptions({ layout: SiteLayout });
 
 defineProps({
     seo: Object,
-    packages: Array,
+    tours: Array,
 });
 </script>
 
@@ -18,11 +18,11 @@ defineProps({
         <section class="about-hero listing-hero">
             <div class="container about-hero__grid">
                 <div>
-                    <p class="about-kicker">Packages</p>
-                    <h1 class="about-title">Short-stay and experience-led packages packaged for clearer decision-making.</h1>
+                    <p class="about-kicker">Tours</p>
+                    <h1 class="about-title">City, cultural, and private tours organized as direct bookable products.</h1>
                     <p class="about-copy">
-                        These products combine accommodation, activities, and planning support into a more complete
-                        commercial offer for travelers who want less fragmentation.
+                        Browse guided tour products that support mixed media, clearer itinerary framing,
+                        and direct booking from the detail page.
                     </p>
 
                     <div class="about-actions">
@@ -32,11 +32,11 @@ defineProps({
                 </div>
 
                 <div class="about-card about-card--primary">
-                    <p class="about-card__label">What to expect</p>
+                    <p class="about-card__label">Tour focus</p>
                     <ul class="about-list about-list--tight">
-                        <li>Stay-inclusive and event-led combinations</li>
-                        <li>Clearer pricing context than single-item browsing</li>
-                        <li>Stronger fit for couples, families, and grouped itineraries</li>
+                        <li>City tours and cultural itineraries</li>
+                        <li>Private and guided formats</li>
+                        <li>Direct payment from the detail page</li>
                     </ul>
                 </div>
             </div>
@@ -45,16 +45,16 @@ defineProps({
         <section class="section-block listing-section">
             <div class="container">
                 <div class="card-grid card-grid-three">
-                    <article v-for="item in packages" :key="item.slug" class="info-card package-card">
+                    <article v-for="item in tours" :key="item.slug" class="info-card package-card">
                         <div v-if="item.heroImageUrl" class="card-media">
                             <img :src="item.heroImageUrl" :alt="item.title" />
                         </div>
-                        <p class="card-tag">Package</p>
+                        <p class="card-tag">{{ item.category || 'Tour' }}</p>
                         <h3>{{ item.title }}</h3>
                         <p>{{ item.summary }}</p>
                         <p class="meta-copy">{{ item.duration }}<span v-if="item.location"> | {{ item.location }}</span></p>
                         <p v-if="item.priceFrom" class="price-line">{{ item.priceFrom }}</p>
-                        <Link class="button-primary card-button" :href="`/packages/${item.slug}`">View package</Link>
+                        <Link class="button-primary card-button" :href="`/tours/${item.slug}`">View tour</Link>
                     </article>
                 </div>
             </div>
