@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 import SiteMeta from '../../Components/SiteMeta.vue';
 import SiteLayout from '../../Layouts/SiteLayout.vue';
@@ -37,6 +37,10 @@ const bookingHighlights = computed(() => [
     props.experience.location,
     'Instant payment confirmation',
 ].filter(Boolean));
+const activeMediaIndex = ref(null);
+const activeMediaItem = computed(() => (
+    activeMediaIndex.value === null ? null : mediaItems.value[activeMediaIndex.value] ?? null
+));
 
 const form = useForm({
     name: '',
@@ -71,6 +75,14 @@ const submit = () => {
     }));
 
     form.post(checkoutHref.value);
+};
+
+const openMedia = (index) => {
+    activeMediaIndex.value = index % mediaItems.value.length;
+};
+
+const closeMedia = () => {
+    activeMediaIndex.value = null;
 };
 </script>
 
@@ -107,6 +119,7 @@ const submit = () => {
                                 type="button"
                                 class="experience-operator-mosaic__tile"
                                 :class="`experience-operator-mosaic__tile--${idx + 1}`"
+                                @click="openMedia(idx)"
                             >
                                 <video
                                     v-if="item.type === 'video'"
@@ -310,5 +323,25 @@ const submit = () => {
                 </div>
             </div>
         </section>
+
+        <div v-if="activeMediaItem" class="experience-lightbox" @click.self="closeMedia">
+            <button type="button" class="experience-lightbox__close" @click="closeMedia">Close</button>
+            <div class="experience-lightbox__dialog">
+                <video
+                    v-if="activeMediaItem.type === 'video'"
+                    class="experience-lightbox__media"
+                    :src="activeMediaItem.url"
+                    controls
+                    autoplay
+                    playsinline
+                ></video>
+                <img
+                    v-else
+                    class="experience-lightbox__media"
+                    :src="activeMediaItem.url"
+                    :alt="experience.title"
+                />
+            </div>
+        </div>
     </div>
 </template>
