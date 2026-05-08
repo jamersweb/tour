@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Storage;
 
 class Package extends Model
@@ -75,6 +76,11 @@ class Package extends Model
             ->filter()
             ->values()
             ->all();
+    }
+
+    public function reviews(): MorphMany
+    {
+        return $this->morphMany(Review::class, 'reviewable');
     }
 
     protected function resolveMediaPath(?string $path): ?string

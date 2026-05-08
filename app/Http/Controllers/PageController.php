@@ -437,7 +437,10 @@ class PageController extends Controller
         $experience = Experience::query()
             ->where('slug', $slug)
             ->where('is_active', true)
-            ->with('collections:id,name,slug')
+            ->with([
+                'collections:id,name,slug',
+                'reviews' => fn ($query) => $query->published()->orderByDesc('is_featured')->orderBy('sort_order')->orderByDesc('reviewed_at'),
+            ])
             ->firstOrFail();
 
         $relatedExperiences = Experience::query()
@@ -498,6 +501,9 @@ class PageController extends Controller
                     'name' => $collection->name,
                     'slug' => $collection->slug,
                 ]),
+                'averageRating' => $this->averageRating($experience->reviews),
+                'reviewCount' => $experience->reviews->count(),
+                'reviews' => $this->presentReviews($experience->reviews),
             ],
             'inquiryDefaults' => [
                 'interest' => $this->interestForCategory($experience->category),
@@ -597,6 +603,9 @@ class PageController extends Controller
         $package = Package::query()
             ->where('slug', $slug)
             ->where('is_active', true)
+            ->with([
+                'reviews' => fn ($query) => $query->published()->orderByDesc('is_featured')->orderBy('sort_order')->orderByDesc('reviewed_at'),
+            ])
             ->firstOrFail();
 
         $relatedPackages = Package::query()
@@ -648,6 +657,9 @@ class PageController extends Controller
                 'inclusions' => $package->inclusions ?? [],
                 'exclusions' => $package->exclusions ?? [],
                 'itinerary' => $package->itinerary ?? [],
+                'averageRating' => $this->averageRating($package->reviews),
+                'reviewCount' => $package->reviews->count(),
+                'reviews' => $this->presentReviews($package->reviews),
             ],
             'relatedPackages' => $relatedPackages,
         ]);
@@ -658,6 +670,9 @@ class PageController extends Controller
         $tour = Tour::query()
             ->where('slug', $slug)
             ->where('is_active', true)
+            ->with([
+                'reviews' => fn ($query) => $query->published()->orderByDesc('is_featured')->orderBy('sort_order')->orderByDesc('reviewed_at'),
+            ])
             ->firstOrFail();
 
         $relatedTours = Tour::query()
@@ -706,6 +721,9 @@ class PageController extends Controller
                 'highlights' => $tour->highlights ?? [],
                 'inclusions' => $tour->inclusions ?? [],
                 'exclusions' => $tour->exclusions ?? [],
+                'averageRating' => $this->averageRating($tour->reviews),
+                'reviewCount' => $tour->reviews->count(),
+                'reviews' => $this->presentReviews($tour->reviews),
             ],
             'relatedTours' => $relatedTours,
         ]);
@@ -1495,6 +1513,32 @@ class PageController extends Controller
 
         return collect($items)
             ->unique(fn (array $item) => $item['type'].'|'.$item['url'])
+            ->values()
+            ->all();
+    }
+
+    protected function averageRating($reviews): float
+    {
+        if ($reviews->isEmpty()) {
+            return 5.0;
+        }
+
+        return round((float) $reviews->avg('rating'), 1);
+    }
+
+    protected function presentReviews($reviews): array
+    {
+        return $reviews
+            ->take(6)
+            ->map(fn ($review) => [
+                'authorName' => $review->author_name,
+                'rating' => $review->rating,
+                'title' => $review->title,
+                'quote' => $review->quote,
+                'tag' => $review->tag,
+                'source' => $review->source,
+                'reviewedAt' => optional($review->reviewed_at)->format('F Y'),
+            ])
             ->values()
             ->all();
     }

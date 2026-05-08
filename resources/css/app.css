@@ -2076,6 +2076,55 @@ a {
     line-height: 1.65;
 }
 
+.experience-review-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.experience-review-card {
+    padding: 1.15rem 1.15rem 1rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(216, 192, 168, 0.56);
+    background: rgba(255, 255, 255, 0.84);
+}
+
+.experience-review-card__stars {
+    margin: 0 0 0.55rem;
+    color: #d7a03b;
+    letter-spacing: 0.12em;
+    font-size: 0.9rem;
+}
+
+.experience-review-card__title {
+    margin: 0 0 0.45rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1f1f1f;
+}
+
+.experience-review-card__quote {
+    margin: 0;
+    color: #575757;
+    line-height: 1.75;
+}
+
+.experience-review-card__meta {
+    display: grid;
+    gap: 0.18rem;
+    margin-top: 0.95rem;
+}
+
+.experience-review-card__meta strong {
+    color: #1f1f1f;
+    font-size: 0.95rem;
+}
+
+.experience-review-card__meta span {
+    color: #8a6b50;
+    font-size: 0.82rem;
+}
+
 .experience-tour-product-hero {
     padding: 2rem 0 1.5rem;
 }
@@ -2759,6 +2808,10 @@ a {
     }
 
     .experience-operator-list--chips {
+        grid-template-columns: 1fr;
+    }
+
+    .experience-review-grid {
         grid-template-columns: 1fr;
     }
 }

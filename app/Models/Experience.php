@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Storage;
 
 class Experience extends Model
@@ -81,6 +82,11 @@ class Experience extends Model
         return $this->belongsToMany(Collection::class)
             ->withPivot('sort_order')
             ->withTimestamps();
+    }
+
+    public function reviews(): MorphMany
+    {
+        return $this->morphMany(Review::class, 'reviewable');
     }
 
     protected function resolveMediaPath(?string $path): ?string

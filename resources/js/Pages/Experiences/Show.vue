@@ -37,6 +37,7 @@ const bookingHighlights = computed(() => [
     props.experience.location,
     'Instant payment confirmation',
 ].filter(Boolean));
+const reviewStars = computed(() => '★★★★★');
 const activeMediaIndex = ref(null);
 const activeMediaItem = computed(() => (
     activeMediaIndex.value === null ? null : mediaItems.value[activeMediaIndex.value] ?? null
@@ -104,9 +105,9 @@ const closeMedia = () => {
                     <p class="experience-operator-head__eyebrow">{{ experience.category }}</p>
                     <h1 class="experience-operator-head__title">{{ experience.title }}</h1>
                     <div class="experience-operator-reviews">
-                        <span class="experience-operator-reviews__stars">★★★★★</span>
-                        <strong>5</strong>
-                        <a href="#detail-booking-form">4070 reviews</a>
+                        <span class="experience-operator-reviews__stars">{{ reviewStars }}</span>
+                        <strong>{{ experience.averageRating }}</strong>
+                        <a v-if="experience.reviewCount" href="#experience-reviews">{{ experience.reviewCount }} reviews</a>
                     </div>
                 </div>
 
@@ -210,6 +211,24 @@ const closeMedia = () => {
                             <ul class="experience-operator-list experience-operator-list--muted">
                                 <li v-for="notice in importantNotices" :key="notice">{{ notice }}</li>
                             </ul>
+                        </article>
+
+                        <article v-if="experience.reviews?.length" id="experience-reviews" class="experience-operator-section">
+                            <div class="experience-operator-section__head">
+                                <span class="experience-operator-section__kicker">Guest reviews</span>
+                                <h2>What travelers say</h2>
+                            </div>
+                            <div class="experience-review-grid">
+                                <article v-for="review in experience.reviews" :key="`${review.authorName}-${review.quote}`" class="experience-review-card">
+                                    <p class="experience-review-card__stars">{{ '★'.repeat(review.rating) }}</p>
+                                    <p v-if="review.title" class="experience-review-card__title">{{ review.title }}</p>
+                                    <p class="experience-review-card__quote">"{{ review.quote }}"</p>
+                                    <div class="experience-review-card__meta">
+                                        <strong>{{ review.authorName }}</strong>
+                                        <span>{{ review.tag || review.source }}</span>
+                                    </div>
+                                </article>
+                            </div>
                         </article>
                     </div>
 
