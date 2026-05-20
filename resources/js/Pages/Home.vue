@@ -336,43 +336,6 @@ onUnmounted(() => detachMediaListeners());
             </div>
         </section>
 
-        <section v-if="momentCards.length" class="home-dashboard-section home-dashboard-section--light" data-reveal>
-            <div class="container home-dashboard-stack">
-                <div class="home-dashboard-heading">
-                    <div>
-                        <h2>Curated <em>Travel</em> Moments</h2>
-                    </div>
-                </div>
-                <div class="home-dashboard-moments">
-                    <div class="home-dashboard-mosaic">
-                        <Link
-                            v-for="item in momentCards.slice(0, 5)"
-                            :key="item.slug"
-                            class="home-dashboard-mosaic__item"
-                            :href="`/experiences/${item.slug}`"
-                        >
-                            <img :src="item.image" :alt="item.title" width="520" height="520" loading="lazy" decoding="async" />
-                        </Link>
-                    </div>
-                    <div class="home-dashboard-feature-video">
-                        <img
-                            :src="momentCards[5]?.image || momentCards[0]?.image"
-                            :alt="momentCards[0]?.title || 'Travel moment'"
-                            width="900"
-                            height="760"
-                            loading="lazy"
-                            decoding="async"
-                        />
-                        <div class="home-dashboard-feature-video__overlay">
-                            <strong>{{ momentCards[0]?.title }}</strong>
-                            <span>{{ momentCards[0]?.tag }}</span>
-                        </div>
-                        <Link class="home-dashboard-feature-video__button" href="/experiences">View All Tours</Link>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <section class="home-dashboard-section home-dashboard-section--light" data-reveal>
             <div class="container home-dashboard-stack">
                 <div class="home-dashboard-heading">
@@ -408,66 +371,38 @@ onUnmounted(() => detachMediaListeners());
             </div>
         </section>
 
-        <section class="home-dashboard-section home-dashboard-section--light" data-reveal>
+        <section v-if="momentCards.length" class="home-dashboard-section home-dashboard-section--light" data-reveal>
             <div class="container home-dashboard-stack">
                 <div class="home-dashboard-heading">
                     <div>
-                        <h2>We are the Best <em>Company</em> for your Visit</h2>
-                        <p class="home-dashboard-subcopy">{{ homeSections.companyCopy }}</p>
+                        <h2>Curated <em>Travel</em> Moments</h2>
                     </div>
                 </div>
-                <div class="home-dashboard-company">
-                    <div class="home-dashboard-company__feature">
+                <div class="home-dashboard-moments">
+                    <div class="home-dashboard-mosaic">
+                        <Link
+                            v-for="item in momentCards.slice(0, 5)"
+                            :key="item.slug"
+                            class="home-dashboard-mosaic__item"
+                            :href="`/experiences/${item.slug}`"
+                        >
+                            <img :src="item.image" :alt="item.title" width="520" height="520" loading="lazy" decoding="async" />
+                        </Link>
+                    </div>
+                    <div class="home-dashboard-feature-video">
                         <img
-                            v-if="momentCards[0]"
-                            :src="momentCards[0].image"
-                            :alt="momentCards[0].title"
-                            width="760"
-                            height="620"
+                            :src="momentCards[5]?.image || momentCards[0]?.image"
+                            :alt="momentCards[0]?.title || 'Travel moment'"
+                            width="900"
+                            height="760"
                             loading="lazy"
                             decoding="async"
                         />
-                        <div class="home-dashboard-company__feature-stat">
-                            <strong>4000+</strong>
-                            <span>Customer Reviews</span>
+                        <div class="home-dashboard-feature-video__overlay">
+                            <strong>{{ momentCards[0]?.title }}</strong>
+                            <span>{{ momentCards[0]?.tag }}</span>
                         </div>
-                    </div>
-                    <div class="home-dashboard-company__side">
-                        <div class="home-dashboard-company__mini">
-                            <img
-                                v-if="momentCards[1]"
-                                :src="momentCards[1].image"
-                                :alt="momentCards[1].title"
-                                width="420"
-                                height="240"
-                                loading="lazy"
-                                decoding="async"
-                            />
-                            <div>
-                                <strong>12</strong>
-                                <span>years of experience</span>
-                            </div>
-                        </div>
-                        <div class="home-dashboard-company__mini">
-                            <img
-                                v-if="momentCards[2]"
-                                :src="momentCards[2].image"
-                                :alt="momentCards[2].title"
-                                width="420"
-                                height="240"
-                                loading="lazy"
-                                decoding="async"
-                            />
-                            <div>
-                                <strong>40+</strong>
-                                <span>partners and services</span>
-                            </div>
-                        </div>
-                        <div class="home-dashboard-company__copy">
-                            <h3>See What They Say <em>About Us</em></h3>
-                            <p>{{ testimonials[0]?.quote }}</p>
-                            <Link class="home-dashboard-card__button" href="/contact">Talk to Acute Tourism</Link>
-                        </div>
+                        <Link class="home-dashboard-feature-video__button" href="/experiences">View All Tours</Link>
                     </div>
                 </div>
             </div>
