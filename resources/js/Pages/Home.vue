@@ -42,15 +42,16 @@ const topRatedCards = computed(() => (
 ).slice(0, 4));
 const momentCards = computed(() => props.heroGallery.slice(0, 6));
 const serviceCards = computed(() => props.serviceFocus.slice(0, 3));
-const operatingProofPoints = computed(() => (
-    props.trustProof.partnerProof?.length
-        ? props.trustProof.partnerProof
-        : [
-            'Direct WhatsApp coordination for dates, pickup points, and guest details.',
-            'Booking records, payment status, and confirmations are tracked in one workflow.',
-            'Operations follow up after payment so travelers know the next step before arrival.',
-        ]
-));
+const visaFlags = {
+    australia: 'au',
+    brazil: 'br',
+    canada: 'ca',
+    japan: 'jp',
+    schengen: 'eu',
+    'south africa': 'za',
+    uk: 'gb',
+    usa: 'us',
+};
 const activeSlides = ref({
     mustDo: 0,
     topRated: 0,
@@ -68,6 +69,13 @@ function serviceFocusWhatsappUrl(item) {
     );
 
     return `https://wa.me/${number}?text=${text}`;
+}
+
+function visaFlag(item) {
+    const title = String(item.title || '').toLowerCase();
+    const key = Object.keys(visaFlags).find((name) => title.includes(name));
+
+    return key ? visaFlags[key] : null;
 }
 
 function updateCarousel(name, event) {
@@ -451,13 +459,10 @@ onUnmounted(() => detachMediaListeners());
                     </article>
                     <article class="home-proof-card home-proof-card--wide">
                         <p class="home-dashboard-service-card__tag">Operating proof</p>
-                        <h3>Operations handled end to end.</h3>
+                        <h3>One team coordinates the trip details.</h3>
                         <p>
-                            From first enquiry to payment confirmation and final travel coordination, the booking stays with one accountable Acute Tourism team.
+                            Hotels, transfers, attractions, visa-document support, and final guest coordination stay with one Acute Tourism team, so the handoff from enquiry to travel is clear.
                         </p>
-                        <ul>
-                            <li v-for="item in operatingProofPoints" :key="item">{{ item }}</li>
-                        </ul>
                     </article>
                 </div>
             </div>
@@ -498,9 +503,9 @@ onUnmounted(() => detachMediaListeners());
             </div>
         </section>
 
-        <section class="home-dashboard-section home-dashboard-section--royal" data-reveal>
+        <section class="home-dashboard-section home-dashboard-section--light home-visa-section" data-reveal>
             <div class="container home-dashboard-stack">
-                <div class="home-dashboard-heading home-dashboard-heading--dark">
+                <div class="home-dashboard-heading">
                     <div>
                         <h2>Visa services &amp; international travel</h2>
                         <p class="home-visa-disclaimer">
@@ -512,9 +517,21 @@ onUnmounted(() => detachMediaListeners());
                     <article
                         v-for="item in recommendations"
                         :key="item.title"
-                        class="home-dashboard-service-card"
+                        class="home-visa-card"
                     >
-                        <p class="home-dashboard-service-card__tag">{{ item.tag }}</p>
+                        <div class="home-visa-card__top">
+                            <span class="home-visa-card__flag" aria-hidden="true">
+                                <img
+                                    v-if="visaFlag(item)"
+                                    :src="`https://flagcdn.com/w80/${visaFlag(item)}.png`"
+                                    :alt="`${item.title} flag`"
+                                    loading="lazy"
+                                    decoding="async"
+                                />
+                                <span v-else>✈</span>
+                            </span>
+                            <p class="home-visa-card__tag">{{ item.tag }}</p>
+                        </div>
                         <h3>{{ item.title }}</h3>
                         <p>{{ item.summary }}</p>
                         <Link class="home-dashboard-card__button" :href="item.href">Check Requirements</Link>
