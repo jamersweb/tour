@@ -7983,10 +7983,10 @@ a {
 
 .home-proof-card--review .home-dashboard-service-card__tag,
 .home-proof-card--review p {
-    color: rgba(255, 255, 255, 0.78);
+    color: rgba(255, 255, 255, 0.84);
 }
 
-.home-proof-card--review h3 {
+.home-proof-card.home-proof-card--review h3 {
     color: #fff;
 }
 

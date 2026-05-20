@@ -42,6 +42,15 @@ const topRatedCards = computed(() => (
 ).slice(0, 4));
 const momentCards = computed(() => props.heroGallery.slice(0, 6));
 const serviceCards = computed(() => props.serviceFocus.slice(0, 3));
+const operatingProofPoints = computed(() => (
+    props.trustProof.partnerProof?.length
+        ? props.trustProof.partnerProof
+        : [
+            'Direct WhatsApp coordination for dates, pickup points, and guest details.',
+            'Booking records, payment status, and confirmations are tracked in one workflow.',
+            'Operations follow up after payment so travelers know the next step before arrival.',
+        ]
+));
 const activeSlides = ref({
     mustDo: 0,
     topRated: 0,
@@ -442,9 +451,12 @@ onUnmounted(() => detachMediaListeners());
                     </article>
                     <article class="home-proof-card home-proof-card--wide">
                         <p class="home-dashboard-service-card__tag">Operating proof</p>
-                        <h3>One team coordinates the trip details.</h3>
+                        <h3>Operations handled end to end.</h3>
+                        <p>
+                            From first enquiry to payment confirmation and final travel coordination, the booking stays with one accountable Acute Tourism team.
+                        </p>
                         <ul>
-                            <li v-for="item in trustProof.partnerProof" :key="item">{{ item }}</li>
+                            <li v-for="item in operatingProofPoints" :key="item">{{ item }}</li>
                         </ul>
                     </article>
                 </div>
