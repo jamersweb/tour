@@ -20,7 +20,7 @@ class CheckoutContinuePaymentMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Complete your payment — '.$this->transaction->payable?->title,
+            subject: 'Complete your payment - '.$this->transaction->bookingTitle(),
         );
     }
 

@@ -26,6 +26,15 @@ class PaymentTransactionInfolist
             TextEntry::make('gateway_order_ref')->placeholder('-'),
             TextEntry::make('gateway_payment_ref')->placeholder('-'),
             TextEntry::make('paid_at')->dateTime()->placeholder('-'),
+            RepeatableEntry::make('cart_items')
+                ->label('Cart items')
+                ->schema([
+                    TextEntry::make('title'),
+                    TextEntry::make('travelDate')->label('Travel date')->placeholder('-'),
+                    TextEntry::make('guestCount')->label('Guests'),
+                    TextEntry::make('lineTotalFormatted')->label('Line total'),
+                ])
+                ->columnSpanFull(),
             RepeatableEntry::make('travelers')
                 ->schema([
                     TextEntry::make('position')->label('#'),

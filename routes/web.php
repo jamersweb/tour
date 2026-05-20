@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\InquiryController;
 use App\Http\Controllers\NetworkWebhookController;
@@ -27,7 +28,14 @@ Route::get('/terms-and-conditions', [PageController::class, 'termsAndConditions'
 Route::get('/privacy-policy', [PageController::class, 'privacyPolicy'])->name('privacy-policy');
 Route::get('/corporate-events', [PageController::class, 'corporateEvents'])->name('corporate-events');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
+Route::patch('/cart/{key}', [CartController::class, 'update'])->name('cart.update')->where('key', '.*');
+Route::delete('/cart/{key}', [CartController::class, 'destroy'])->name('cart.destroy')->where('key', '.*');
+Route::delete('/cart', [CartController::class, 'clear'])->name('cart.clear');
 Route::post('/inquiries', [InquiryController::class, 'store'])->name('inquiries.store');
+Route::get('/checkout/cart', [CheckoutController::class, 'cart'])->name('checkout.cart.show');
+Route::post('/checkout/cart', [CheckoutController::class, 'startCart'])->name('checkout.cart.start');
 Route::get('/checkout/experiences/{slug}', [CheckoutController::class, 'experience'])->name('checkout.experiences.show');
 Route::post('/checkout/experiences/{slug}', [CheckoutController::class, 'startExperience'])->name('checkout.experiences.start');
 Route::get('/checkout/tours/{slug}', [CheckoutController::class, 'tour'])->name('checkout.tours.show');

@@ -102,7 +102,7 @@ class AdminBookingNotifier
         $this->notifyAdminsInPanel(
             Notification::make()
                 ->title('Checkout started')
-                ->body("{$transaction->customer_name} — ".($transaction->payable?->title ?? 'Booking')." ({$transaction->reference})")
+                ->body("{$transaction->customer_name} - ".$transaction->bookingTitle()." ({$transaction->reference})")
                 ->icon('heroicon-o-credit-card')
                 ->actions([
                     Action::make('view')
@@ -121,7 +121,7 @@ class AdminBookingNotifier
         $this->notifyAdminsInPanel(
             Notification::make()
                 ->title('Payment received')
-                ->body(($transaction->payable?->title ?? 'Booking')." — {$transaction->reference}")
+                ->body($transaction->bookingTitle()." - {$transaction->reference}")
                 ->icon('heroicon-o-check-circle')
                 ->actions([
                     Action::make('view')

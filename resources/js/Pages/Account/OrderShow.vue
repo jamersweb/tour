@@ -33,7 +33,7 @@ defineProps({
                         </div>
                         <div class="account-row">
                             <strong>Travel Date</strong>
-                            <p>{{ order.travelDate || 'To be confirmed' }}</p>
+                            <p>{{ order.itemType === 'Cart' ? 'See cart items' : (order.travelDate || 'To be confirmed') }}</p>
                         </div>
                         <div class="account-row">
                             <strong>Guests</strong>
@@ -42,6 +42,16 @@ defineProps({
                         <div class="account-row">
                             <strong>Payment Confirmed</strong>
                             <p>{{ order.paidAt || 'Pending' }}</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article v-if="order.cartItems?.length" class="info-card">
+                    <p class="card-tag">Cart Items</p>
+                    <div class="account-list">
+                        <div v-for="item in order.cartItems" :key="`${item.title}-${item.travelDate}`" class="account-row">
+                            <strong>{{ item.title }}</strong>
+                            <p>{{ item.travelDate || 'To be confirmed' }} | {{ item.guestCount }} guests | {{ item.lineTotal }}</p>
                         </div>
                     </div>
                 </article>

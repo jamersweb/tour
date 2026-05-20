@@ -40,6 +40,18 @@ class SiteSettingForm
                     TextInput::make('whatsapp_number')
                         ->maxLength(100)
                         ->helperText('Used for wa.me links site-wide (digits are normalized automatically). Example: +971 58 516 1554'),
+                    TextInput::make('license_number')
+                        ->maxLength(120)
+                        ->label('DTCM / DED license number')
+                        ->helperText('Shown in the homepage trust proof and footer once provided.'),
+                    TextInput::make('google_reviews_url')
+                        ->url()
+                        ->maxLength(255)
+                        ->label('Google reviews URL'),
+                    TextInput::make('tripadvisor_reviews_url')
+                        ->url()
+                        ->maxLength(255)
+                        ->label('Tripadvisor reviews URL'),
                     Textarea::make('contact_address')->rows(3)->columnSpanFull(),
                     TagsInput::make('interest_options')
                         ->placeholder('Add an inquiry interest option')
@@ -59,6 +71,9 @@ class SiteSettingForm
                 ->schema([
                     TextInput::make('home_trust_heading')->maxLength(120),
                     TagsInput::make('home_trust_points')->placeholder('Add a trust point')->columnSpanFull(),
+                    TagsInput::make('partner_proof')
+                        ->placeholder('Add partner, license, payment, or operating proof')
+                        ->columnSpanFull(),
                     TextInput::make('home_collections_eyebrow')->maxLength(120),
                     Textarea::make('home_collections_title')->rows(2)->columnSpanFull(),
                     TextInput::make('home_featured_eyebrow')->maxLength(120),

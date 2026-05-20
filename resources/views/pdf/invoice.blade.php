@@ -34,12 +34,33 @@
             </tr>
             <tr>
                 <td>{{ $transaction->reference }}</td>
-                <td>{{ $transaction->payable?->title ?? 'Booking' }}</td>
+                <td>{{ $transaction->bookingTitle() }}</td>
                 <td>{{ ucfirst($transaction->status) }}</td>
-                <td>{{ $transaction->travel_date?->format('F j, Y') ?? 'To be confirmed' }}</td>
+                <td>{{ $transaction->isCartCheckout() ? 'See items below' : ($transaction->travel_date?->format('F j, Y') ?? 'To be confirmed') }}</td>
             </tr>
         </table>
     </div>
+
+    @if ($transaction->isCartCheckout())
+        <div class="section panel">
+            <table class="grid">
+                <tr>
+                    <th>Item</th>
+                    <th>Travel Date</th>
+                    <th>Guests</th>
+                    <th class="right">Total</th>
+                </tr>
+                @foreach ($transaction->cart_items as $item)
+                    <tr>
+                        <td>{{ $item['title'] ?? 'Cart item' }}</td>
+                        <td>{{ $item['travelDate'] ?? 'To be confirmed' }}</td>
+                        <td>{{ $item['guestCount'] ?? 1 }}</td>
+                        <td class="right">{{ $item['lineTotalFormatted'] ?? '' }}</td>
+                    </tr>
+                @endforeach
+            </table>
+        </div>
+    @endif
 
     <div class="section panel">
         <table class="grid">

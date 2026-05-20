@@ -29,6 +29,7 @@ class PaymentTransactionsTable
                 ->formatStateUsing(fn (string $state) => class_basename($state)),
             TextColumn::make('payable.title')
                 ->label('Item')
+                ->formatStateUsing(fn ($state, PaymentTransaction $record): string => $record->bookingTitle())
                 ->searchable(),
             TextColumn::make('customer_name')->searchable(),
             TextColumn::make('amount')->money('AED')->sortable(),

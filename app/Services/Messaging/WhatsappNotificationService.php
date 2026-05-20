@@ -36,9 +36,12 @@ class WhatsappNotificationService
 
     protected function messageBody(PaymentTransaction $transaction, string $name): string
     {
-        $payable = $transaction->payable;
-        $itemTitle = $payable?->title ?? 'your booking';
+        $itemTitle = $transaction->bookingTitle();
         $travelDate = $transaction->travel_date?->format('F j, Y') ?? 'your selected date';
+
+        if ($transaction->isCartCheckout()) {
+            return "Hello {$name}, your cart booking for {$itemTitle} has been confirmed. Reference: {$transaction->reference}. Acute Tourism will contact you shortly with the next steps.";
+        }
 
         return "Hello {$name}, your booking for {$itemTitle} has been confirmed for {$travelDate}. Reference: {$transaction->reference}. Acute Tourism will contact you shortly with the next steps.";
     }

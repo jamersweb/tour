@@ -21,7 +21,7 @@ class StaffBookingPaidMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Payment received: '.$this->transaction->payable?->title.' — '.$this->transaction->reference,
+            subject: 'Payment received: '.$this->transaction->bookingTitle().' - '.$this->transaction->reference,
             replyTo: [
                 new Address($this->transaction->customer_email, $this->transaction->customer_name),
             ],

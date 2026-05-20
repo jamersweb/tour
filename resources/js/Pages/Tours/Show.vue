@@ -3,6 +3,7 @@ import { computed, ref } from 'vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 import SiteMeta from '../../Components/SiteMeta.vue';
 import SiteLayout from '../../Layouts/SiteLayout.vue';
+import { useMobileAutoCarousel } from '../../Composables/useMobileAutoCarousel';
 
 defineOptions({ layout: SiteLayout });
 
@@ -14,7 +15,6 @@ const props = defineProps({
 
 const page = usePage();
 
-const checkoutHref = computed(() => `/checkout/tours/${props.tour.slug}`);
 const mediaItems = computed(() => props.tour.mediaItems || []);
 
 const heroTiles = computed(() => {
@@ -37,19 +37,21 @@ const bookingHighlights = computed(() => [
 ].filter(Boolean));
 const reviewStars = computed(() => '★★★★★');
 const activeMediaIndex = ref(null);
+const mosaicRef = useMobileAutoCarousel();
 const activeMediaItem = computed(() => (
     activeMediaIndex.value === null ? null : mediaItems.value[activeMediaIndex.value] ?? null
 ));
 
 const form = useForm({
-    name: '',
-    email: '',
-    phone: '',
     travel_date: '',
     guest_count: 1,
-    traveler_contacts: [
-        { name: '', email: '', phone: '' },
-    ],
+});
+
+const cartForm = useForm({
+    type: 'tour',
+    slug: props.tour.slug,
+    travel_date: '',
+    guest_count: 1,
 });
 
 const totalAmount = computed(() => {
@@ -63,17 +65,10 @@ const totalAmount = computed(() => {
     }).format(unitAmount * guestCount)}`;
 });
 
-const submit = () => {
-    const guestCount = Math.max(1, Number.parseInt(form.guest_count, 10) || 1);
-
-    form.guest_count = guestCount;
-    form.traveler_contacts = Array.from({ length: guestCount }, () => ({
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-    }));
-
-    form.post(checkoutHref.value);
+const addToCart = () => {
+    cartForm.travel_date = form.travel_date;
+    cartForm.guest_count = Math.max(1, Number.parseInt(form.guest_count, 10) || 1);
+    cartForm.post('/cart', { preserveScroll: true });
 };
 
 const openMedia = (index) => {
@@ -111,7 +106,7 @@ const closeMedia = () => {
 
                 <div class="experience-operator-layout">
                     <div class="experience-operator-main">
-                        <section class="experience-operator-mosaic">
+                        <section ref="mosaicRef" class="experience-operator-mosaic">
                             <button
                                 v-for="(item, idx) in heroTiles"
                                 :key="`${item.type}-${item.url}-${idx}`"
@@ -230,78 +225,47 @@ const closeMedia = () => {
                                 Current pricing is available at checkout.
                             </p>
                             <p class="experience-operator-booking__copy">
-                                Book the tour from this page and continue directly into payment once your date and guest count are ready.
+                                Select your date and guest count, add this tour to cart, then use the cart checkout button.
                             </p>
                             <ul class="experience-operator-booking__summary">
                                 <li v-for="item in bookingHighlights" :key="item">{{ item }}</li>
                             </ul>
-                        </article>
 
-                        <article id="detail-booking-form" class="experience-operator-enquiry">
-                            <p class="experience-operator-enquiry__eyebrow">Secure booking form</p>
-                            <h2>Complete your booking</h2>
-                            <p class="experience-operator-enquiry__intro">
-                                Enter your details below and continue directly to payment from this page.
-                            </p>
-
+                            <div v-if="page.props.flash.success" class="success-banner">
+                                {{ page.props.flash.success }}
+                            </div>
                             <div v-if="page.props.flash.error" class="error-banner">
                                 {{ page.props.flash.error }}
                             </div>
 
-                            <form class="lead-form" @submit.prevent="submit">
-                                <label class="field">
-                                    <span>Name</span>
-                                    <input v-model="form.name" type="text" autocomplete="name" />
-                                    <small v-if="form.errors.name">{{ form.errors.name }}</small>
-                                </label>
-
-                                <label class="field">
-                                    <span>Email</span>
-                                    <input v-model="form.email" type="email" autocomplete="email" />
-                                    <small v-if="form.errors.email">{{ form.errors.email }}</small>
-                                </label>
-
-                                <label class="field">
-                                    <span>Phone</span>
-                                    <input v-model="form.phone" type="text" autocomplete="tel" />
-                                    <small v-if="form.errors.phone">{{ form.errors.phone }}</small>
-                                </label>
-
+                            <div class="experience-operator-cart-fields">
                                 <label class="field">
                                     <span>Travel Date</span>
                                     <input v-model="form.travel_date" type="date" />
-                                    <small v-if="form.errors.travel_date">{{ form.errors.travel_date }}</small>
+                                    <small v-if="cartForm.errors.travel_date">{{ cartForm.errors.travel_date }}</small>
                                 </label>
 
                                 <label class="field">
                                     <span>Guests</span>
                                     <input v-model="form.guest_count" type="number" min="1" max="100" />
-                                    <small v-if="form.errors.guest_count">{{ form.errors.guest_count }}</small>
+                                    <small v-if="cartForm.errors.guest_count">{{ cartForm.errors.guest_count }}</small>
                                 </label>
 
-                                <div class="field">
-                                    <span>Total Price</span>
-                                    <strong class="detail-price">{{ totalAmount }}</strong>
+                                <div class="experience-operator-total">
+                                    <span>Total</span>
+                                    <strong>{{ totalAmount }}</strong>
                                 </div>
+                            </div>
 
-                                <p class="experience-operator-enquiry__note">
-                                    Pickup timing and final meeting details are confirmed after payment.
-                                </p>
-
-                                <button
-                                    class="button-primary"
-                                    type="submit"
-                                    :disabled="form.processing || !page.props.payments?.networkCheckoutReady"
-                                >
-                                    {{
-                                        !page.props.payments?.networkCheckoutReady
-                                            ? 'Payment setup required'
-                                            : form.processing
-                                              ? 'Redirecting...'
-                                              : 'Proceed to Payment'
-                                    }}
-                                </button>
-                            </form>
+                            <button
+                                class="button-primary add-cart-button"
+                                type="button"
+                                :disabled="cartForm.processing || !tour.priceFrom"
+                                @click="addToCart"
+                            >
+                                {{ cartForm.processing ? 'Adding...' : 'Add to Cart' }}
+                            </button>
+                            <Link class="button-secondary add-cart-button" href="/cart">View Cart</Link>
                         </article>
                     </aside>
                 </div>
@@ -347,6 +311,24 @@ const closeMedia = () => {
                     :src="activeMediaItem.url"
                     :alt="tour.title"
                 />
+            </div>
+        </div>
+
+        <div class="detail-mobile-cta">
+            <div class="detail-mobile-cta__copy">
+                <strong>{{ tour.title }}</strong>
+                <span>{{ tour.priceFrom || 'Current price on request' }} | {{ tour.duration || 'Flexible duration' }}</span>
+            </div>
+            <div class="detail-mobile-cta__actions">
+                <button
+                    class="button-primary"
+                    type="button"
+                    :disabled="cartForm.processing || !tour.priceFrom"
+                    @click="addToCart"
+                >
+                    {{ cartForm.processing ? 'Adding...' : 'Add to Cart' }}
+                </button>
+                <Link class="button-secondary" href="/cart">Cart</Link>
             </div>
         </div>
     </div>

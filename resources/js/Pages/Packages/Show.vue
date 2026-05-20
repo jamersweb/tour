@@ -3,6 +3,7 @@ import { computed, ref } from 'vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 import SiteMeta from '../../Components/SiteMeta.vue';
 import SiteLayout from '../../Layouts/SiteLayout.vue';
+import { useMobileAutoCarousel } from '../../Composables/useMobileAutoCarousel';
 
 defineOptions({ layout: SiteLayout });
 
@@ -32,6 +33,31 @@ const importantNotices = computed(() => [
 
 const contactPhone = '(+971) 58 516 1554';
 const contactEmail = 'info@acutetourism.org';
+const quickFacts = computed(() => [
+    { label: 'Duration', value: props.packageItem.duration || 'Flexible' },
+    { label: 'Destination', value: props.packageItem.location || 'Dubai & UAE' },
+    { label: 'Group Size', value: props.packageItem.groupSize || 'Custom group' },
+    { label: 'Price From', value: props.packageItem.priceFrom || 'On request' },
+]);
+const packageOptions = computed(() => [
+    {
+        title: 'Standard package',
+        copy: 'Keep the planned inclusions and travel sequence, then confirm dates and guest details before payment.',
+    },
+    {
+        title: 'Private transfer upgrade',
+        copy: 'Use private transfers when the group needs smoother pickup timing, family comfort, or tighter daily pacing.',
+    },
+    {
+        title: 'Custom travel add-ons',
+        copy: 'Add visa support, flights, insurance, extra nights, or attraction upgrades once the base itinerary is clear.',
+    },
+]);
+const bestFor = computed(() => [
+    'First-time visitors who want Dubai highlights arranged in one plan.',
+    'Families and groups who need hotels, transfers, and attractions coordinated together.',
+    'Travelers who prefer a final quote based on dates, room type, guest count, and add-ons.',
+]);
 const bookingHighlights = computed(() => [
     props.packageItem.duration,
     props.packageItem.location,
@@ -39,21 +65,22 @@ const bookingHighlights = computed(() => [
 ].filter(Boolean));
 const reviewStars = computed(() => '★★★★★');
 const activeMediaIndex = ref(null);
+const openItineraryIndex = ref(null);
+const mosaicRef = useMobileAutoCarousel();
 const activeMediaItem = computed(() => (
     activeMediaIndex.value === null ? null : mediaItems.value[activeMediaIndex.value] ?? null
 ));
 
-const checkoutHref = computed(() => `/checkout/packages/${props.packageItem.slug}`);
-
 const form = useForm({
-    name: '',
-    email: '',
-    phone: '',
     travel_date: '',
     guest_count: 1,
-    traveler_contacts: [
-        { name: '', email: '', phone: '' },
-    ],
+});
+
+const cartForm = useForm({
+    type: 'package',
+    slug: props.packageItem.slug,
+    travel_date: '',
+    guest_count: 1,
 });
 
 const totalAmount = computed(() => {
@@ -67,17 +94,14 @@ const totalAmount = computed(() => {
     }).format(unitAmount * guestCount)}`;
 });
 
-const submit = () => {
-    const guestCount = Math.max(1, Number.parseInt(form.guest_count, 10) || 1);
+const addToCart = () => {
+    cartForm.travel_date = form.travel_date;
+    cartForm.guest_count = Math.max(1, Number.parseInt(form.guest_count, 10) || 1);
+    cartForm.post('/cart', { preserveScroll: true });
+};
 
-    form.guest_count = guestCount;
-    form.traveler_contacts = Array.from({ length: guestCount }, () => ({
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-    }));
-
-    form.post(checkoutHref.value);
+const toggleItinerary = (index) => {
+    openItineraryIndex.value = openItineraryIndex.value === index ? null : index;
 };
 
 const openMedia = (index) => {
@@ -115,7 +139,7 @@ const closeMedia = () => {
 
                 <div class="experience-operator-layout">
                     <div class="experience-operator-main">
-                        <section class="experience-operator-mosaic">
+                        <section ref="mosaicRef" class="experience-operator-mosaic">
                             <button
                                 v-for="(item, idx) in heroTiles"
                                 :key="`${item.type}-${item.url}-${idx}`"
@@ -146,6 +170,13 @@ const closeMedia = () => {
                                     +{{ mediaItems.length - 4 }}
                                 </span>
                             </button>
+                        </section>
+
+                        <section class="detail-fact-grid" aria-label="Package quick facts">
+                            <article v-for="fact in quickFacts" :key="fact.label" class="detail-fact">
+                                <span>{{ fact.label }}</span>
+                                <strong>{{ fact.value }}</strong>
+                            </article>
                         </section>
 
                         <article class="experience-operator-section experience-operator-section--overview">
@@ -196,11 +227,65 @@ const closeMedia = () => {
                                     v-for="(stop, index) in packageItem.itinerary"
                                     :key="`${stop.dayLabel}-${stop.title}-${index}`"
                                     class="experience-operator-itinerary__item"
+                                    :class="{ 'experience-operator-itinerary__item--open': openItineraryIndex === index }"
                                 >
-                                    <strong>{{ stop.dayLabel || `Day ${index + 1}` }}: {{ stop.title }}</strong>
-                                    <p>{{ stop.description }}</p>
+                                    <button
+                                        type="button"
+                                        class="experience-operator-itinerary__trigger"
+                                        :aria-expanded="openItineraryIndex === index"
+                                        :aria-controls="`itinerary-day-${index}`"
+                                        @click="toggleItinerary(index)"
+                                    >
+                                        <span>
+                                            <small>{{ stop.dayLabel || `Day ${index + 1}` }}</small>
+                                            <strong>{{ stop.title }}</strong>
+                                        </span>
+                                        <span class="experience-operator-itinerary__chevron" aria-hidden="true"></span>
+                                    </button>
+                                    <div
+                                        v-show="openItineraryIndex === index"
+                                        :id="`itinerary-day-${index}`"
+                                        class="experience-operator-itinerary__panel"
+                                    >
+                                        <p>{{ stop.description }}</p>
+                                    </div>
                                 </article>
                             </div>
+                        </article>
+
+                        <article class="experience-operator-section">
+                            <div class="experience-operator-section__head">
+                                <span class="experience-operator-section__kicker">Package choices</span>
+                                <h2>Package Options</h2>
+                            </div>
+                            <div class="detail-option-grid">
+                                <article v-for="option in packageOptions" :key="option.title" class="detail-option-card">
+                                    <h3>{{ option.title }}</h3>
+                                    <p>{{ option.copy }}</p>
+                                </article>
+                            </div>
+                        </article>
+
+                        <article class="experience-operator-section">
+                            <div class="experience-operator-section__head">
+                                <span class="experience-operator-section__kicker">Best fit</span>
+                                <h2>Who This Package Is Best For</h2>
+                            </div>
+                            <ul class="experience-operator-list experience-operator-list--chips">
+                                <li v-for="item in bestFor" :key="item">{{ item }}</li>
+                            </ul>
+                        </article>
+
+                        <article class="experience-operator-section detail-price-note">
+                            <div class="experience-operator-section__head">
+                                <span class="experience-operator-section__kicker">Quote clarity</span>
+                                <h2>Final Price Depends on Travel Details</h2>
+                            </div>
+                            <p>
+                                Hotel rates, attraction availability, travel dates, number of guests, room type, and selected
+                                upgrades can affect the final quotation. The checkout form keeps the route functional, while
+                                the team can reconfirm any custom changes before final operation.
+                            </p>
                         </article>
 
                         <article class="experience-operator-section">
@@ -262,11 +347,47 @@ const closeMedia = () => {
                                 Current pricing is available at checkout.
                             </p>
                             <p class="experience-operator-booking__copy">
-                                Secure your package from this page and continue straight to payment when your travel date is set.
+                                Select your date and guest count, add this package to cart, then use the cart checkout button.
                             </p>
                             <ul class="experience-operator-booking__summary">
                                 <li v-for="item in bookingHighlights" :key="item">{{ item }}</li>
                             </ul>
+
+                            <div v-if="page.props.flash.success" class="success-banner">
+                                {{ page.props.flash.success }}
+                            </div>
+                            <div v-if="page.props.flash.error" class="error-banner">
+                                {{ page.props.flash.error }}
+                            </div>
+
+                            <div class="experience-operator-cart-fields">
+                                <label class="field">
+                                    <span>Travel Date</span>
+                                    <input v-model="form.travel_date" type="date" />
+                                    <small v-if="cartForm.errors.travel_date">{{ cartForm.errors.travel_date }}</small>
+                                </label>
+
+                                <label class="field">
+                                    <span>Guests</span>
+                                    <input v-model="form.guest_count" type="number" min="1" max="100" />
+                                    <small v-if="cartForm.errors.guest_count">{{ cartForm.errors.guest_count }}</small>
+                                </label>
+
+                                <div class="experience-operator-total">
+                                    <span>Total</span>
+                                    <strong>{{ totalAmount }}</strong>
+                                </div>
+                            </div>
+
+                            <button
+                                class="button-primary add-cart-button"
+                                type="button"
+                                :disabled="cartForm.processing || !packageItem.priceFrom"
+                                @click="addToCart"
+                            >
+                                {{ cartForm.processing ? 'Adding...' : 'Add to Cart' }}
+                            </button>
+                            <Link class="button-secondary add-cart-button" href="/cart">View Cart</Link>
 
                             <div class="experience-operator-booking__contact">
                                 <h3>Contact us</h3>
@@ -274,73 +395,6 @@ const closeMedia = () => {
                                 <p><strong>{{ contactPhone }}</strong></p>
                                 <p>{{ contactEmail }}</p>
                             </div>
-                        </article>
-
-                        <article id="detail-booking-form" class="experience-operator-enquiry">
-                            <p class="experience-operator-enquiry__eyebrow">Secure booking form</p>
-                            <h2>Complete your booking</h2>
-                            <p class="experience-operator-enquiry__intro">
-                                Enter your details below and continue directly to payment from this page.
-                            </p>
-
-                            <div v-if="page.props.flash.error" class="error-banner">
-                                {{ page.props.flash.error }}
-                            </div>
-
-                            <form class="lead-form" @submit.prevent="submit">
-                                <label class="field">
-                                    <span>Name</span>
-                                    <input v-model="form.name" type="text" autocomplete="name" />
-                                    <small v-if="form.errors.name">{{ form.errors.name }}</small>
-                                </label>
-
-                                <label class="field">
-                                    <span>Email</span>
-                                    <input v-model="form.email" type="email" autocomplete="email" />
-                                    <small v-if="form.errors.email">{{ form.errors.email }}</small>
-                                </label>
-
-                                <label class="field">
-                                    <span>Phone</span>
-                                    <input v-model="form.phone" type="text" autocomplete="tel" />
-                                    <small v-if="form.errors.phone">{{ form.errors.phone }}</small>
-                                </label>
-
-                                <label class="field">
-                                    <span>Travel Date</span>
-                                    <input v-model="form.travel_date" type="date" />
-                                    <small v-if="form.errors.travel_date">{{ form.errors.travel_date }}</small>
-                                </label>
-
-                                <label class="field">
-                                    <span>Guests</span>
-                                    <input v-model="form.guest_count" type="number" min="1" max="100" />
-                                    <small v-if="form.errors.guest_count">{{ form.errors.guest_count }}</small>
-                                </label>
-
-                                <div class="field">
-                                    <span>Total Price</span>
-                                    <strong class="detail-price">{{ totalAmount }}</strong>
-                                </div>
-
-                                <p class="experience-operator-enquiry__note">
-                                    Hotel, transfer, and final operating details are reconfirmed after payment.
-                                </p>
-
-                                <button
-                                    class="button-primary"
-                                    type="submit"
-                                    :disabled="form.processing || !page.props.payments?.networkCheckoutReady"
-                                >
-                                    {{
-                                        !page.props.payments?.networkCheckoutReady
-                                            ? 'Payment setup required'
-                                            : form.processing
-                                              ? 'Redirecting...'
-                                              : 'Proceed to Payment'
-                                    }}
-                                </button>
-                            </form>
                         </article>
                     </aside>
                 </div>
@@ -386,6 +440,24 @@ const closeMedia = () => {
                     :src="activeMediaItem.url"
                     :alt="packageItem.title"
                 />
+            </div>
+        </div>
+
+        <div class="detail-mobile-cta">
+            <div class="detail-mobile-cta__copy">
+                <strong>{{ packageItem.title }}</strong>
+                <span>{{ packageItem.priceFrom || 'Current price on request' }} · {{ packageItem.duration || 'Flexible duration' }}</span>
+            </div>
+            <div class="detail-mobile-cta__actions">
+                <button
+                    class="button-primary"
+                    type="button"
+                    :disabled="cartForm.processing || !packageItem.priceFrom"
+                    @click="addToCart"
+                >
+                    {{ cartForm.processing ? 'Adding...' : 'Add to Cart' }}
+                </button>
+                <Link class="button-secondary" href="/cart">Cart</Link>
             </div>
         </div>
     </div>

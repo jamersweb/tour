@@ -1,12 +1,26 @@
 <script setup>
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
+import WhatsappFloat from '../Components/WhatsappFloat.vue';
 
 const page = usePage();
 const logoutForm = useForm({});
 const headerRef = ref(null);
 const mobileNavOpen = ref(false);
 let revealObserver;
+
+function phoneHref(value) {
+    return `tel:${String(value).replace(/[^\d+]/g, '')}`;
+}
+
+function whatsappHref(value) {
+    const number = value ? String(value).replace(/\D/g, '') : '';
+    if (!number) {
+        return null;
+    }
+
+    return `https://wa.me/${number}?text=${encodeURIComponent('Hi Acute Tourism, I would like to plan a trip.')}`;
+}
 
 function initRevealObserver() {
     revealObserver?.disconnect();
@@ -86,7 +100,6 @@ function onDocumentPointerDown(event) {
 
 function onWindowScroll() {
     closeNavDropdowns();
-    closeMobileNav();
 }
 
 function onDocumentKeydown(event) {
@@ -175,7 +188,23 @@ onBeforeUnmount(() => {
                         </template>
                     </nav>
 
+                    <nav class="mobile-flat-nav" aria-label="Mobile main">
+                        <Link
+                            v-for="item in page.props.site.mobileNavigation"
+                            :key="item.href"
+                            class="mobile-flat-nav__link"
+                            :href="item.href"
+                            @click="closeMobileNav"
+                        >
+                            {{ item.label }}
+                        </Link>
+                    </nav>
+
                     <div class="header-actions">
+                        <Link class="header-cart-link" :href="page.props.cart.url" @click="closeMobileNav">
+                            Cart
+                            <span v-if="page.props.cart.count" class="header-cart-link__count">{{ page.props.cart.count }}</span>
+                        </Link>
                         <Link v-if="page.props.auth.user" class="header-cta" :href="page.props.auth.user.dashboardUrl" @click="closeMobileNav">My Account</Link>
                         <Link v-else class="header-cta" href="/login" @click="closeMobileNav">Login</Link>
                         <button
@@ -208,17 +237,17 @@ onBeforeUnmount(() => {
                     <p class="footer-copy">{{ page.props.site.footer.description }}</p>
                 </div>
 
-                <div>
-                    <p class="footer-label">Explore</p>
+                <details class="footer-panel" open>
+                    <summary class="footer-label">Explore</summary>
                     <ul class="footer-list">
                         <li v-for="item in page.props.site.footerNavigation" :key="item.href">
                             <Link class="footer-link" :href="item.href">{{ item.label }}</Link>
                         </li>
                     </ul>
-                </div>
+                </details>
 
-                <div>
-                    <p class="footer-label">Contact</p>
+                <details class="footer-panel" open>
+                    <summary class="footer-label">Contact</summary>
                     <ul class="footer-list">
                         <li>
                             <a class="footer-link" :href="`mailto:${page.props.site.contact.email}`">
@@ -226,24 +255,29 @@ onBeforeUnmount(() => {
                             </a>
                         </li>
                         <li v-if="page.props.site.contact.phone">
-                            <a class="footer-link" :href="`tel:${String(page.props.site.contact.phone).replace(/[^\d+]/g, '')}`">
+                            <a class="footer-link" :href="phoneHref(page.props.site.contact.phone)">
                                 {{ page.props.site.contact.phone }}
                             </a>
                         </li>
                         <li v-if="page.props.site.contact.phoneSecondary">
                             <a
                                 class="footer-link"
-                                :href="`tel:${String(page.props.site.contact.phoneSecondary).replace(/[^\d+]/g, '')}`"
+                                :href="phoneHref(page.props.site.contact.phoneSecondary)"
                             >
                                 {{ page.props.site.contact.phoneSecondary }}
                             </a>
                         </li>
+                        <li v-if="whatsappHref(page.props.site.contact.whatsappNumber)">
+                            <a class="footer-link" :href="whatsappHref(page.props.site.contact.whatsappNumber)" target="_blank" rel="noreferrer">
+                                WhatsApp {{ page.props.site.contact.whatsappNumber }}
+                            </a>
+                        </li>
                         <li>{{ page.props.site.contact.address }}</li>
                     </ul>
-                </div>
+                </details>
 
-                <div>
-                    <p class="footer-label">Connect</p>
+                <details class="footer-panel" open>
+                    <summary class="footer-label">Connect</summary>
                     <ul class="footer-list">
                         <li v-for="link in page.props.site.footer.socialLinks" :key="link.href">
                             <a class="footer-link" :href="link.href" target="_blank" rel="noreferrer">
@@ -256,8 +290,16 @@ onBeforeUnmount(() => {
                             </a>
                         </li>
                     </ul>
-                </div>
+                </details>
+            </div>
+
+            <div class="container footer-bottom">
+                <span>{{ page.props.site.footer.legalName }}</span>
+                <span>{{ page.props.site.trust.licenseText }}</span>
+                <span>{{ page.props.site.trust.responseTime }}</span>
             </div>
         </footer>
+
+        <WhatsappFloat />
     </div>
 </template>

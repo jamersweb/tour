@@ -142,6 +142,118 @@ class CheckoutTest extends TestCase
         Mail::assertSent(StaffNewPaymentTransactionMail::class, 1);
     }
 
+    public function test_cart_checkout_creates_one_transaction_for_all_cart_items(): void
+    {
+        Mail::fake();
+
+        $experiences = Experience::query()
+            ->whereNotNull('price_from')
+            ->orderBy('id')
+            ->limit(2)
+            ->get();
+
+        $this->assertCount(2, $experiences);
+
+        $first = $experiences[0];
+        $second = $experiences[1];
+        $travelDate = now()->addWeek()->toDateString();
+        $expectedAmount = ($first->price_from * 2) + $second->price_from;
+
+        $this->mock(NetworkNgeniusGateway::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('createHostedOrder')
+                ->once()
+                ->andReturn([
+                    'payment_url' => 'https://pay.example.test/session/cart-123',
+                    'order_ref' => 'cart-order-ref-123',
+                    'payload' => ['reference' => 'cart-order-ref-123'],
+                ]);
+
+            $mock->shouldReceive('fetchOrder')
+                ->once()
+                ->andReturn([
+                    'reference' => 'cart-order-ref-123',
+                    '_embedded' => [
+                        'payment' => [
+                            [
+                                'state' => 'PURCHASED',
+                                '_id' => 'urn:payment:cart123',
+                            ],
+                        ],
+                    ],
+                ]);
+        });
+
+        $this->mock(WhatsappNotificationService::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('sendBookingConfirmation')->times(3);
+        });
+
+        $response = $this
+            ->withSession([
+                'cart.items' => [
+                    "experience:{$first->slug}" => [
+                        'type' => 'experience',
+                        'slug' => $first->slug,
+                        'guest_count' => 2,
+                        'travel_date' => $travelDate,
+                    ],
+                    "experience:{$second->slug}" => [
+                        'type' => 'experience',
+                        'slug' => $second->slug,
+                        'guest_count' => 1,
+                        'travel_date' => $travelDate,
+                    ],
+                ],
+            ])
+            ->post('/checkout/cart', [
+                'name' => 'Bilal Ahmed',
+                'email' => 'bilal@example.com',
+                'phone' => '+971500000001',
+                'guest_count' => 3,
+                'traveler_contacts' => [
+                    [
+                        'name' => 'Bilal Ahmed',
+                        'email' => 'bilal@example.com',
+                        'phone' => '+971500000001',
+                    ],
+                    [
+                        'name' => 'Hassan Ali',
+                        'email' => 'hassan@example.com',
+                        'phone' => '+971500000002',
+                    ],
+                    [
+                        'name' => 'Ayesha Khan',
+                        'email' => 'ayesha@example.com',
+                        'phone' => '+971500000003',
+                    ],
+                ],
+            ]);
+
+        $response->assertRedirect('https://pay.example.test/session/cart-123');
+
+        $transaction = PaymentTransaction::query()
+            ->where('gateway_order_ref', 'cart-order-ref-123')
+            ->firstOrFail();
+
+        $this->assertSame(3, $transaction->guest_count);
+        $this->assertEqualsWithDelta($expectedAmount, (float) $transaction->amount, 0.01);
+        $this->assertCount(2, $transaction->cart_items);
+
+        Mail::assertSent(CheckoutContinuePaymentMail::class, 1);
+        Mail::assertSent(StaffNewPaymentTransactionMail::class, 1);
+
+        $callback = $this->get("/payments/network/callback?transaction={$transaction->id}");
+
+        $callback
+            ->assertRedirect("/checkout/result/{$transaction->id}")
+            ->assertSessionMissing('cart.items');
+
+        $transaction->refresh();
+
+        $this->assertSame('paid', $transaction->status);
+        Mail::assertSent(BookingConfirmedMail::class, 4);
+        Mail::assertSent(StaffBookingPaidMail::class, 1);
+    }
+
     public function test_checkout_callback_updates_transaction_status(): void
     {
         $experience = Experience::query()->where('slug', 'private-heritage-desert-safari')->firstOrFail();

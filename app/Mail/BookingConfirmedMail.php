@@ -24,7 +24,7 @@ class BookingConfirmedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: "Booking confirmed: {$this->transaction->payable?->title}",
+            subject: 'Booking confirmed: '.$this->transaction->bookingTitle(),
         );
     }
 

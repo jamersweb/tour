@@ -27,7 +27,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CheckoutController extends Controller
 {
-    public function experience(string $slug): InertiaResponse|RedirectResponse
+    public function experience(Request $request, string $slug): InertiaResponse|RedirectResponse
     {
         $experience = Experience::query()
             ->where('slug', $slug)
@@ -50,11 +50,12 @@ class CheckoutController extends Controller
                 amount: $experience->price_from,
                 currency: $experience->currency,
                 image: $experience->hero_image_url,
+                defaults: $this->checkoutDefaults($request),
             ),
         ]);
     }
 
-    public function package(string $slug): InertiaResponse|RedirectResponse
+    public function package(Request $request, string $slug): InertiaResponse|RedirectResponse
     {
         $package = Package::query()
             ->where('slug', $slug)
@@ -77,11 +78,12 @@ class CheckoutController extends Controller
                 amount: $package->price_from,
                 currency: $package->currency,
                 image: $package->hero_image_url,
+                defaults: $this->checkoutDefaults($request),
             ),
         ]);
     }
 
-    public function tour(string $slug): InertiaResponse|RedirectResponse
+    public function tour(Request $request, string $slug): InertiaResponse|RedirectResponse
     {
         $tour = Tour::query()
             ->where('slug', $slug)
@@ -104,7 +106,41 @@ class CheckoutController extends Controller
                 amount: $tour->price_from,
                 currency: $tour->currency,
                 image: $tour->hero_image_url,
+                defaults: $this->checkoutDefaults($request),
             ),
+        ]);
+    }
+
+    public function cart(Request $request): InertiaResponse|RedirectResponse
+    {
+        $cart = $this->cartPayload($request);
+
+        if ($cart['items'] === []) {
+            return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
+        }
+
+        return Inertia::render('Checkout/Show', [
+            'seo' => [
+                'title' => 'Cart Checkout',
+                'description' => 'Complete checkout for all items in your cart.',
+            ],
+            'checkout' => [
+                'label' => 'Cart Checkout',
+                'type' => 'cart',
+                'slug' => 'cart',
+                'title' => 'Complete checkout for your cart',
+                'summary' => 'One payment will cover every item currently in your cart.',
+                'unitAmountValue' => $cart['total'],
+                'currency' => $cart['currency'],
+                'amount' => $this->formatMoney($cart['total'], $cart['currency']),
+                'image' => $cart['items'][0]['image'] ?? null,
+                'defaults' => [
+                    'guest_count' => $cart['guest_count'],
+                    'travel_date' => null,
+                ],
+                'isCart' => true,
+                'items' => $cart['items'],
+            ],
         ]);
     }
 
@@ -138,6 +174,30 @@ class CheckoutController extends Controller
         return $this->startCheckout($request, $gateway, $tour);
     }
 
+    public function startCart(StartCheckoutRequest $request, NetworkNgeniusGateway $gateway): Response
+    {
+        $cart = $this->cartPayload($request);
+
+        if ($cart['items'] === []) {
+            return back()->with('error', 'Your cart is empty.');
+        }
+
+        return $this->startCheckout(
+            $request,
+            $gateway,
+            $cart['payable'],
+            [
+                'amount' => $cart['total'],
+                'currency' => $cart['currency'],
+                'guest_count' => $cart['guest_count'],
+                'travel_date' => null,
+                'cart_items' => $cart['items'],
+                'cancel_url' => route('cart.index'),
+                'success_message_context' => 'cart',
+            ],
+        );
+    }
+
     public function callback(
         Request $request,
         NetworkNgeniusGateway $gateway,
@@ -167,6 +227,10 @@ class CheckoutController extends Controller
                 );
         }
 
+        if (is_array($transaction->cart_items) && $transaction->cart_items !== [] && in_array($transaction->fresh()->status, ['paid', 'authorized'], true)) {
+            $request->session()->forget('cart.items');
+        }
+
         return redirect()->route('checkout.result', $transaction);
     }
 
@@ -193,7 +257,11 @@ class CheckoutController extends Controller
             default => 'Review the details below. Contact us if you need help.',
         };
 
-        $retryCheckoutUrl = $this->checkoutUrlForPayable($transaction->payable);
+        $isCartCheckout = is_array($transaction->cart_items) && $transaction->cart_items !== [];
+        $retryCheckoutUrl = $isCartCheckout ? route('cart.index') : $this->checkoutUrlForPayable($transaction->payable);
+        $itemTitle = $isCartCheckout
+            ? count($transaction->cart_items).' cart item'.(count($transaction->cart_items) === 1 ? '' : 's')
+            : $transaction->payable?->title;
 
         return Inertia::render('Checkout/Result', [
             'seo' => [
@@ -208,8 +276,8 @@ class CheckoutController extends Controller
                 'isSuccess' => in_array($status, ['paid', 'authorized'], true),
                 'amount' => "{$transaction->currency} ".number_format((float) $transaction->amount, 2),
                 'customerName' => $transaction->customer_name,
-                'itemTitle' => $transaction->payable?->title,
-                'itemType' => class_basename($transaction->payable_type),
+                'itemTitle' => $itemTitle,
+                'itemType' => $isCartCheckout ? 'Cart' : class_basename($transaction->payable_type),
                 'retryCheckoutUrl' => $retryCheckoutUrl,
             ],
         ]);
@@ -232,7 +300,7 @@ class CheckoutController extends Controller
         return null;
     }
 
-    protected function startCheckout(StartCheckoutRequest $request, NetworkNgeniusGateway $gateway, Model $payable): Response
+    protected function startCheckout(StartCheckoutRequest $request, NetworkNgeniusGateway $gateway, Model $payable, array $overrides = []): Response
     {
         $activityLogger = app(PaymentTransactionLogger::class);
 
@@ -247,9 +315,10 @@ class CheckoutController extends Controller
         }
 
         $validated = $request->validated();
-        $guestCount = (int) ($validated['guest_count'] ?? 1);
+        $guestCount = (int) ($overrides['guest_count'] ?? ($validated['guest_count'] ?? 1));
         $unitAmount = (float) $payable->price_from;
-        $totalAmount = round($unitAmount * max(1, $guestCount), 2);
+        $totalAmount = round((float) ($overrides['amount'] ?? ($unitAmount * max(1, $guestCount))), 2);
+        $currency = (string) ($overrides['currency'] ?? $payable->currency);
 
         $transaction = PaymentTransaction::query()->create([
             'payable_type' => $payable::class,
@@ -260,11 +329,14 @@ class CheckoutController extends Controller
             'customer_name' => $validated['name'],
             'customer_email' => $validated['email'],
             'customer_phone' => $validated['phone'] ?? null,
-            'travel_date' => $validated['travel_date'] ?? null,
+            'travel_date' => array_key_exists('travel_date', $overrides)
+                ? $overrides['travel_date']
+                : ($validated['travel_date'] ?? null),
             'guest_count' => $guestCount,
+            'cart_items' => $overrides['cart_items'] ?? null,
             'amount' => $totalAmount,
             'amount_minor' => (int) round($totalAmount * 100),
-            'currency' => $payable->currency,
+            'currency' => $currency,
         ]);
 
         $transaction->travelers()->createMany(
@@ -293,7 +365,7 @@ class CheckoutController extends Controller
         );
 
         $callbackUrl = route('payments.network.callback', ['transaction' => $transaction->id]);
-        $cancelUrl = $this->checkoutUrlForPayable($payable);
+        $cancelUrl = $overrides['cancel_url'] ?? $this->checkoutUrlForPayable($payable);
 
         try {
             $gatewayOrder = $gateway->createHostedOrder(
@@ -370,7 +442,7 @@ class CheckoutController extends Controller
         return Inertia::location($gatewayOrder['payment_url']);
     }
 
-    protected function checkoutPayload(string $label, string $type, string $slug, string $title, ?string $summary, string $amount, string $currency, ?string $image): array
+    protected function checkoutPayload(string $label, string $type, string $slug, string $title, ?string $summary, string $amount, string $currency, ?string $image, array $defaults = []): array
     {
         $unitAmount = (float) $amount;
 
@@ -384,6 +456,102 @@ class CheckoutController extends Controller
             'currency' => $currency,
             'amount' => "{$currency} ".number_format($unitAmount, 2),
             'image' => $image,
+            'defaults' => $defaults,
         ];
+    }
+
+    protected function checkoutDefaults(Request $request): array
+    {
+        return [
+            'guest_count' => max(1, min(100, $request->integer('guest_count') ?: 1)),
+            'travel_date' => $request->query('travel_date'),
+        ];
+    }
+
+    protected function cartPayload(Request $request): array
+    {
+        $items = [];
+        $total = 0.0;
+        $guestCount = 0;
+        $currency = null;
+        $firstPayable = null;
+
+        foreach ($request->session()->get('cart.items', []) as $item) {
+            $payable = $this->resolveCartPayable($item['type'] ?? '', $item['slug'] ?? '');
+
+            if (! $payable || ! $payable->price_from) {
+                continue;
+            }
+
+            $itemCurrency = $payable->currency ?: 'AED';
+            if ($currency !== null && $currency !== $itemCurrency) {
+                abort(422, 'Cart checkout requires all items to use the same currency.');
+            }
+
+            $currency ??= $itemCurrency;
+            $firstPayable ??= $payable;
+            $lineGuestCount = max(1, (int) ($item['guest_count'] ?? 1));
+            $unitAmount = (float) $payable->price_from;
+            $lineTotal = round($unitAmount * $lineGuestCount, 2);
+            $total += $lineTotal;
+            $guestCount += $lineGuestCount;
+
+            $items[] = [
+                'type' => $item['type'],
+                'slug' => $item['slug'],
+                'title' => $payable->title,
+                'summary' => $payable->short_description,
+                'image' => $this->imageForPayable($payable),
+                'duration' => $payable->duration,
+                'location' => $payable->location,
+                'travelDate' => $item['travel_date'] ?? null,
+                'guestCount' => $lineGuestCount,
+                'unitAmount' => $unitAmount,
+                'unitAmountFormatted' => $this->formatMoney($unitAmount, $itemCurrency),
+                'lineTotal' => $lineTotal,
+                'lineTotalFormatted' => $this->formatMoney($lineTotal, $itemCurrency),
+            ];
+        }
+
+        return [
+            'items' => $items,
+            'total' => round($total, 2),
+            'currency' => $currency ?: 'AED',
+            'guest_count' => max(1, $guestCount),
+            'payable' => $firstPayable,
+        ];
+    }
+
+    protected function resolveCartPayable(string $type, string $slug): ?Model
+    {
+        $model = match ($type) {
+            'experience' => Experience::class,
+            'package' => Package::class,
+            'tour' => Tour::class,
+            default => null,
+        };
+
+        if (! $model) {
+            return null;
+        }
+
+        return $model::query()
+            ->where('slug', $slug)
+            ->where('is_active', true)
+            ->first();
+    }
+
+    protected function imageForPayable(Model $payable): ?string
+    {
+        if ($payable instanceof Package) {
+            return $payable->hero_image_url ?: collect($payable->gallery_image_urls ?? [])->first();
+        }
+
+        return $payable->hero_image_url;
+    }
+
+    protected function formatMoney(float $amount, string $currency = 'AED'): string
+    {
+        return "{$currency} ".number_format($amount, 2);
     }
 }

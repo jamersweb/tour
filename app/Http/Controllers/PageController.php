@@ -87,6 +87,41 @@ class PageController extends Controller
                 'heroImageUrl' => $this->packageShowcaseImage($package, $index),
             ]);
 
+        $packageImages = $packages
+            ->pluck('heroImageUrl')
+            ->filter()
+            ->values();
+
+        $packageCategories = collect([
+            [
+                'title' => 'Dubai Holiday Packages',
+                'summary' => 'Hotels, transfers, attractions, and desert experiences arranged into one city break plan.',
+                'priceLine' => 'Custom quote by travel date',
+                'detail' => 'Best for families, couples, and first-time Dubai visitors.',
+                'href' => route('packages.index'),
+                'cta' => 'Request Quote',
+                'image' => $packageImages->get(0) ?: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80',
+            ],
+            [
+                'title' => 'Event & Abu Dhabi Packages',
+                'summary' => 'UAE event travel, Abu Dhabi add-ons, attraction tickets, and transfer planning for tighter schedules.',
+                'priceLine' => 'From AED pricing when available',
+                'detail' => 'Best for event weekends, groups, and mixed city itineraries.',
+                'href' => route('packages.index'),
+                'cta' => 'View Packages',
+                'image' => $packageImages->get(1) ?: 'https://images.unsplash.com/photo-1512632578888-169bbbc64f33?auto=format&fit=crop&w=1200&q=80',
+            ],
+            [
+                'title' => 'International Holiday Planning',
+                'summary' => 'Outbound trip planning with visa support, hotel guidance, transfers, and practical document timing.',
+                'priceLine' => 'Custom quote after consultation',
+                'detail' => 'Best for travelers who want trip planning and visa support together.',
+                'href' => route('packages.index'),
+                'cta' => 'Customize Package',
+                'image' => $packageImages->get(2) ?: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80',
+            ],
+        ]);
+
         $heroGallery = $featuredExperiences
             ->filter(fn (array $experience) => filled($experience['heroImageUrl']))
             ->take(6)
@@ -173,20 +208,22 @@ class PageController extends Controller
                 'description' => 'Luxury travel planning, premium Dubai experiences, and professional visa services from one polished travel brand.',
             ],
             'hero' => [
-                'eyebrow' => 'Tailor-Made Dubai & UAE Holidays',
-                'title' => 'Exclusively Curated Holiday Experiences',
-                'description' => 'Crafted by destination experts, each itinerary is designed to deliver a refined and effortless journey with luxury hotels, private transfers, bespoke desert safaris, and priority access to iconic landmarks.',
+                'eyebrow' => 'Acute Tourism Dubai',
+                'title' => 'Your Dubai Holiday, Handled',
+                'mobileTitle' => 'Tours, Packages & Visa Assistance',
+                'description' => 'From private tours and custom holiday packages to international visa assistance, Acute Tourism helps you plan every part of your journey with ease.',
                 'heroImageUrl' => 'https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=2000&q=80',
                 'videoUrl' => 'https://acutetourism.org/videos/hero-section-intro.mp4',
-                'primaryCta' => ['label' => 'Explore Packages', 'href' => route('packages.index')],
-                'secondaryCta' => ['label' => 'Visa Services', 'href' => route('visa.index')],
-                'tertiaryCta' => ['label' => 'Contact Us', 'href' => route('contact')],
+                'primaryCta' => ['label' => 'Explore Dubai Experiences', 'href' => route('experiences.index')],
+                'secondaryCta' => ['label' => 'View Packages', 'href' => route('packages.index')],
+                'tertiaryCta' => ['label' => 'Visa Services', 'href' => route('visa.index')],
+                'trustLine' => '2,500+ travelers | 12 years in Dubai | Licensed operator',
             ],
             'homeSections' => [
                 'ribbonEyebrow' => 'In Dubai & beyond',
                 'ribbonTitle' => 'Curated Travel Moments',
                 'collectionsEyebrow' => 'Destinations',
-                'collectionsTitle' => 'Explore Other Emirates',
+                'collectionsTitle' => 'Our Core Travel Services',
                 'mustDoEyebrow' => 'Start here',
                 'mustDoTitle' => "Dubai's Must-Do Experiences",
                 'topRatedEyebrow' => 'Guest favourites',
@@ -226,46 +263,56 @@ class PageController extends Controller
             'topRatedExperiences' => $topRatedExperiences,
             'heroGallery' => $heroGallery,
             'packages' => $packages,
+            'packageCategories' => $packageCategories,
             'recommendations' => $visaServices,
             'serviceFocus' => [
                 [
-                    'title' => 'Visa Services',
-                    'copy' => 'Schengen, UK, USA, Canada, Japan, and more, clear requirements, document checks, and step-by-step guidance before you book your trip.',
-                    'href' => route('visa.index'),
-                    'cta' => 'View visa services',
-                    'tag' => 'Visa assistance',
+                    'title' => 'Tours & Experiences',
+                    'copy' => 'Desert safaris, yacht charters, city tours, theme parks, and private Dubai activities.',
+                    'href' => route('experiences.index'),
+                    'cta' => 'View Tours',
+                    'tag' => 'Dubai activities',
                 ],
                 [
-                    'title' => 'International Tour Packages',
-                    'copy' => 'Hand-picked holidays with hotels, transfers, and activities coordinated for you, fewer moving parts, more time to enjoy the journey.',
+                    'title' => 'Holiday Packages',
+                    'copy' => 'Custom Dubai, UAE, and international holiday packages for families, couples, groups, and corporate travel.',
                     'href' => route('packages.index'),
-                    'cta' => 'Explore packages',
+                    'cta' => 'View Packages',
                     'tag' => 'Holiday packages',
                 ],
                 [
-                    'title' => 'Luxury Experiences in Dubai',
-                    'copy' => 'Private desert camps, yacht days, and city experiences with concierge-style coordination, built around your dates and group.',
-                    'href' => route('experiences.index'),
-                    'cta' => 'Browse experiences',
-                    'tag' => 'Dubai & UAE',
+                    'title' => 'Visa Assistance',
+                    'copy' => 'Support for Schengen, UK, USA, Canada, Japan, Australia, and other international visa applications.',
+                    'href' => route('visa.index'),
+                    'cta' => 'View Visa Services',
+                    'tag' => 'Documentation support',
                 ],
             ],
             'testimonials' => [
                 [
-                    'name' => 'Sarah Al-Mansoori',
-                    'tag' => 'Dubai Desert Experience',
-                    'quote' => 'Seamless pickup, incredible camp setup, and a team that actually answers WhatsApp. Felt like a private concierge from start to finish.',
+                    'name' => 'Sarah',
+                    'tag' => 'Desert Safari',
+                    'quote' => 'Felt like a private concierge from start to finish.',
                 ],
                 [
-                    'name' => 'James Porter',
-                    'tag' => 'Schengen visa support',
-                    'quote' => 'Clear checklist, realistic timelines, and no guesswork at the VFS appointment. We had our visas back without the stress we expected.',
+                    'name' => 'James',
+                    'tag' => 'Schengen Visa',
+                    'quote' => 'Visas back with no stress whatsoever.',
                 ],
                 [
-                    'name' => 'Elena Rossi',
+                    'name' => 'Elena',
                     'tag' => 'UAE package holiday',
-                    'quote' => 'Hotels, transfers, and desert day were coordinated in one flow. One invoice, one point of contact, exactly what we wanted for a family trip.',
+                    'quote' => 'One invoice, one point of contact, exactly what we wanted.',
                 ],
+            ],
+            'trustProof' => [
+                'reviewSource' => $settings->google_reviews_url ? 'Google' : 'Tripadvisor',
+                'reviewsUrl' => $settings->google_reviews_url ?: $settings->tripadvisor_reviews_url,
+                'licenseText' => $settings->license_number
+                    ? "DTCM / DED license {$settings->license_number}"
+                    : 'Dubai licensed operator - license number available on request',
+                'paymentText' => 'Secure payment via Network payment gateway. Booking confirmation and team follow-up are handled by email and WhatsApp.',
+                'partnerProof' => $settings->partner_proof ?? [],
             ],
         ]);
     }

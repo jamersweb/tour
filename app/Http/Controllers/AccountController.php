@@ -16,7 +16,7 @@ class AccountController extends Controller
     public function dashboard(): Response
     {
         $user = request()->user()->load([
-            'paymentTransactions' => fn ($query) => $query->latest()->limit(5),
+            'paymentTransactions' => fn ($query) => $query->with('payable')->latest()->limit(5),
             'inquiries' => fn ($query) => $query->latest()->limit(5),
             'feedback' => fn ($query) => $query->latest()->limit(5),
         ]);
@@ -40,7 +40,7 @@ class AccountController extends Controller
                     'reference' => $transaction->reference,
                     'status' => $transaction->status,
                     'amount' => "{$transaction->currency} ".number_format((float) $transaction->amount, 2),
-                    'itemTitle' => $transaction->payable?->title,
+                    'itemTitle' => $transaction->bookingTitle(),
                     'createdAt' => $transaction->created_at?->format('F j, Y'),
                     'invoiceUrl' => route('account.orders.invoice', $transaction),
                 ]),
@@ -97,10 +97,16 @@ class AccountController extends Controller
                 'reference' => $transaction->reference,
                 'status' => $transaction->status,
                 'amount' => "{$transaction->currency} ".number_format((float) $transaction->amount, 2),
-                'itemTitle' => $transaction->payable?->title,
-                'itemType' => class_basename($transaction->payable_type),
+                'itemTitle' => $transaction->bookingTitle(),
+                'itemType' => $transaction->isCartCheckout() ? 'Cart' : class_basename($transaction->payable_type),
                 'travelDate' => $transaction->travel_date?->format('F j, Y'),
                 'guestCount' => $transaction->guest_count,
+                'cartItems' => collect($transaction->cart_items ?? [])->map(fn (array $item) => [
+                    'title' => $item['title'] ?? 'Cart item',
+                    'travelDate' => $item['travelDate'] ?? null,
+                    'guestCount' => $item['guestCount'] ?? 1,
+                    'lineTotal' => $item['lineTotalFormatted'] ?? null,
+                ])->values()->all(),
                 'customerName' => $transaction->customer_name,
                 'customerEmail' => $transaction->customer_email,
                 'customerPhone' => $transaction->customer_phone,

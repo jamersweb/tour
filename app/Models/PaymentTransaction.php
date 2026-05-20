@@ -21,6 +21,7 @@ class PaymentTransaction extends Model
         'customer_phone',
         'travel_date',
         'guest_count',
+        'cart_items',
         'amount',
         'amount_minor',
         'currency',
@@ -42,6 +43,7 @@ class PaymentTransaction extends Model
         return [
             'travel_date' => 'date',
             'guest_count' => 'integer',
+            'cart_items' => 'array',
             'amount' => 'decimal:2',
             'amount_minor' => 'integer',
             'gateway_payload' => 'array',
@@ -80,5 +82,26 @@ class PaymentTransaction extends Model
     public function refundedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'refunded_by');
+    }
+
+    public function bookingTitle(): string
+    {
+        if ($this->isCartCheckout()) {
+            $count = count($this->cart_items);
+
+            return $count.' cart item'.($count === 1 ? '' : 's');
+        }
+
+        return $this->payable?->title ?? 'your booking';
+    }
+
+    public function isCartCheckout(): bool
+    {
+        return is_array($this->cart_items) && $this->cart_items !== [];
+    }
+
+    public function getBookingTitleAttribute(): string
+    {
+        return $this->bookingTitle();
     }
 }

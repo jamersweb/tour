@@ -39,6 +39,11 @@ class HandleInertiaRequests extends Middleware
 
         return [
             ...parent::share($request),
+            'cart' => [
+                'count' => fn () => collect($request->session()->get('cart.items', []))
+                    ->sum(fn (array $item) => max(1, (int) ($item['guest_count'] ?? 1))),
+                'url' => route('cart.index'),
+            ],
             'payments' => [
                 'networkEnabled' => (bool) config('payments.network.enabled'),
                 'networkCheckoutReady' => NetworkPayments::isCheckoutReady(),
@@ -81,7 +86,7 @@ class HandleInertiaRequests extends Middleware
                         'phone' => $settings->contact_phone,
                         'phoneSecondary' => $settings->contact_phone_secondary,
                         'address' => $settings->contact_address,
-                        'whatsappNumber' => null,
+                        'whatsappNumber' => $settings->whatsapp_number,
                     ],
                 ],
                 'contact' => [
@@ -89,7 +94,19 @@ class HandleInertiaRequests extends Middleware
                     'phone' => $settings->contact_phone,
                     'phoneSecondary' => $settings->contact_phone_secondary,
                     'address' => $settings->contact_address,
-                    'whatsappNumber' => null,
+                    'whatsappNumber' => $settings->whatsapp_number,
+                ],
+                'trust' => [
+                    'travelerCount' => '2,500+ happy travelers',
+                    'yearsInDubai' => '12 years in Dubai',
+                    'licenseNumber' => $settings->license_number,
+                    'licenseText' => $settings->license_number
+                        ? "DTCM / DED license {$settings->license_number}"
+                        : 'Dubai licensed operator - license number available on request',
+                    'responseTime' => 'We respond within 2 hours on WhatsApp',
+                    'googleReviewsUrl' => $settings->google_reviews_url,
+                    'tripadvisorReviewsUrl' => $settings->tripadvisor_reviews_url,
+                    'partnerProof' => $settings->partner_proof ?? [],
                 ],
                 'interestOptions' => $settings->interest_options ?? [],
                 'footer' => [
@@ -155,6 +172,21 @@ class HandleInertiaRequests extends Middleware
                             ['label' => 'Contact', 'href' => route('contact')],
                         ],
                     ],
+                ],
+                'mobileNavigation' => [
+                    ['label' => 'Home', 'href' => route('home')],
+                    ['label' => 'Experiences', 'href' => route('experiences.index')],
+                    ['label' => 'Tours', 'href' => route('tours.index')],
+                    ['label' => 'Packages', 'href' => route('packages.index')],
+                    ['label' => 'Schengen Visa', 'href' => route('visa.schengen')],
+                    ['label' => 'About', 'href' => route('about')],
+                    ['label' => 'Corporate Events', 'href' => route('corporate-events')],
+                    ['label' => 'Journal', 'href' => route('journal')],
+                    ['label' => 'FAQ', 'href' => route('faq')],
+                    ['label' => 'Cancellation Policy', 'href' => route('cancellation-policy')],
+                    ['label' => 'Terms & Conditions', 'href' => route('terms-and-conditions')],
+                    ['label' => 'Privacy Policy', 'href' => route('privacy-policy')],
+                    ['label' => 'Contact', 'href' => route('contact')],
                 ],
             ],
         ];
