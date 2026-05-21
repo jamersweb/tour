@@ -101,6 +101,7 @@ class PageController extends Controller
                 'href' => route('packages.index'),
                 'cta' => 'Request Quote',
                 'image' => $packageImages->get(0) ?: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80',
+                'highlights' => ['Hotels', 'Transfers', 'Attractions'],
             ],
             [
                 'title' => 'Event & Abu Dhabi Packages',
@@ -110,6 +111,7 @@ class PageController extends Controller
                 'href' => route('packages.index'),
                 'cta' => 'View Packages',
                 'image' => $packageImages->get(1) ?: 'https://images.unsplash.com/photo-1512632578888-169bbbc64f33?auto=format&fit=crop&w=1200&q=80',
+                'highlights' => ['Event travel', 'Abu Dhabi', 'Tickets'],
             ],
             [
                 'title' => 'International Holiday Planning',
@@ -119,6 +121,7 @@ class PageController extends Controller
                 'href' => route('packages.index'),
                 'cta' => 'Customize Package',
                 'image' => $packageImages->get(2) ?: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80',
+                'highlights' => ['Outbound', 'Visa support', 'Hotels'],
             ],
         ]);
 

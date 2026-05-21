@@ -33,15 +33,57 @@ const reduceMotion = ref(
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
 );
 
-const heroAvatars = computed(() => props.heroGallery.slice(0, 4));
 const mustDoCards = computed(() => props.mustDoExperiences.slice(0, 4));
 const topRatedCards = computed(() => (
     props.topRatedExperiences && props.topRatedExperiences.length > 0
         ? props.topRatedExperiences
         : props.mustDoExperiences
 ).slice(0, 4));
-const momentCards = computed(() => props.heroGallery.slice(0, 6));
 const serviceCards = computed(() => props.serviceFocus.slice(0, 3));
+const visaCards = computed(() => props.recommendations.slice(0, 4));
+const visaProcessSteps = computed(() => [
+    {
+        title: 'Choose route',
+        copy: 'Select the destination and visa type that matches the trip.',
+        icon: 'document',
+    },
+    {
+        title: 'Review file',
+        copy: 'A consultant checks key documents before you proceed.',
+        icon: 'check',
+    },
+    {
+        title: 'Proceed clearly',
+        copy: 'Know expected timelines, fees, and next steps before applying.',
+        icon: 'arrow',
+    },
+]);
+const whyAcuteCards = computed(() => [
+    {
+        title: 'Local Experts',
+        copy: 'Dubai-based guidance.',
+        icon: 'pin',
+        tone: 'gold',
+    },
+    {
+        title: '2,500+ Customers',
+        copy: 'Served across trips and visas.',
+        icon: 'customer',
+        tone: 'blue',
+    },
+    {
+        title: 'Secure Payment',
+        copy: 'Safe confirmation.',
+        icon: 'card',
+        tone: 'green',
+    },
+    {
+        title: 'Group Friendly',
+        copy: 'Solo, family, and groups.',
+        icon: 'group',
+        tone: 'orange',
+    },
+]);
 const visaFlags = {
     australia: 'au',
     brazil: 'br',
@@ -55,6 +97,7 @@ const visaFlags = {
 const activeSlides = ref({
     mustDo: 0,
     topRated: 0,
+    packages: 0,
     testimonials: 0,
 });
 
@@ -76,6 +119,15 @@ function visaFlag(item) {
     const key = Object.keys(visaFlags).find((name) => title.includes(name));
 
     return key ? visaFlags[key] : null;
+}
+
+function whyAcuteIconPath(icon) {
+    return {
+        pin: 'M12 21s7-4.8 7-11a7 7 0 0 0-14 0c0 6.2 7 11 7 11Zm0-8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z',
+        customer: 'M15 11a4 4 0 1 0-8 0M3 21a8 8 0 0 1 16 0M19 8v6M22 11h-6',
+        card: 'M3 7h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Zm0 4h18M7 15h4',
+        group: 'M16 11a4 4 0 1 0-8 0M4 21a8 8 0 0 1 16 0M19 8h2M3 8h2',
+    }[icon] || 'M12 5v14M5 12h14';
 }
 
 function updateCarousel(name, event) {
@@ -170,49 +222,27 @@ onUnmounted(() => detachMediaListeners());
                     <span class="home-title-desktop">{{ hero.title }}</span>
                     <span class="home-title-mobile">{{ hero.mobileTitle || hero.title }}</span>
                 </h1>
-                <p class="home-hero-video__lead">{{ hero.description }}</p>
-                <div class="home-hero-video__proof">
-                    <div class="home-hero-video__avatars" aria-hidden="true">
-                        <span
-                            v-for="item in heroAvatars"
-                            :key="item.slug"
-                            class="home-hero-video__avatar"
-                        >
-                            <img :src="item.image" :alt="item.title" />
-                        </span>
-                    </div>
-                    <div class="home-hero-video__proof-copy">
-                        <strong>2,500+</strong>
-                        <span>travelers</span>
-                    </div>
+                <p class="home-hero-video__lead">
+                    Search Dubai tours, attraction tickets, holiday packages, and visa assistance from one local travel team.
+                </p>
+                <div class="home-hero-rating" aria-label="Rated 4.9 out of 5 by more than 2,500 travelers">
+                    <span aria-hidden="true">★★★★★</span>
+                    <strong>4.9/5 by 2,500+ travelers</strong>
                 </div>
-                <p class="home-hero-video__trust">{{ hero.trustLine }}</p>
-                <div class="home-hero-video__actions">
-                    <Link class="home-hero-video__cta home-hero-video__cta--solid" :href="hero.primaryCta.href">
-                        {{ hero.primaryCta.label }}
-                    </Link>
-                    <div class="home-hero-video__secondary-actions">
-                        <Link class="home-hero-video__secondary-link" :href="hero.secondaryCta.href">
-                            {{ hero.secondaryCta.label }}
-                        </Link>
-                        <Link
-                            v-if="hero.tertiaryCta"
-                            class="home-hero-video__secondary-link"
-                            :href="hero.tertiaryCta.href"
-                        >
-                            {{ hero.tertiaryCta.label }}
-                        </Link>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="home-trust-strip" aria-label="Acute Tourism proof">
-            <div class="container home-trust-strip__inner">
-                <span>2,500+ happy travelers</span>
-                <span>Serving Dubai travelers since 2013</span>
-                <span>Licensed operator</span>
-                <span>WhatsApp replies within 2 hours</span>
+                <form class="home-hero-search" action="/experiences" method="get" role="search">
+                    <input
+                        name="search"
+                        type="search"
+                        placeholder="Search tours, packages, visas..."
+                        aria-label="Search Acute Tourism"
+                    />
+                    <button type="submit" aria-label="Search">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="11" cy="11" r="7"></circle>
+                            <path d="m20 20-3.5-3.5"></path>
+                        </svg>
+                    </button>
+                </form>
             </div>
         </section>
 
@@ -361,8 +391,11 @@ onUnmounted(() => detachMediaListeners());
                     </div>
                     <Link class="home-dashboard-more" href="/packages">View All Packages</Link>
                 </div>
-                <div class="home-dashboard-grid home-dashboard-grid--three">
-                    <article v-for="item in packageCategories" :key="item.title" class="home-dashboard-card home-dashboard-card--package home-dashboard-card--package-category">
+                <div
+                    class="home-dashboard-grid home-dashboard-grid--three home-mobile-carousel"
+                    @scroll.passive="updateCarousel('packages', $event)"
+                >
+                    <article v-for="item in packageCategories" :key="item.title" class="home-dashboard-card home-dashboard-card--package home-dashboard-card--package-category" data-carousel-card>
                         <Link class="home-dashboard-card__media" :href="item.href">
                             <img
                                 v-if="item.image"
@@ -375,94 +408,52 @@ onUnmounted(() => detachMediaListeners());
                             />
                         </Link>
                         <div class="home-dashboard-card__body">
+                            <div v-if="item.highlights?.length" class="home-package-highlights">
+                                <span v-for="highlight in item.highlights" :key="highlight">{{ highlight }}</span>
+                            </div>
                             <h3>{{ item.title }}</h3>
                             <p>{{ item.summary }}</p>
+                            <strong class="home-package-price">{{ item.priceLine }}</strong>
                             <div class="home-dashboard-card__meta">
                                 <span>{{ item.detail }}</span>
-                                <strong>{{ item.priceLine }}</strong>
                             </div>
                             <Link class="home-dashboard-card__button home-dashboard-card__button--light" :href="item.href">{{ item.cta }}</Link>
                         </div>
                     </article>
                 </div>
+                <div class="home-carousel-dots" aria-hidden="true">
+                    <span
+                        v-for="(_, index) in packageCategories"
+                        :key="index"
+                        :class="{ 'is-active': activeSlides.packages === index }"
+                    ></span>
+                </div>
+                <Link class="home-mobile-view-all" href="/packages">View All Packages</Link>
             </div>
         </section>
 
-        <section v-if="momentCards.length" class="home-dashboard-section home-dashboard-section--light" data-reveal>
+        <section class="home-dashboard-section home-dashboard-section--light home-why-acute-section" data-reveal>
             <div class="container home-dashboard-stack">
-                <div class="home-dashboard-heading">
-                    <div>
-                        <h2>Curated <em>Travel</em> Moments</h2>
-                    </div>
+                <div class="home-why-acute-heading">
+                    <p>Why Acute</p>
+                    <h2>Why Book With Acute Tourism?</h2>
+                    <span>Short proof points that matter when customers are deciding who to trust.</span>
                 </div>
-                <div class="home-dashboard-moments">
-                    <div class="home-dashboard-mosaic">
-                        <Link
-                            v-for="item in momentCards.slice(0, 5)"
-                            :key="item.slug"
-                            class="home-dashboard-mosaic__item"
-                            :href="`/experiences/${item.slug}`"
-                        >
-                            <img :src="item.image" :alt="item.title" width="520" height="520" loading="lazy" decoding="async" />
-                        </Link>
-                    </div>
-                    <div class="home-dashboard-feature-video">
-                        <img
-                            :src="momentCards[5]?.image || momentCards[0]?.image"
-                            :alt="momentCards[0]?.title || 'Travel moment'"
-                            width="900"
-                            height="760"
-                            loading="lazy"
-                            decoding="async"
-                        />
-                        <div class="home-dashboard-feature-video__overlay">
-                            <strong>{{ momentCards[0]?.title }}</strong>
-                            <span>{{ momentCards[0]?.tag }}</span>
+                <div class="home-why-acute-grid">
+                    <article
+                        v-for="card in whyAcuteCards"
+                        :key="card.title"
+                        class="home-why-acute-card"
+                    >
+                        <span class="home-why-acute-card__icon" :class="`home-why-acute-card__icon--${card.tone}`" aria-hidden="true">
+                            <svg viewBox="0 0 24 24">
+                                <path :d="whyAcuteIconPath(card.icon)"></path>
+                            </svg>
+                        </span>
+                        <div>
+                            <h3>{{ card.title }}</h3>
+                            <p>{{ card.copy }}</p>
                         </div>
-                        <Link class="home-dashboard-feature-video__button" href="/experiences">View All Tours</Link>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="home-dashboard-section home-dashboard-section--light home-proof-section" data-reveal>
-            <div class="container home-dashboard-stack">
-                <div class="home-dashboard-heading home-dashboard-heading--center">
-                    <div>
-                        <h2>Proof before you book</h2>
-                    </div>
-                </div>
-                <div class="home-proof-grid">
-                    <article class="home-proof-card home-proof-card--review">
-                        <p class="home-dashboard-service-card__tag">{{ trustProof.reviewSource || 'Reviews' }}</p>
-                        <h3>Verified traveler feedback</h3>
-                        <p>Read public reviews before you enquire, then confirm the exact service details with the Acute team.</p>
-                        <a
-                            v-if="trustProof.reviewsUrl"
-                            class="home-dashboard-card__button"
-                            :href="trustProof.reviewsUrl"
-                            target="_blank"
-                            rel="noreferrer"
-                        >
-                            Read All {{ trustProof.reviewSource }} Reviews
-                        </a>
-                    </article>
-                    <article class="home-proof-card">
-                        <p class="home-dashboard-service-card__tag">License</p>
-                        <h3>{{ trustProof.licenseText }}</h3>
-                        <p>Ask the team to verify license details before payment if you need the certificate or registration reference for your records.</p>
-                    </article>
-                    <article class="home-proof-card">
-                        <p class="home-dashboard-service-card__tag">Payment</p>
-                        <h3>Secure booking support</h3>
-                        <p>{{ trustProof.paymentText }}</p>
-                    </article>
-                    <article class="home-proof-card home-proof-card--wide">
-                        <p class="home-dashboard-service-card__tag">Operating proof</p>
-                        <h3>One team coordinates the trip details.</h3>
-                        <p>
-                            Hotels, transfers, attractions, visa-document support, and final guest coordination stay with one Acute Tourism team, so the handoff from enquiry to travel is clear.
-                        </p>
                     </article>
                 </div>
             </div>
@@ -508,14 +499,42 @@ onUnmounted(() => detachMediaListeners());
                 <div class="home-dashboard-heading">
                     <div>
                         <h2>Visa services &amp; international travel</h2>
-                        <p class="home-visa-disclaimer">
-                            Acute Tourism provides visa application support and documentation guidance. Visa approval is at the sole discretion of the issuing embassy or consulate. Acute Tourism does not guarantee visa approval. Service fees are charged for assistance, not for visa issuance.
-                        </p>
                     </div>
                 </div>
-                <div class="home-dashboard-grid home-dashboard-grid--three">
+                <div class="home-visa-disclaimer">
+                    <strong>
+                        <span aria-hidden="true">▼</span>
+                        Important visa note
+                    </strong>
+                    <p>
+                        Acute Tourism provides visa application support and documentation guidance. Visa approval is at the sole discretion of the issuing embassy or consulate. Acute Tourism does not guarantee visa approval. Service fees are charged for assistance, not for visa issuance.
+                    </p>
+                </div>
+                <div class="home-visa-process">
+                    <article v-for="step in visaProcessSteps" :key="step.title" class="home-visa-step">
+                        <span class="home-visa-step__icon" aria-hidden="true">
+                            <svg v-if="step.icon === 'document'" viewBox="0 0 24 24">
+                                <path d="M7 3h7l4 4v14H7z"></path>
+                                <path d="M14 3v5h5"></path>
+                            </svg>
+                            <svg v-else-if="step.icon === 'check'" viewBox="0 0 24 24">
+                                <path d="M9 11l2 2 4-4"></path>
+                                <circle cx="12" cy="12" r="9"></circle>
+                            </svg>
+                            <svg v-else viewBox="0 0 24 24">
+                                <path d="M5 12h14"></path>
+                                <path d="m13 6 6 6-6 6"></path>
+                            </svg>
+                        </span>
+                        <span>
+                            <strong>{{ step.title }}</strong>
+                            <small>{{ step.copy }}</small>
+                        </span>
+                    </article>
+                </div>
+                <div class="home-dashboard-grid home-dashboard-grid--four">
                     <article
-                        v-for="item in recommendations"
+                        v-for="item in visaCards"
                         :key="item.title"
                         class="home-visa-card"
                     >
@@ -528,7 +547,7 @@ onUnmounted(() => detachMediaListeners());
                                     loading="lazy"
                                     decoding="async"
                                 />
-                                <span v-else>✈</span>
+                                <span v-else>Visa</span>
                             </span>
                             <p class="home-visa-card__tag">{{ item.tag }}</p>
                         </div>
@@ -541,3 +560,4 @@ onUnmounted(() => detachMediaListeners());
         </section>
     </section>
 </template>
+

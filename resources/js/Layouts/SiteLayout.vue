@@ -6,8 +6,16 @@ import WhatsappFloat from '../Components/WhatsappFloat.vue';
 const page = usePage();
 const logoutForm = useForm({});
 const headerRef = ref(null);
+const footerRef = ref(null);
 const mobileNavOpen = ref(false);
+const partnerUrl = 'https://tourgrat.com';
+const paymentIcons = [
+    { label: 'Cards', image: '/images/payment-card.svg' },
+    { label: 'Wallet', image: '/images/payment-wallet.svg' },
+    { label: 'Secure payment', image: '/images/payment-secure.svg' },
+];
 let revealObserver;
+let footerMediaQuery;
 
 function phoneHref(value) {
     return `tel:${String(value).replace(/[^\d+]/g, '')}`;
@@ -20,6 +28,20 @@ function whatsappHref(value) {
     }
 
     return `https://wa.me/${number}?text=${encodeURIComponent('Hi Acute Tourism, I would like to plan a trip.')}`;
+}
+
+function footerSocialIconPath(label) {
+    const key = String(label || '').toLowerCase();
+
+    if (key.includes('instagram')) {
+        return 'M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4Zm5 5.2A3.8 3.8 0 1 0 12 15.8 3.8 3.8 0 0 0 12 8.2Zm5.2-1.1h.01';
+    }
+
+    if (key.includes('facebook')) {
+        return 'M14 8h2V4h-2a5 5 0 0 0-5 5v2H7v4h2v6h4v-6h2.5l.5-4h-3V9a1 1 0 0 1 1-1Z';
+    }
+
+    return 'M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm0 0c2.1 2.2 3.2 4.9 3.2 8S14.1 17.8 12 20m0-16C9.9 6.2 8.8 8.9 8.8 12s1.1 5.8 3.2 8M4.7 9h14.6M4.7 15h14.6';
 }
 
 function initRevealObserver() {
@@ -83,6 +105,42 @@ function onNavGroupToggle(event) {
     });
 }
 
+function isFooterAccordionMobile() {
+    return footerMediaQuery?.matches ?? window.matchMedia('(max-width: 960px)').matches;
+}
+
+function setFooterPanelsForViewport() {
+    const panels = footerRef.value?.querySelectorAll('details.footer-panel');
+    if (!panels) {
+        return;
+    }
+
+    panels.forEach((panel) => {
+        if (isFooterAccordionMobile()) {
+            panel.removeAttribute('open');
+            return;
+        }
+
+        panel.setAttribute('open', '');
+    });
+}
+
+function onFooterPanelToggle(event) {
+    const el = event.target;
+    if (!(el instanceof HTMLDetailsElement) || !el.classList.contains('footer-panel')) {
+        return;
+    }
+    if (!isFooterAccordionMobile() || !el.open) {
+        return;
+    }
+
+    footerRef.value?.querySelectorAll('details.footer-panel').forEach((panel) => {
+        if (panel !== el) {
+            panel.removeAttribute('open');
+        }
+    });
+}
+
 function onDocumentPointerDown(event) {
     const target = event.target;
     if (!(target instanceof Node) || !headerRef.value) {
@@ -113,6 +171,9 @@ onMounted(() => {
     document.addEventListener('pointerdown', onDocumentPointerDown, true);
     document.addEventListener('keydown', onDocumentKeydown);
     window.addEventListener('scroll', onWindowScroll, { passive: true });
+    footerMediaQuery = window.matchMedia('(max-width: 960px)');
+    footerMediaQuery.addEventListener('change', setFooterPanelsForViewport);
+    setFooterPanelsForViewport();
     initRevealObserver();
 });
 
@@ -120,6 +181,7 @@ watch(
     () => page.url,
     async () => {
         await nextTick();
+        setFooterPanelsForViewport();
         initRevealObserver();
     },
 );
@@ -128,6 +190,7 @@ onBeforeUnmount(() => {
     document.removeEventListener('pointerdown', onDocumentPointerDown, true);
     document.removeEventListener('keydown', onDocumentKeydown);
     window.removeEventListener('scroll', onWindowScroll);
+    footerMediaQuery?.removeEventListener('change', setFooterPanelsForViewport);
     revealObserver?.disconnect();
 });
 
@@ -201,8 +264,21 @@ onBeforeUnmount(() => {
                     </nav>
 
                     <div class="header-actions">
-                        <Link class="header-cart-link" :href="page.props.cart.url" @click="closeMobileNav">
-                            Cart
+                        <a
+                            class="header-partner-link"
+                            :href="partnerUrl"
+                            target="_blank"
+                            rel="noreferrer"
+                            @click="closeMobileNav"
+                        >
+                            Partner with us
+                        </a>
+                        <Link class="header-cart-link" :href="page.props.cart.url" aria-label="Cart" @click="closeMobileNav">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M5 6h2l1.1 8.2a2 2 0 0 0 2 1.8h6.5a2 2 0 0 0 1.9-1.4L20 9H8"></path>
+                                <path d="M10 20h.01"></path>
+                                <path d="M17 20h.01"></path>
+                            </svg>
                             <span v-if="page.props.cart.count" class="header-cart-link__count">{{ page.props.cart.count }}</span>
                         </Link>
                         <Link v-if="page.props.auth.user" class="header-cta" :href="page.props.auth.user.dashboardUrl" @click="closeMobileNav">My Account</Link>
@@ -223,7 +299,7 @@ onBeforeUnmount(() => {
             <slot />
         </main>
 
-        <footer class="site-footer">
+        <footer ref="footerRef" class="site-footer">
             <div class="container footer-grid">
                 <div>
                     <div class="footer-brand">
@@ -235,9 +311,27 @@ onBeforeUnmount(() => {
                         />
                     </div>
                     <p class="footer-copy">{{ page.props.site.footer.description }}</p>
+                    <div class="footer-tourgrat">
+                        <strong>Tour Grat</strong>
+                        <span>Acute Tourism's referrer platform for partners who send travel leads and track opportunities.</span>
+                        <div class="footer-store-buttons">
+                            <a class="footer-store-btn" href="#" aria-label="Download Tour Grat on the App Store">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M17.5 12.5c0-2.2 1.8-3.3 1.9-3.4-1-1.5-2.6-1.7-3.2-1.7-1.4-.1-2.6.8-3.3.8-.7 0-1.8-.8-2.9-.8-1.5 0-2.9.9-3.7 2.2-1.6 2.8-.4 6.9 1.1 9.1.8 1.1 1.7 2.3 2.9 2.3 1.1 0 1.6-.7 3-.7s1.8.7 3 .7 2.1-1.1 2.8-2.2c.9-1.3 1.2-2.5 1.3-2.6-.1 0-2.4-.9-2.4-3.7ZM15.3 5.9c.6-.8 1-1.8.9-2.9-.9 0-2 .6-2.7 1.4-.6.7-1.1 1.8-1 2.8 1 .1 2.1-.5 2.8-1.3Z" />
+                                </svg>
+                                <span><small>Download on the</small>App Store</span>
+                            </a>
+                            <a class="footer-store-btn" href="#" aria-label="Get Tour Grat on Google Play">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="m4 3 11 9L4 21V3Zm12.2 7.9 2.5-1.5c.8-.5.8-1.6 0-2.1L6.3.3l9.9 10.6Zm0 2.2L6.3 23.7l12.4-7c.8-.5.8-1.6 0-2.1l-2.5-1.5Z" />
+                                </svg>
+                                <span><small>Get it on</small>Google Play</span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
 
-                <details class="footer-panel" open>
+                <details class="footer-panel" open @toggle="onFooterPanelToggle">
                     <summary class="footer-label">Explore</summary>
                     <ul class="footer-list">
                         <li v-for="item in page.props.site.footerNavigation" :key="item.href">
@@ -246,7 +340,7 @@ onBeforeUnmount(() => {
                     </ul>
                 </details>
 
-                <details class="footer-panel" open>
+                <details class="footer-panel" open @toggle="onFooterPanelToggle">
                     <summary class="footer-label">Contact</summary>
                     <ul class="footer-list">
                         <li>
@@ -276,20 +370,42 @@ onBeforeUnmount(() => {
                     </ul>
                 </details>
 
-                <details class="footer-panel" open>
+                <details class="footer-panel" open @toggle="onFooterPanelToggle">
                     <summary class="footer-label">Connect</summary>
-                    <ul class="footer-list">
-                        <li v-for="link in page.props.site.footer.socialLinks" :key="link.href">
-                            <a class="footer-link" :href="link.href" target="_blank" rel="noreferrer">
-                                {{ link.label }}
-                            </a>
-                        </li>
-                        <li>
-                            <a class="footer-link" :href="page.props.site.footer.website" target="_blank" rel="noreferrer">
-                                Official Website
-                            </a>
-                        </li>
-                    </ul>
+                    <div class="footer-social-icons" aria-label="Social links">
+                        <a
+                            v-for="link in page.props.site.footer.socialLinks"
+                            :key="`icon-${link.href}`"
+                            :href="link.href"
+                            target="_blank"
+                            rel="noreferrer"
+                            :aria-label="link.label"
+                        >
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path :d="footerSocialIconPath(link.label)"></path>
+                            </svg>
+                        </a>
+                        <a
+                            :href="page.props.site.footer.website"
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label="Official Website"
+                        >
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path :d="footerSocialIconPath('website')"></path>
+                            </svg>
+                        </a>
+                    </div>
+                    <div class="footer-payment-icons" aria-label="Payment support">
+                        <span
+                            v-for="item in paymentIcons"
+                            :key="item.label"
+                            :title="item.label"
+                            :aria-label="item.label"
+                        >
+                            <img :src="item.image" :alt="item.label" width="64" height="64" loading="lazy" />
+                        </span>
+                    </div>
                 </details>
             </div>
 
@@ -299,6 +415,53 @@ onBeforeUnmount(() => {
                 <span>{{ page.props.site.trust.responseTime }}</span>
             </div>
         </footer>
+
+        <nav class="mobile-bottom-nav" aria-label="Mobile quick navigation">
+            <Link class="mobile-bottom-nav__item" href="/experiences">
+                <span aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M4 7h16"></path>
+                        <path d="M6 7v12"></path>
+                        <path d="M18 7v12"></path>
+                        <path d="M6 19h12"></path>
+                        <path d="M9 7V5h6v2"></path>
+                    </svg>
+                </span>
+                Tours
+            </Link>
+            <Link class="mobile-bottom-nav__item" href="/packages">
+                <span aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M4 8h16v11H4z"></path>
+                        <path d="M8 8V6a4 4 0 0 1 8 0v2"></path>
+                        <path d="M4 13h16"></path>
+                    </svg>
+                </span>
+                Packages
+            </Link>
+            <Link class="mobile-bottom-nav__item" href="/visa-services">
+                <span aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M7 3h7l4 4v14H7z"></path>
+                        <path d="M14 3v5h5"></path>
+                        <path d="M9 13h6"></path>
+                        <path d="M9 17h4"></path>
+                    </svg>
+                </span>
+                Visas
+            </Link>
+            <Link class="mobile-bottom-nav__item mobile-bottom-nav__item--cart" :href="page.props.cart.url">
+                <span aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M5 6h2l1.1 8.2a2 2 0 0 0 2 1.8h6.5a2 2 0 0 0 1.9-1.4L20 9H8"></path>
+                        <path d="M10 20h.01"></path>
+                        <path d="M17 20h.01"></path>
+                    </svg>
+                    <b v-if="page.props.cart.count">{{ page.props.cart.count }}</b>
+                </span>
+                Cart
+            </Link>
+        </nav>
 
         <WhatsappFloat />
     </div>
