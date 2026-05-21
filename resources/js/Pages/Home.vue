@@ -26,6 +26,8 @@ const props = defineProps({
 });
 
 const videoRef = ref(null);
+const heroSearchQuery = ref('');
+const heroSearchOpen = ref(false);
 const mobileMediaRibbon = ref(
     typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches,
 );
@@ -41,6 +43,44 @@ const topRatedCards = computed(() => (
 ).slice(0, 4));
 const serviceCards = computed(() => props.serviceFocus.slice(0, 3));
 const visaCards = computed(() => props.recommendations.slice(0, 4));
+const heroSearchItems = computed(() => [
+    ...props.featuredExperiences.map((item) => ({
+        title: item.title,
+        type: item.category || 'Experience',
+        meta: item.priceFrom || item.duration || 'Dubai experience',
+        href: `/experiences/${item.slug}`,
+        keywords: [item.title, item.category, item.summary, item.location, item.duration].filter(Boolean).join(' '),
+    })),
+    ...props.packageCategories.map((item) => ({
+        title: item.title,
+        type: 'Holiday Package',
+        meta: item.priceLine || item.detail || 'Custom quote',
+        href: item.href,
+        keywords: [item.title, item.summary, item.detail, item.priceLine, ...(item.highlights || [])].filter(Boolean).join(' '),
+    })),
+    ...props.recommendations.map((item) => ({
+        title: item.title,
+        type: 'Visa Service',
+        meta: item.tag || 'Visa guidance',
+        href: item.href,
+        keywords: [item.title, item.tag, item.summary].filter(Boolean).join(' '),
+    })),
+]);
+const heroSearchSuggestions = computed(() => {
+    const query = heroSearchQuery.value.trim().toLowerCase();
+    const items = heroSearchItems.value;
+
+    if (!query) {
+        return items.slice(0, 5);
+    }
+
+    return items
+        .filter((item) => `${item.title} ${item.type} ${item.meta} ${item.keywords}`.toLowerCase().includes(query))
+        .slice(0, 6);
+});
+const showHeroSearchSuggestions = computed(() => (
+    heroSearchOpen.value || heroSearchQuery.value.trim().length > 0
+) && heroSearchSuggestions.value.length > 0);
 const visaProcessSteps = computed(() => [
     {
         title: 'Choose route',
@@ -148,6 +188,12 @@ function updateCarousel(name, event) {
     };
 }
 
+function closeHeroSearchSoon() {
+    window.setTimeout(() => {
+        heroSearchOpen.value = false;
+    }, 140);
+}
+
 let detachMediaListeners = () => {};
 
 onMounted(() => {
@@ -229,20 +275,44 @@ onUnmounted(() => detachMediaListeners());
                     <span aria-hidden="true">★★★★★</span>
                     <strong>4.9/5 by 2,500+ travelers</strong>
                 </div>
-                <form class="home-hero-search" action="/experiences" method="get" role="search">
-                    <input
-                        name="search"
-                        type="search"
-                        placeholder="Search tours, packages, visas..."
-                        aria-label="Search Acute Tourism"
-                    />
-                    <button type="submit" aria-label="Search">
-                        <svg viewBox="0 0 24 24" aria-hidden="true">
-                            <circle cx="11" cy="11" r="7"></circle>
-                            <path d="m20 20-3.5-3.5"></path>
-                        </svg>
-                    </button>
-                </form>
+                <div class="home-hero-search-shell">
+                    <form class="home-hero-search" action="/experiences" method="get" role="search">
+                        <input
+                            v-model="heroSearchQuery"
+                            name="search"
+                            type="search"
+                            placeholder="Search tours, packages, visas..."
+                            aria-label="Search Acute Tourism"
+                            autocomplete="off"
+                            @focus="heroSearchOpen = true"
+                            @input="heroSearchOpen = true"
+                            @blur="closeHeroSearchSoon"
+                            @keydown.escape="heroSearchOpen = false"
+                        />
+                        <button type="submit" aria-label="Search">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <circle cx="11" cy="11" r="7"></circle>
+                                <path d="m20 20-3.5-3.5"></path>
+                            </svg>
+                        </button>
+                    </form>
+                    <div v-if="showHeroSearchSuggestions" class="home-hero-search-results" role="listbox">
+                        <Link
+                            v-for="item in heroSearchSuggestions"
+                            :key="`${item.type}-${item.title}`"
+                            class="home-hero-search-result"
+                            :href="item.href"
+                            role="option"
+                            @mousedown.prevent
+                        >
+                            <span>
+                                <strong>{{ item.title }}</strong>
+                                <small>{{ item.type }}</small>
+                            </span>
+                            <em>{{ item.meta }}</em>
+                        </Link>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -501,7 +571,11 @@ onUnmounted(() => detachMediaListeners());
                         <h2>Visa services &amp; international travel</h2>
                     </div>
                 </div>
-                <div class="home-visa-disclaimer">
+                <details class="home-visa-disclaimer" open>
+                    <summary>
+                        <span aria-hidden="true"></span>
+                        <strong>Important visa note</strong>
+                    </summary>
                     <strong>
                         <span aria-hidden="true">▼</span>
                         Important visa note
@@ -509,7 +583,7 @@ onUnmounted(() => detachMediaListeners());
                     <p>
                         Acute Tourism provides visa application support and documentation guidance. Visa approval is at the sole discretion of the issuing embassy or consulate. Acute Tourism does not guarantee visa approval. Service fees are charged for assistance, not for visa issuance.
                     </p>
-                </div>
+                </details>
                 <div class="home-visa-process">
                     <article v-for="step in visaProcessSteps" :key="step.title" class="home-visa-step">
                         <span class="home-visa-step__icon" aria-hidden="true">

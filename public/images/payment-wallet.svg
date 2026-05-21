@@ -1,7 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Wallet payment">
-  <rect width="64" height="64" rx="32" fill="#18206f"/>
-  <rect x="1" y="1" width="62" height="62" rx="31" fill="none" stroke="#ffffff" stroke-opacity=".16" stroke-width="2"/>
-  <path d="M18 24h27a4 4 0 0 1 4 4v13a4 4 0 0 1-4 4H20a5 5 0 0 1-5-5V27a5 5 0 0 1 5-5h20" fill="none" stroke="#f0c45f" stroke-width="3" stroke-linejoin="round"/>
-  <path d="M39 35h10" stroke="#f0c45f" stroke-width="3"/>
-  <circle cx="42" cy="35" r="1.8" fill="#f0c45f"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="172" height="56" viewBox="0 0 172 56" role="img" aria-label="Wallet payment">
+  <rect width="172" height="56" rx="16" fill="#fff8ec"/>
+  <rect x="1" y="1" width="170" height="54" rx="15" fill="none" stroke="#f0c45f" stroke-opacity=".55" stroke-width="2"/>
+  <rect x="18" y="16" width="35" height="25" rx="6" fill="#071056"/>
+  <path d="M25 16h22a5 5 0 0 1 5 5v15a5 5 0 0 1-5 5H24a6 6 0 0 1-6-6V22a6 6 0 0 1 6-6Z" fill="none" stroke="#f0c45f" stroke-width="3"/>
+  <circle cx="43" cy="29" r="2.2" fill="#f0c45f"/>
+  <text x="64" y="25" fill="#071056" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="800" letter-spacing="1.5">WALLET</text>
+  <text x="64" y="40" fill="#7b6a58" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="700">Digital payment</text>
 </svg>

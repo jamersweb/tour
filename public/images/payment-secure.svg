@@ -1,6 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Secure payment">
-  <rect width="64" height="64" rx="32" fill="#18206f"/>
-  <rect x="1" y="1" width="62" height="62" rx="31" fill="none" stroke="#ffffff" stroke-opacity=".16" stroke-width="2"/>
-  <path d="M32 15l16 7v12c0 11-7 17-16 21-9-4-16-10-16-21V22l16-7Z" fill="none" stroke="#f0c45f" stroke-width="3" stroke-linejoin="round"/>
-  <path d="M25 33l5 5 10-11" fill="none" stroke="#f0c45f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="172" height="56" viewBox="0 0 172 56" role="img" aria-label="Secure payment">
+  <rect width="172" height="56" rx="16" fill="#fff8ec"/>
+  <rect x="1" y="1" width="170" height="54" rx="15" fill="none" stroke="#f0c45f" stroke-opacity=".55" stroke-width="2"/>
+  <path d="M35 13l18 8v12c0 12-8 18-18 22-10-4-18-10-18-22V21l18-8Z" fill="#071056"/>
+  <path d="M27 30l6 6 11-13" fill="none" stroke="#f0c45f" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="64" y="25" fill="#071056" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="800" letter-spacing="1.5">SECURE</text>
+  <text x="64" y="40" fill="#7b6a58" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="700">Protected checkout</text>
 </svg>

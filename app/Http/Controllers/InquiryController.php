@@ -71,9 +71,11 @@ class InquiryController extends Controller
         $message = match (true) {
             (bool) $experience => 'Experience inquiry received. The lead is now attached to this experience in the admin pipeline.',
             $source === 'visa-landing-page' => 'Thank you. Your visa inquiry was received. Our team is notified by email—you should also get a confirmation message shortly.',
+            $source === 'package-custom-request' => 'Thank you. Your custom package request was received. Our team is notified by email and will follow up with options.',
             default => 'Inquiry received. Acute Tourism can follow up from this new lead pipeline.',
         };
 
         return back()->with('success', $message);
     }
 }
+

@@ -281,8 +281,30 @@ onBeforeUnmount(() => {
                             </svg>
                             <span v-if="page.props.cart.count" class="header-cart-link__count">{{ page.props.cart.count }}</span>
                         </Link>
-                        <Link v-if="page.props.auth.user" class="header-cta" :href="page.props.auth.user.dashboardUrl" @click="closeMobileNav">My Account</Link>
-                        <Link v-else class="header-cta" href="/login" @click="closeMobileNav">Login</Link>
+                        <Link
+                            v-if="page.props.auth.user"
+                            class="header-login-link"
+                            :href="page.props.auth.user.dashboardUrl"
+                            aria-label="My Account"
+                            @click="closeMobileNav"
+                        >
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </Link>
+                        <Link
+                            v-else
+                            class="header-login-link"
+                            href="/login"
+                            aria-label="Log in"
+                            @click="closeMobileNav"
+                        >
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </Link>
                         <button
                             v-if="page.props.auth.user"
                             class="button-secondary header-logout"

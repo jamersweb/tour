@@ -1,7 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Card payment">
-  <rect width="64" height="64" rx="32" fill="#18206f"/>
-  <rect x="1" y="1" width="62" height="62" rx="31" fill="none" stroke="#ffffff" stroke-opacity=".16" stroke-width="2"/>
-  <rect x="19" y="23" width="26" height="18" rx="2.5" fill="none" stroke="#f0c45f" stroke-width="3"/>
-  <path d="M19 29h26" stroke="#f0c45f" stroke-width="3"/>
-  <path d="M24 36h9" stroke="#f0c45f" stroke-width="3" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="172" height="56" viewBox="0 0 172 56" role="img" aria-label="Card payment">
+  <rect width="172" height="56" rx="16" fill="#fff8ec"/>
+  <rect x="1" y="1" width="170" height="54" rx="15" fill="none" stroke="#f0c45f" stroke-opacity=".55" stroke-width="2"/>
+  <rect x="18" y="17" width="34" height="23" rx="4" fill="#071056"/>
+  <path d="M18 24h34" stroke="#f0c45f" stroke-width="3"/>
+  <path d="M25 34h12" stroke="#f0c45f" stroke-width="3" stroke-linecap="round"/>
+  <text x="64" y="25" fill="#071056" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="800" letter-spacing="1.5">CARD</text>
+  <text x="64" y="40" fill="#7b6a58" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="700">Visa / Mastercard</text>
 </svg>

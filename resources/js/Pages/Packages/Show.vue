@@ -16,6 +16,12 @@ const props = defineProps({
 const page = usePage();
 
 const mediaItems = computed(() => props.packageItem.mediaItems || []);
+const interestOptions = computed(() => page.props.site?.interestOptions || []);
+const packageInquiryInterest = computed(() => (
+    interestOptions.value.find((option) => /package|general/i.test(option))
+    || interestOptions.value[0]
+    || 'General Planning'
+));
 
 const heroTiles = computed(() => {
     if (!mediaItems.value.length) {
@@ -58,11 +64,6 @@ const bestFor = computed(() => [
     'Families and groups who need hotels, transfers, and attractions coordinated together.',
     'Travelers who prefer a final quote based on dates, room type, guest count, and add-ons.',
 ]);
-const bookingHighlights = computed(() => [
-    props.packageItem.duration,
-    props.packageItem.location,
-    'Instant payment confirmation',
-].filter(Boolean));
 const reviewStars = computed(() => '★★★★★');
 const activeMediaIndex = ref(null);
 const openItineraryIndex = ref(null);
@@ -83,6 +84,19 @@ const cartForm = useForm({
     guest_count: 1,
 });
 
+const customPackageForm = useForm({
+    source: 'package-custom-request',
+    name: '',
+    email: '',
+    phone: '',
+    travel_date: '',
+    guest_count: 2,
+    interest: packageInquiryInterest.value,
+    hotel_preference: 'Flexible',
+    add_ons: 'Not sure yet',
+    message: '',
+});
+
 const totalAmount = computed(() => {
     const guestCount = Math.max(1, Number.parseInt(form.guest_count, 10) || 1);
     const rawAmount = String(props.packageItem.priceFrom || '0').replace(/[^0-9.]/g, '');
@@ -98,6 +112,42 @@ const addToCart = () => {
     cartForm.travel_date = form.travel_date;
     cartForm.guest_count = Math.max(1, Number.parseInt(form.guest_count, 10) || 1);
     cartForm.post('/cart', { preserveScroll: true });
+};
+
+const submitCustomPackageRequest = () => {
+    const guestCount = Math.max(1, Number.parseInt(customPackageForm.guest_count, 10) || 1);
+    const requestNote = customPackageForm.message?.trim() || 'No additional notes provided.';
+    const visibleMessage = customPackageForm.message;
+
+    customPackageForm.guest_count = guestCount;
+    customPackageForm.interest = packageInquiryInterest.value;
+    customPackageForm.message = [
+        `Package request: ${props.packageItem.title}`,
+        `Package slug: ${props.packageItem.slug}`,
+        `Base price: ${props.packageItem.priceFrom || 'On request'}`,
+        `Duration: ${props.packageItem.duration || 'Flexible'}`,
+        `Destination: ${props.packageItem.location || 'Dubai & UAE'}`,
+        `Preferred travel date: ${customPackageForm.travel_date || 'Not provided'}`,
+        `Travelers: ${guestCount}`,
+        `Hotel preference: ${customPackageForm.hotel_preference}`,
+        `Add-ons: ${customPackageForm.add_ons}`,
+        '',
+        'Customer request:',
+        requestNote,
+    ].join('\n');
+
+    customPackageForm.post('/inquiries', {
+        preserveScroll: true,
+        onError: () => {
+            customPackageForm.message = visibleMessage;
+        },
+        onSuccess: () => {
+            customPackageForm.reset('name', 'email', 'phone', 'travel_date', 'guest_count', 'message');
+            customPackageForm.hotel_preference = 'Flexible';
+            customPackageForm.add_ons = 'Not sure yet';
+            customPackageForm.interest = packageInquiryInterest.value;
+        },
+    });
 };
 
 const toggleItinerary = (index) => {
@@ -137,40 +187,96 @@ const closeMedia = () => {
                     </div>
                 </div>
 
-                <div class="experience-operator-layout">
+                <div class="experience-operator-layout experience-operator-layout--package">
                     <div class="experience-operator-main">
-                        <section ref="mosaicRef" class="experience-operator-mosaic">
-                            <button
-                                v-for="(item, idx) in heroTiles"
-                                :key="`${item.type}-${item.url}-${idx}`"
-                                type="button"
-                                class="experience-operator-mosaic__tile"
-                                :class="`experience-operator-mosaic__tile--${idx + 1}`"
-                                @click="openMedia(idx)"
-                            >
-                                <video
-                                    v-if="item.type === 'video'"
-                                    class="experience-operator-mosaic__media"
-                                    :src="item.url"
-                                    autoplay
-                                    loop
-                                    muted
-                                    playsinline
-                                    preload="metadata"
-                                ></video>
-                                <img
-                                    v-else
-                                    class="experience-operator-mosaic__media"
-                                    :src="item.url"
-                                    :alt="packageItem.title"
-                                    loading="eager"
-                                    decoding="async"
-                                />
-                                <span v-if="idx === 4 && mediaItems.length > 5" class="experience-operator-mosaic__more">
-                                    +{{ mediaItems.length - 4 }}
-                                </span>
-                            </button>
-                        </section>
+                        <div class="package-detail-top-grid">
+                            <section ref="mosaicRef" class="experience-operator-mosaic package-detail-mosaic">
+                                <button
+                                    v-for="(item, idx) in heroTiles"
+                                    :key="`${item.type}-${item.url}-${idx}`"
+                                    type="button"
+                                    class="experience-operator-mosaic__tile"
+                                    :class="`experience-operator-mosaic__tile--${idx + 1}`"
+                                    @click="openMedia(idx)"
+                                >
+                                    <video
+                                        v-if="item.type === 'video'"
+                                        class="experience-operator-mosaic__media"
+                                        :src="item.url"
+                                        autoplay
+                                        loop
+                                        muted
+                                        playsinline
+                                        preload="metadata"
+                                    ></video>
+                                    <img
+                                        v-else
+                                        class="experience-operator-mosaic__media"
+                                        :src="item.url"
+                                        :alt="packageItem.title"
+                                        loading="eager"
+                                        decoding="async"
+                                    />
+                                    <span v-if="idx === 4 && mediaItems.length > 5" class="experience-operator-mosaic__more">
+                                        +{{ mediaItems.length - 4 }}
+                                    </span>
+                                </button>
+                            </section>
+
+                            <article class="experience-operator-booking package-detail-booking">
+                                <div>
+                                    <div class="package-detail-booking__topline">
+                                        <p class="experience-operator-booking__badge">Best Seller</p>
+                                        <span v-if="packageItem.duration">{{ packageItem.duration }}</span>
+                                    </div>
+                                    <p class="experience-operator-booking__label">Reserve package</p>
+                                    <h2 v-if="packageItem.priceFrom" class="experience-operator-booking__price">
+                                        {{ packageItem.priceFrom }} <span>per person</span>
+                                    </h2>
+                                    <p v-else class="experience-operator-booking__price experience-operator-booking__price--muted">
+                                        Current pricing is available at checkout.
+                                    </p>
+                                </div>
+
+                                <div v-if="page.props.flash.success" class="success-banner">
+                                    {{ page.props.flash.success }}
+                                </div>
+                                <div v-if="page.props.flash.error" class="error-banner">
+                                    {{ page.props.flash.error }}
+                                </div>
+
+                                <div class="experience-operator-cart-fields package-detail-booking__fields">
+                                    <label class="field">
+                                        <span>Travel Date</span>
+                                        <input v-model="form.travel_date" type="date" />
+                                        <small v-if="cartForm.errors.travel_date">{{ cartForm.errors.travel_date }}</small>
+                                    </label>
+
+                                    <label class="field">
+                                        <span>Guests</span>
+                                        <input v-model="form.guest_count" type="number" min="1" max="100" />
+                                        <small v-if="cartForm.errors.guest_count">{{ cartForm.errors.guest_count }}</small>
+                                    </label>
+
+                                    <div class="experience-operator-total">
+                                        <span>Estimated Total</span>
+                                        <strong>{{ totalAmount }}</strong>
+                                    </div>
+                                </div>
+
+                                <div class="package-detail-booking__actions">
+                                    <button
+                                        class="button-primary add-cart-button"
+                                        type="button"
+                                        :disabled="cartForm.processing || !packageItem.priceFrom"
+                                        @click="addToCart"
+                                    >
+                                        {{ cartForm.processing ? 'Adding...' : 'Add to Cart' }}
+                                    </button>
+                                    <Link class="button-secondary add-cart-button" href="/cart">Checkout</Link>
+                                </div>
+                            </article>
+                        </div>
 
                         <section class="detail-fact-grid" aria-label="Package quick facts">
                             <article v-for="fact in quickFacts" :key="fact.label" class="detail-fact">
@@ -266,6 +372,75 @@ const closeMedia = () => {
                             </div>
                         </article>
 
+                        <article class="experience-operator-section package-custom-panel">
+                            <div class="package-custom-panel__copy">
+                                <span class="experience-operator-section__kicker">Customize your trip</span>
+                                <h2>Adjust this package around your dates, hotel, and add-ons</h2>
+                                <p>
+                                    Use this package as the base plan, then ask the team to tune the hotel category,
+                                    transfers, visa support, flights, extra nights, or attractions before final payment.
+                                </p>
+                            </div>
+                            <form class="package-custom-form" @submit.prevent="submitCustomPackageRequest">
+                                <label>
+                                    <span>Name</span>
+                                    <input v-model="customPackageForm.name" type="text" autocomplete="name" />
+                                    <small v-if="customPackageForm.errors.name">{{ customPackageForm.errors.name }}</small>
+                                </label>
+                                <label>
+                                    <span>Email</span>
+                                    <input v-model="customPackageForm.email" type="email" autocomplete="email" />
+                                    <small v-if="customPackageForm.errors.email">{{ customPackageForm.errors.email }}</small>
+                                </label>
+                                <label>
+                                    <span>Phone / WhatsApp</span>
+                                    <input v-model="customPackageForm.phone" type="tel" autocomplete="tel" />
+                                    <small v-if="customPackageForm.errors.phone">{{ customPackageForm.errors.phone }}</small>
+                                </label>
+                                <label>
+                                    <span>Travel date</span>
+                                    <input v-model="customPackageForm.travel_date" type="date" />
+                                    <small v-if="customPackageForm.errors.travel_date">{{ customPackageForm.errors.travel_date }}</small>
+                                </label>
+                                <label>
+                                    <span>Travelers</span>
+                                    <input v-model="customPackageForm.guest_count" type="number" min="1" max="100" placeholder="2" />
+                                    <small v-if="customPackageForm.errors.guest_count">{{ customPackageForm.errors.guest_count }}</small>
+                                </label>
+                                <label>
+                                    <span>Hotel preference</span>
+                                    <select v-model="customPackageForm.hotel_preference">
+                                        <option>Flexible</option>
+                                        <option>3-star hotel</option>
+                                        <option>4-star hotel</option>
+                                        <option>5-star hotel</option>
+                                        <option>Luxury hotel</option>
+                                    </select>
+                                </label>
+                                <label>
+                                    <span>Add-ons</span>
+                                    <select v-model="customPackageForm.add_ons">
+                                        <option>Not sure yet</option>
+                                        <option>Visa assistance</option>
+                                        <option>Flights</option>
+                                        <option>Travel insurance</option>
+                                        <option>Extra nights</option>
+                                    </select>
+                                </label>
+                                <label class="package-custom-form__wide">
+                                    <span>Request</span>
+                                    <textarea v-model="customPackageForm.message" placeholder="Tell us what you want to change."></textarea>
+                                    <small v-if="customPackageForm.errors.message">{{ customPackageForm.errors.message }}</small>
+                                </label>
+                                <div v-if="page.props.flash.success" class="success-banner package-custom-form__wide">
+                                    {{ page.props.flash.success }}
+                                </div>
+                                <button class="button-primary package-custom-form__wide" type="submit" :disabled="customPackageForm.processing">
+                                    {{ customPackageForm.processing ? 'Sending...' : 'Send Custom Package Request' }}
+                                </button>
+                            </form>
+                        </article>
+
                         <article class="experience-operator-section">
                             <div class="experience-operator-section__head">
                                 <span class="experience-operator-section__kicker">Best fit</span>
@@ -296,14 +471,14 @@ const closeMedia = () => {
                             <p>For a full refund, cancel at least 24 hours in advance of the start date of the experience.</p>
                         </article>
 
-                        <article class="experience-operator-section">
+                        <article class="experience-operator-section package-support-strip">
                             <div class="experience-operator-section__head">
                                 <span class="experience-operator-section__kicker">Need help?</span>
-                                <h2>Contact Us</h2>
+                                <h2>Package support</h2>
                             </div>
                             <p>
-                                If you have questions about this tour or need help making your booking, we would be happy to help.
-                                Just call {{ contactPhone }} or email {{ contactEmail }}.
+                                If you want to confirm hotel options, timing, add-ons, or payment before checkout, contact
+                                the Acute Tourism team at <strong>{{ contactPhone }}</strong> or {{ contactEmail }}.
                             </p>
                         </article>
 
@@ -336,67 +511,6 @@ const closeMedia = () => {
                         </article>
                     </div>
 
-                    <aside class="experience-operator-sidebar">
-                        <article class="experience-operator-booking">
-                            <p class="experience-operator-booking__badge">Best Seller</p>
-                            <p class="experience-operator-booking__label">From</p>
-                            <h2 v-if="packageItem.priceFrom" class="experience-operator-booking__price">
-                                {{ packageItem.priceFrom }} <span>per person</span>
-                            </h2>
-                            <p v-else class="experience-operator-booking__price experience-operator-booking__price--muted">
-                                Current pricing is available at checkout.
-                            </p>
-                            <p class="experience-operator-booking__copy">
-                                Select your date and guest count, add this package to cart, then use the cart checkout button.
-                            </p>
-                            <ul class="experience-operator-booking__summary">
-                                <li v-for="item in bookingHighlights" :key="item">{{ item }}</li>
-                            </ul>
-
-                            <div v-if="page.props.flash.success" class="success-banner">
-                                {{ page.props.flash.success }}
-                            </div>
-                            <div v-if="page.props.flash.error" class="error-banner">
-                                {{ page.props.flash.error }}
-                            </div>
-
-                            <div class="experience-operator-cart-fields">
-                                <label class="field">
-                                    <span>Travel Date</span>
-                                    <input v-model="form.travel_date" type="date" />
-                                    <small v-if="cartForm.errors.travel_date">{{ cartForm.errors.travel_date }}</small>
-                                </label>
-
-                                <label class="field">
-                                    <span>Guests</span>
-                                    <input v-model="form.guest_count" type="number" min="1" max="100" />
-                                    <small v-if="cartForm.errors.guest_count">{{ cartForm.errors.guest_count }}</small>
-                                </label>
-
-                                <div class="experience-operator-total">
-                                    <span>Total</span>
-                                    <strong>{{ totalAmount }}</strong>
-                                </div>
-                            </div>
-
-                            <button
-                                class="button-primary add-cart-button"
-                                type="button"
-                                :disabled="cartForm.processing || !packageItem.priceFrom"
-                                @click="addToCart"
-                            >
-                                {{ cartForm.processing ? 'Adding...' : 'Add to Cart' }}
-                            </button>
-                            <Link class="button-secondary add-cart-button" href="/cart">View Cart</Link>
-
-                            <div class="experience-operator-booking__contact">
-                                <h3>Contact us</h3>
-                                <p>If you have questions about this package or need help making your booking, we would be happy to help.</p>
-                                <p><strong>{{ contactPhone }}</strong></p>
-                                <p>{{ contactEmail }}</p>
-                            </div>
-                        </article>
-                    </aside>
                 </div>
             </div>
         </section>
