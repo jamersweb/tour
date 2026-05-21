@@ -41,7 +41,16 @@ const topRatedCards = computed(() => (
         ? props.topRatedExperiences
         : props.mustDoExperiences
 ).slice(0, 10));
-const serviceCards = computed(() => props.serviceFocus.slice(0, 3));
+const serviceCards = computed(() => props.serviceFocus.slice(0, 3).map((item, index) => ({
+    ...item,
+    imageUrl: [
+        props.featuredExperiences?.[0]?.heroImageUrl
+            || 'https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=1200&q=80',
+        props.packages?.[0]?.heroImageUrl
+            || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1200&q=80',
+    ][index],
+})));
 const visaCards = computed(() => props.recommendations);
 const cssImageUrl = (url) => `url("${String(url || '').replace(/"/g, '%22')}")`;
 const routingBackgroundImage = computed(() => cssImageUrl(
@@ -364,6 +373,7 @@ onUnmounted(() => detachMediaListeners());
                         v-for="item in serviceCards"
                         :key="item.title"
                         class="home-routing-card"
+                        :style="{ '--routing-card-image': cssImageUrl(item.imageUrl) }"
                     >
                         <p class="home-routing-card__tag">{{ item.tag }}</p>
                         <h3>{{ item.title }}</h3>
