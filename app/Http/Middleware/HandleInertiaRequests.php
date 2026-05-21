@@ -37,6 +37,9 @@ class HandleInertiaRequests extends Middleware
             $footerLogoUrl = 'https://acutetourism.org/uploads/0000/6/2025/03/14/4-2.png';
         }
 
+        $socialUrls = $this->socialUrls($settings->social_links ?? []);
+        $footerSocialLinks = $this->footerSocialLinks($socialUrls);
+
         return [
             ...parent::share($request),
             'cart' => [
@@ -80,7 +83,7 @@ class HandleInertiaRequests extends Middleware
                     'type' => $settings->organization_type ?: 'Organization',
                     'url' => $settings->website_url ?: config('app.url'),
                     'logo' => $logoUrl,
-                    'socialLinks' => $settings->social_links ?? [],
+                    'socialLinks' => $socialUrls,
                     'contact' => [
                         'email' => $settings->contact_email,
                         'phone' => $settings->contact_phone,
@@ -113,23 +116,7 @@ class HandleInertiaRequests extends Middleware
                     'description' => $settings->footer_description,
                     'legalName' => $settings->company_legal_name ?: $settings->site_name,
                     'website' => $settings->website_url ?: config('app.url'),
-                    'socialLinks' => collect($settings->social_links ?? [])
-                        ->filter(fn ($url) => filled($url))
-                        ->map(function ($url) {
-                            $host = parse_url($url, PHP_URL_HOST) ?: $url;
-                            $label = str($host)
-                                ->replace('www.', '')
-                                ->before('.')
-                                ->headline()
-                                ->toString();
-
-                            return [
-                                'label' => $label,
-                                'href' => $url,
-                            ];
-                        })
-                        ->values()
-                        ->all(),
+                    'socialLinks' => $footerSocialLinks,
                 ],
                 'footerNavigation' => [
                     ['label' => 'Experiences', 'href' => route('experiences.index')],
@@ -159,5 +146,86 @@ class HandleInertiaRequests extends Middleware
                 ],
             ],
         ];
+    }
+
+    /**
+     * @param  array<int, string>  $configuredUrls
+     * @return array<int, string>
+     */
+    private function socialUrls(array $configuredUrls): array
+    {
+        $urls = collect($configuredUrls)
+            ->filter(fn ($url) => filled($url))
+            ->map(fn ($url) => (string) $url)
+            ->values();
+        $platforms = $urls
+            ->map(fn (string $url) => $this->socialPlatform($url))
+            ->filter()
+            ->all();
+
+        foreach ($this->defaultSocialUrls() as $platform => $url) {
+            if (! in_array($platform, $platforms, true)) {
+                $urls->push($url);
+            }
+        }
+
+        return $urls->unique()->values()->all();
+    }
+
+    /**
+     * @param  array<int, string>  $urls
+     * @return array<int, array{label: string, href: string}>
+     */
+    private function footerSocialLinks(array $urls): array
+    {
+        return collect($urls)
+            ->map(function (string $url) {
+                $platform = $this->socialPlatform($url);
+                $host = parse_url($url, PHP_URL_HOST) ?: $url;
+                $label = match ($platform) {
+                    'instagram' => 'Instagram',
+                    'facebook' => 'Facebook',
+                    'tiktok' => 'TikTok',
+                    'linkedin' => 'LinkedIn',
+                    default => str($host)
+                        ->replace('www.', '')
+                        ->before('.')
+                        ->headline()
+                        ->toString(),
+                };
+
+                return [
+                    'label' => $label,
+                    'href' => $url,
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function defaultSocialUrls(): array
+    {
+        return [
+            'instagram' => 'https://www.instagram.com/acutetourism',
+            'facebook' => 'https://www.facebook.com/acutetourism',
+            'tiktok' => 'https://www.tiktok.com/@acutetourism',
+            'linkedin' => 'https://ae.linkedin.com/company/acute-tourism-llc',
+        ];
+    }
+
+    private function socialPlatform(string $url): ?string
+    {
+        $value = strtolower($url);
+
+        foreach (array_keys($this->defaultSocialUrls()) as $platform) {
+            if (str_contains($value, $platform)) {
+                return $platform;
+            }
+        }
+
+        return null;
     }
 }

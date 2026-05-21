@@ -41,6 +41,14 @@ function footerSocialIconPath(label) {
         return 'M14 8h2V4h-2a5 5 0 0 0-5 5v2H7v4h2v6h4v-6h2.5l.5-4h-3V9a1 1 0 0 1 1-1Z';
     }
 
+    if (key.includes('tiktok')) {
+        return 'M14 4v9.1a4.1 4.1 0 1 1-4.1-4.1M14 4c.4 2.7 2.2 4.4 5 4.6';
+    }
+
+    if (key.includes('linkedin')) {
+        return 'M6.5 10v8M6.5 6v.01M11 18v-8m0 3.4c0-2 1.3-3.4 3.2-3.4 2.1 0 3.3 1.4 3.3 3.8V18';
+    }
+
     return 'M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm0 0c2.1 2.2 3.2 4.9 3.2 8S14.1 17.8 12 20m0-16C9.9 6.2 8.8 8.9 8.8 12s1.1 5.8 3.2 8M4.7 9h14.6M4.7 15h14.6';
 }
 
@@ -219,7 +227,12 @@ onBeforeUnmount(() => {
                     aria-controls="site-primary-nav"
                     @click="toggleMobileNav"
                 >
-                    <span>{{ mobileNavOpen ? 'Close' : 'Menu' }}</span>
+                    <span class="sr-only">{{ mobileNavOpen ? 'Close menu' : 'Open menu' }}</span>
+                    <span class="mobile-nav-toggle__icon" :class="{ 'is-open': mobileNavOpen }" aria-hidden="true">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </span>
                 </button>
 
                 <div class="site-header-panel" :class="{ 'is-open': mobileNavOpen }">

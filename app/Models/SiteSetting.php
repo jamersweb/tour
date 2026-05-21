@@ -72,6 +72,8 @@ class SiteSetting extends Model
                 'social_links' => [
                     'https://www.instagram.com/acutetourism',
                     'https://www.facebook.com/acutetourism',
+                    'https://www.tiktok.com/@acutetourism',
+                    'https://ae.linkedin.com/company/acute-tourism-llc',
                 ],
                 'footer_description' => 'Exclusively Curated Holiday Experiences, crafted by destination experts, with itinerary designed to deliver a refined and effortless journey with luxury hotels, private transfers, bespoke desert safaris, and priority access to iconic landmarks.',
                 'footer_build_notes' => ['Laravel 12', 'Vue 3 + Inertia', 'Network Payment Gateway'],

@@ -35,14 +35,21 @@ const reduceMotion = ref(
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
 );
 
-const mustDoCards = computed(() => props.mustDoExperiences.slice(0, 4));
+const mustDoCards = computed(() => props.mustDoExperiences.slice(0, 6));
 const topRatedCards = computed(() => (
     props.topRatedExperiences && props.topRatedExperiences.length > 0
         ? props.topRatedExperiences
         : props.mustDoExperiences
-).slice(0, 4));
+).slice(0, 10));
 const serviceCards = computed(() => props.serviceFocus.slice(0, 3));
-const visaCards = computed(() => props.recommendations.slice(0, 4));
+const visaCards = computed(() => props.recommendations);
+const cssImageUrl = (url) => `url("${String(url || '').replace(/"/g, '%22')}")`;
+const routingBackgroundImage = computed(() => cssImageUrl(
+    props.hero?.heroImageUrl
+        || props.packages?.[0]?.heroImageUrl
+        || props.featuredExperiences?.[0]?.heroImageUrl
+        || 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1800&q=80',
+));
 const heroSearchItems = computed(() => [
     ...props.featuredExperiences.map((item) => ({
         title: item.title,
@@ -139,7 +146,9 @@ const activeSlides = ref({
     topRated: 0,
     packages: 0,
     testimonials: 0,
+    visa: 0,
 });
+const carouselRefs = {};
 
 function serviceFocusWhatsappUrl(item) {
     const raw = page.props.site?.contact?.whatsappNumber;
@@ -186,6 +195,29 @@ function updateCarousel(name, event) {
         ...activeSlides.value,
         [name]: index,
     };
+}
+
+function setCarouselRef(name, el) {
+    if (el) {
+        carouselRefs[name] = el;
+    }
+}
+
+function scrollCarousel(name, direction) {
+    const el = carouselRefs[name];
+    const card = el?.querySelector('[data-carousel-card]');
+    if (!el || !card) {
+        return;
+    }
+
+    const styles = window.getComputedStyle(el);
+    const gap = Number.parseFloat(styles.columnGap || styles.gap || '0') || 0;
+    const step = card.getBoundingClientRect().width + gap;
+
+    el.scrollBy({
+        left: direction * step,
+        behavior: reduceMotion.value ? 'auto' : 'smooth',
+    });
 }
 
 function closeHeroSearchSoon() {
@@ -316,7 +348,11 @@ onUnmounted(() => detachMediaListeners());
             </div>
         </section>
 
-        <section class="home-dashboard-section home-dashboard-section--light home-routing-section" data-reveal>
+        <section
+            class="home-dashboard-section home-dashboard-section--light home-routing-section"
+            :style="{ '--routing-bg-image': routingBackgroundImage }"
+            data-reveal
+        >
             <div class="container home-dashboard-stack">
                 <div class="home-dashboard-heading home-dashboard-heading--center">
                     <div>
@@ -349,22 +385,41 @@ onUnmounted(() => detachMediaListeners());
             </div>
         </section>
 
-        <section class="home-dashboard-section home-dashboard-section--light" data-reveal>
+        <section class="home-dashboard-section home-dashboard-section--light home-featured-section" data-reveal>
             <div class="container home-dashboard-stack">
                 <div class="home-dashboard-heading">
                     <div>
-                        <h2>Featured Dubai Tours &amp; Experiences</h2>
+                        <h2>Featured Dubai Tours</h2>
                     </div>
-                    <Link class="home-dashboard-more" href="/experiences">View All Tours</Link>
+                    <div class="home-featured-actions">
+                        <button
+                            class="home-carousel-control"
+                            type="button"
+                            aria-label="Previous featured tour"
+                            @click="scrollCarousel('mustDo', -1)"
+                        >
+                            <span aria-hidden="true">&lt;</span>
+                        </button>
+                        <button
+                            class="home-carousel-control"
+                            type="button"
+                            aria-label="Next featured tour"
+                            @click="scrollCarousel('mustDo', 1)"
+                        >
+                            <span aria-hidden="true">&gt;</span>
+                        </button>
+                        <Link class="home-dashboard-more" href="/experiences">View All Tours</Link>
+                    </div>
                 </div>
                 <div
-                    class="home-dashboard-grid home-dashboard-grid--four home-dashboard-grid--featured home-mobile-carousel"
+                    :ref="(el) => setCarouselRef('mustDo', el)"
+                    class="home-dashboard-grid home-dashboard-grid--four home-dashboard-grid--featured home-featured-carousel home-mobile-carousel"
                     @scroll.passive="updateCarousel('mustDo', $event)"
                 >
                     <article
                         v-for="experience in mustDoCards"
                         :key="experience.slug"
-                        class="home-dashboard-card"
+                        class="home-dashboard-card home-dashboard-card--lean"
                         data-carousel-card
                     >
                         <Link class="home-dashboard-card__media" :href="`/experiences/${experience.slug}`">
@@ -381,11 +436,7 @@ onUnmounted(() => detachMediaListeners());
                         </Link>
                         <div class="home-dashboard-card__body">
                             <h3>{{ experience.title }}</h3>
-                            <p>{{ experience.summary }}</p>
-                            <div class="home-dashboard-card__meta">
-                                <span>{{ experience.location || experience.duration }}</span>
-                                <strong>{{ experience.priceFrom }}</strong>
-                            </div>
+                            <strong class="home-dashboard-card__price">{{ experience.priceFrom }}</strong>
                             <Link class="home-dashboard-card__button" :href="`/experiences/${experience.slug}`">View Tour</Link>
                         </div>
                     </article>
@@ -401,22 +452,41 @@ onUnmounted(() => detachMediaListeners());
             </div>
         </section>
 
-        <section class="home-dashboard-section home-dashboard-section--light" data-reveal>
+        <section class="home-dashboard-section home-dashboard-section--light home-featured-section" data-reveal>
             <div class="container home-dashboard-stack">
                 <div class="home-dashboard-heading">
                     <div>
                         <h2>Top-Rated Dubai Experiences</h2>
                     </div>
-                    <Link class="home-dashboard-more" href="/experiences">View All Tours</Link>
+                    <div class="home-featured-actions">
+                        <button
+                            class="home-carousel-control"
+                            type="button"
+                            aria-label="Previous top-rated experience"
+                            @click="scrollCarousel('topRated', -1)"
+                        >
+                            <span aria-hidden="true">&lt;</span>
+                        </button>
+                        <button
+                            class="home-carousel-control"
+                            type="button"
+                            aria-label="Next top-rated experience"
+                            @click="scrollCarousel('topRated', 1)"
+                        >
+                            <span aria-hidden="true">&gt;</span>
+                        </button>
+                        <Link class="home-dashboard-more" href="/experiences">View All Tours</Link>
+                    </div>
                 </div>
                 <div
-                    class="home-dashboard-grid home-dashboard-grid--four home-dashboard-grid--featured home-mobile-carousel"
+                    :ref="(el) => setCarouselRef('topRated', el)"
+                    class="home-dashboard-grid home-dashboard-grid--four home-dashboard-grid--featured home-featured-carousel home-mobile-carousel"
                     @scroll.passive="updateCarousel('topRated', $event)"
                 >
                     <article
                         v-for="experience in topRatedCards"
                         :key="experience.slug"
-                        class="home-dashboard-card"
+                        class="home-dashboard-card home-dashboard-card--lean"
                         data-carousel-card
                     >
                         <Link class="home-dashboard-card__media" :href="`/experiences/${experience.slug}`">
@@ -433,11 +503,7 @@ onUnmounted(() => detachMediaListeners());
                         </Link>
                         <div class="home-dashboard-card__body">
                             <h3>{{ experience.title }}</h3>
-                            <p>{{ experience.summary }}</p>
-                            <div class="home-dashboard-card__meta">
-                                <span>{{ experience.location || experience.duration }}</span>
-                                <strong>{{ experience.priceFrom }}</strong>
-                            </div>
+                            <strong class="home-dashboard-card__price">{{ experience.priceFrom }}</strong>
                             <Link class="home-dashboard-card__button" :href="`/experiences/${experience.slug}`">Check Availability</Link>
                         </div>
                     </article>
@@ -570,6 +636,25 @@ onUnmounted(() => detachMediaListeners());
                     <div>
                         <h2>Visa services &amp; international travel</h2>
                     </div>
+                    <div class="home-featured-actions">
+                        <button
+                            class="home-carousel-control"
+                            type="button"
+                            aria-label="Previous visa service"
+                            @click="scrollCarousel('visa', -1)"
+                        >
+                            <span aria-hidden="true">&lt;</span>
+                        </button>
+                        <button
+                            class="home-carousel-control"
+                            type="button"
+                            aria-label="Next visa service"
+                            @click="scrollCarousel('visa', 1)"
+                        >
+                            <span aria-hidden="true">&gt;</span>
+                        </button>
+                        <Link class="home-dashboard-more" href="/visa-services">All Visa Services</Link>
+                    </div>
                 </div>
                 <details class="home-visa-disclaimer" open>
                     <summary>
@@ -606,11 +691,16 @@ onUnmounted(() => detachMediaListeners());
                         </span>
                     </article>
                 </div>
-                <div class="home-dashboard-grid home-dashboard-grid--four">
+                <div
+                    :ref="(el) => setCarouselRef('visa', el)"
+                    class="home-dashboard-grid home-dashboard-grid--four home-featured-carousel home-mobile-carousel home-visa-carousel"
+                    @scroll.passive="updateCarousel('visa', $event)"
+                >
                     <article
                         v-for="item in visaCards"
                         :key="item.title"
                         class="home-visa-card"
+                        data-carousel-card
                     >
                         <div class="home-visa-card__top">
                             <span class="home-visa-card__flag" aria-hidden="true">
@@ -629,6 +719,13 @@ onUnmounted(() => detachMediaListeners());
                         <p>{{ item.summary }}</p>
                         <Link class="home-dashboard-card__button" :href="item.href">Check Requirements</Link>
                     </article>
+                </div>
+                <div class="home-carousel-dots" aria-hidden="true">
+                    <span
+                        v-for="(_, index) in visaCards"
+                        :key="index"
+                        :class="{ 'is-active': activeSlides.visa === index }"
+                    ></span>
                 </div>
             </div>
         </section>
