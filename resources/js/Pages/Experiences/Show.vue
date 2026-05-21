@@ -56,11 +56,6 @@ const bestFor = computed(() => [
     'Couples, families, and small groups who prefer direct booking and payment.',
     'Guests who want operational details reconfirmed after checkout.',
 ]);
-const bookingHighlights = computed(() => [
-    props.experience.duration,
-    props.experience.location,
-    'Instant payment confirmation',
-].filter(Boolean));
 const reviewStars = computed(() => '★★★★★');
 const activeMediaIndex = ref(null);
 const mosaicRef = useMobileAutoCarousel();
@@ -130,9 +125,10 @@ const closeMedia = () => {
                     </div>
                 </div>
 
-                <div class="experience-operator-layout">
+                <div class="experience-operator-layout experience-operator-layout--package">
                     <div class="experience-operator-main">
-                        <section ref="mosaicRef" class="experience-operator-mosaic">
+                        <div class="package-detail-top-grid">
+                        <section ref="mosaicRef" class="experience-operator-mosaic package-detail-mosaic">
                             <button
                                 v-for="(item, idx) in heroTiles"
                                 :key="`${item.type}-${item.url}-${idx}`"
@@ -164,6 +160,61 @@ const closeMedia = () => {
                                 </span>
                             </button>
                         </section>
+
+                            <article class="experience-operator-booking package-detail-booking">
+                                <div>
+                                    <div class="package-detail-booking__topline">
+                                        <p class="experience-operator-booking__badge">Best Seller</p>
+                                        <span v-if="experience.duration">{{ experience.duration }}</span>
+                                    </div>
+                                    <p class="experience-operator-booking__label">Reserve</p>
+                                    <h2 v-if="experience.priceFrom" class="experience-operator-booking__price">
+                                        {{ experience.priceFrom }} <span>per person</span>
+                                    </h2>
+                                    <p v-else class="experience-operator-booking__price experience-operator-booking__price--muted">
+                                        Send an enquiry for current pricing.
+                                    </p>
+                                </div>
+
+                                <div v-if="page.props.flash.success" class="success-banner">
+                                    {{ page.props.flash.success }}
+                                </div>
+                                <div v-if="page.props.flash.error" class="error-banner">
+                                    {{ page.props.flash.error }}
+                                </div>
+
+                                <div class="experience-operator-cart-fields package-detail-booking__fields">
+                                    <label class="field">
+                                        <span>Travel Date</span>
+                                        <input v-model="form.travel_date" type="date" />
+                                        <small v-if="cartForm.errors.travel_date">{{ cartForm.errors.travel_date }}</small>
+                                    </label>
+
+                                    <label class="field">
+                                        <span>Guests</span>
+                                        <input v-model="form.guest_count" type="number" min="1" max="100" />
+                                        <small v-if="cartForm.errors.guest_count">{{ cartForm.errors.guest_count }}</small>
+                                    </label>
+
+                                    <div class="experience-operator-total">
+                                        <span>Estimated Total</span>
+                                        <strong>{{ totalAmount }}</strong>
+                                    </div>
+                                </div>
+
+                                <div class="package-detail-booking__actions">
+                                    <button
+                                        class="button-primary add-cart-button"
+                                        type="button"
+                                        :disabled="cartForm.processing || !experience.priceFrom"
+                                        @click="addToCart"
+                                    >
+                                        {{ cartForm.processing ? 'Adding...' : 'Add to Cart' }}
+                                    </button>
+                                    <Link class="button-secondary add-cart-button" href="/cart">Checkout</Link>
+                                </div>
+                            </article>
+                        </div>
 
                         <section class="detail-fact-grid" aria-label="Experience quick facts">
                             <article v-for="fact in quickFacts" :key="fact.label" class="detail-fact">
@@ -241,14 +292,14 @@ const closeMedia = () => {
                             <p>For a full refund, cancel at least 24 hours in advance of the start date of the experience.</p>
                         </article>
 
-                        <article class="experience-operator-section">
+                        <article class="experience-operator-section package-support-strip">
                             <div class="experience-operator-section__head">
                                 <span class="experience-operator-section__kicker">Need help?</span>
-                                <h2>Contact Us</h2>
+                                <h2>Experience support</h2>
                             </div>
                             <p>
-                                If you have questions about this tour or need help making your booking, we would be happy to help.
-                                Just call (+971) 58 516 1554 or email info@acutetourism.org.
+                                If you want to confirm pickup, timing, group needs, or payment before checkout, contact
+                                the Acute Tourism team at <strong>(+971) 58 516 1554</strong> or info@acutetourism.org.
                             </p>
                         </article>
 
@@ -281,60 +332,6 @@ const closeMedia = () => {
                         </article>
                     </div>
 
-                    <aside class="experience-operator-sidebar">
-                        <article class="experience-operator-booking">
-                            <p class="experience-operator-booking__badge">Best Seller</p>
-                            <p class="experience-operator-booking__label">From</p>
-                            <h2 v-if="experience.priceFrom" class="experience-operator-booking__price">
-                                {{ experience.priceFrom }} <span>per person</span>
-                            </h2>
-                            <p v-else class="experience-operator-booking__price experience-operator-booking__price--muted">
-                                Send an enquiry for current pricing.
-                            </p>
-                            <p class="experience-operator-booking__copy">
-                                Select your date and guest count, add this experience to cart, then use the cart checkout button.
-                            </p>
-                            <ul class="experience-operator-booking__summary">
-                                <li v-for="item in bookingHighlights" :key="item">{{ item }}</li>
-                            </ul>
-
-                            <div v-if="page.props.flash.success" class="success-banner">
-                                {{ page.props.flash.success }}
-                            </div>
-                            <div v-if="page.props.flash.error" class="error-banner">
-                                {{ page.props.flash.error }}
-                            </div>
-
-                            <div class="experience-operator-cart-fields">
-                                <label class="field">
-                                    <span>Travel Date</span>
-                                    <input v-model="form.travel_date" type="date" />
-                                    <small v-if="cartForm.errors.travel_date">{{ cartForm.errors.travel_date }}</small>
-                                </label>
-
-                                <label class="field">
-                                    <span>Guests</span>
-                                    <input v-model="form.guest_count" type="number" min="1" max="100" />
-                                    <small v-if="cartForm.errors.guest_count">{{ cartForm.errors.guest_count }}</small>
-                                </label>
-
-                                <div class="experience-operator-total">
-                                    <span>Total</span>
-                                    <strong>{{ totalAmount }}</strong>
-                                </div>
-                            </div>
-
-                            <button
-                                class="button-primary add-cart-button"
-                                type="button"
-                                :disabled="cartForm.processing || !experience.priceFrom"
-                                @click="addToCart"
-                            >
-                                {{ cartForm.processing ? 'Adding...' : 'Add to Cart' }}
-                            </button>
-                            <Link class="button-secondary add-cart-button" href="/cart">View Cart</Link>
-                        </article>
-                    </aside>
                 </div>
             </div>
         </section>
@@ -395,7 +392,7 @@ const closeMedia = () => {
                 >
                     {{ cartForm.processing ? 'Adding...' : 'Add to Cart' }}
                 </button>
-                <Link class="button-secondary" href="/cart">Cart</Link>
+                <Link class="button-secondary" href="/cart">Checkout</Link>
             </div>
         </div>
     </div>
