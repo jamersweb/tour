@@ -8,7 +8,7 @@ const logoutForm = useForm({});
 const headerRef = ref(null);
 const footerRef = ref(null);
 const mobileNavOpen = ref(false);
-const partnerUrl = 'https://tourgrat.com';
+const partnerUrl = 'http://tourgratbat.acutetourism.org/';
 const paymentIcons = [
     { label: 'Cards', image: '/images/payment-card.svg' },
     { label: 'Wallet', image: '/images/payment-wallet.svg' },
