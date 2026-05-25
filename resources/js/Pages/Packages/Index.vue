@@ -36,6 +36,94 @@ const packageTags = (item) => {
     return tags;
 };
 
+const trustItems = [
+    { icon: '📍', label: 'Local support' },
+    { icon: '📋', label: 'Clear inclusions' },
+    { icon: '🧩', label: 'Customizable packages' },
+    { icon: '🔒', label: 'Secure payment' },
+];
+
+const packageLabel = (item) => {
+    const title = String(item.title || '').toLowerCase();
+
+    if (title.includes('dazzling dubai')) return 'First-Time Dubai';
+    if (title.includes('decadence')) return 'Best for Families';
+    if (title.includes('delight')) return 'Short Break';
+    if (title.includes('golden escape')) return 'Dubai + Abu Dhabi';
+    if (title.includes('ufc')) return 'Event Weekend';
+    if (title.includes('happy family')) return 'Family Holiday';
+    if (packageTags(item).includes('short')) return 'Short Break';
+
+    return 'Curated Package';
+};
+
+const packageAudience = (item) => {
+    const title = String(item.title || '').toLowerCase();
+
+    if (title.includes('dazzling dubai')) return 'Best for first-time visitors';
+    if (title.includes('decadence') || title.includes('happy family')) return 'Best for families';
+    if (title.includes('delight')) return 'Best for short stays';
+    if (title.includes('golden escape')) return 'Best for 2 emirates';
+    if (title.includes('ufc')) return 'Best for event weekend';
+
+    return item.location || 'Dubai & UAE';
+};
+
+const guideCards = [
+    {
+        number: '01',
+        title: 'Will I miss the key Dubai highlights?',
+        copy: 'Choose packages that include Burj Khalifa, desert safari, Dubai Marina, city tour, and at least one major attraction day.',
+    },
+    {
+        number: '02',
+        title: 'Is the itinerary too rushed?',
+        copy: 'Short packages are best for quick highlights. Longer packages give more comfort, free time, and smoother pacing.',
+    },
+    {
+        number: '03',
+        title: 'What is actually included?',
+        copy: 'Check hotel, breakfast, transfers, tour tickets, attraction entries, and whether visa or flights are separate.',
+    },
+    {
+        number: '04',
+        title: 'Can I change the hotel or activities?',
+        copy: 'Most packages can be adjusted by hotel category, room type, dates, guest count, and preferred attractions.',
+    },
+];
+
+const trustList = [
+    'Packages are arranged by a local team that understands Dubai hotels, transfers, tours, and attraction timing',
+    'You see clear inclusions before payment, so there is less confusion about what is covered',
+    'Packages can be adjusted to your budget, dates, hotel preference, and travel style',
+    'Final quotation is confirmed before payment, helping you avoid surprise changes later',
+    'Secure payment options and written booking confirmation',
+    'Options available for solo travelers, couples, families, groups, and event travelers',
+];
+
+const faqItems = [
+    {
+        question: 'Can packages be customized?',
+        answer: 'Yes. Hotel category, duration, attractions, transfers, visa assistance, and extra nights can usually be customized based on travel dates and availability.',
+    },
+    {
+        question: 'Are flights included?',
+        answer: 'Flights are not included by default unless specifically mentioned inside the package details.',
+    },
+    {
+        question: 'Can visa assistance be included?',
+        answer: 'Yes. Visa assistance can be added depending on nationality and travel requirements.',
+    },
+    {
+        question: 'Why does the final price vary?',
+        answer: 'Hotel availability, travel dates, room type, number of guests, attraction availability, and selected add-ons can affect the final quote.',
+    },
+    {
+        question: 'Which package is best for first-time Dubai visitors?',
+        answer: 'Packages that include Dubai city tour, Burj Khalifa, desert safari, Marina dinner, and Abu Dhabi are usually best for first-time travelers.',
+    },
+];
+
 const numericPrice = (item) => Number.parseFloat(String(item.priceFrom || '').replace(/[^0-9.]/g, '')) || 0;
 
 const visiblePackages = computed(() => {
@@ -52,48 +140,42 @@ const visiblePackages = computed(() => {
 <template>
     <SiteMeta :title="seo.title" :description="seo.description" />
 
-    <div class="listing-page package-category-page">
-        <section class="about-hero listing-hero package-category-hero">
-            <div class="container about-hero__grid">
+    <div class="package-category-reference">
+        <section class="category-hero">
+            <div class="container hero-grid">
                 <div>
-                    <p class="about-kicker">Packages</p>
-                    <h1 class="about-title">Dubai Holiday Packages, Curated for Effortless Travel</h1>
-                    <p class="about-copy">
+                    <p class="kicker">Holiday Packages</p>
+                    <h1 class="hero-title">Dubai Holiday Packages, Curated for Effortless Travel</h1>
+                    <p class="hero-copy">
                         Browse ready-made packages with hotels, transfers, tours, attractions, and planning support
                         arranged in one smooth itinerary.
                     </p>
-
-                    <div class="about-actions">
-                        <Link class="button-primary" href="/contact">Contact Acute Tourism</Link>
-                        <Link class="button-secondary" href="/experiences">Browse experiences</Link>
-                    </div>
                 </div>
 
-                <div class="about-card about-card--primary">
-                    <p class="about-card__label">What to expect</p>
-                    <ul class="about-list about-list--tight">
+                <aside class="hero-side-card">
+                    <p class="hero-side-card__label">What to expect</p>
+                    <ul>
                         <li>Hotel stay options with breakfast</li>
                         <li>Private transfers and planned activities</li>
                         <li>Flexible itinerary options</li>
                         <li>Packages suitable for solo travelers, couples, families, and groups</li>
                         <li>Customization available based on budget and travel dates</li>
                     </ul>
+                </aside>
+            </div>
+        </section>
+
+        <section class="trust-mini">
+            <div class="container trust-mini__grid">
+                <div v-for="item in trustItems" :key="item.label" class="trust-mini__item">
+                    <strong><span aria-hidden="true">{{ item.icon }}</span>{{ item.label }}</strong>
                 </div>
             </div>
         </section>
 
-        <section class="client-trust-strip">
-            <div class="container client-trust-strip__grid">
-                <div><strong>Local support</strong><span>Dubai-based coordination</span></div>
-                <div><strong>Clear inclusions</strong><span>Know what is covered</span></div>
-                <div><strong>Customizable packages</strong><span>Adjust dates and budget</span></div>
-                <div><strong>Secure payment</strong><span>Checkout through the app</span></div>
-            </div>
-        </section>
-
-        <section class="section-block listing-section">
+        <section id="package-grid" class="section-block">
             <div class="container">
-                <div class="section-heading package-category-heading">
+                <div class="section-heading">
                     <div>
                         <p class="eyebrow">Holiday planning</p>
                         <h2>Choose your package style</h2>
@@ -104,7 +186,7 @@ const visiblePackages = computed(() => {
                     </div>
                 </div>
 
-                <div class="listing-controls">
+                <div class="navigation-panel">
                     <div class="filter-row" aria-label="Package filters">
                         <button
                             v-for="option in filterOptions"
@@ -117,28 +199,32 @@ const visiblePackages = computed(() => {
                             {{ option.label }}
                         </button>
                     </div>
-                    <select v-model="activeSort" class="select-field" aria-label="Sort packages">
-                        <option value="recommended">Sort by recommended</option>
-                        <option value="price-low">Price: low to high</option>
-                        <option value="price-high">Price: high to low</option>
-                    </select>
+                    <div class="sort-row sort-row--simple">
+                        <select v-model="activeSort" class="select-field" aria-label="Sort packages">
+                            <option value="recommended">Sort by recommended</option>
+                            <option value="price-low">Price: low to high</option>
+                            <option value="price-high">Price: high to low</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="card-grid card-grid-three">
-                    <article v-for="item in visiblePackages" :key="item.slug" class="info-card package-card package-card--client">
-                        <div v-if="item.heroImageUrl" class="card-media package-card__media">
+                    <article v-for="item in visiblePackages" :key="item.slug" class="info-card package-card">
+                        <div v-if="item.heroImageUrl" class="card-media">
                             <img :src="item.heroImageUrl" :alt="item.title" />
-                            <span class="package-label">{{ packageTags(item).includes('short') ? 'Short Break' : 'Curated Package' }}</span>
+                            <span class="package-label">{{ packageLabel(item) }}</span>
                         </div>
-                        <p class="card-tag">Package</p>
-                        <h3>{{ item.title }}</h3>
-                        <p>{{ item.summary }}</p>
-                        <div class="package-meta-list">
-                            <span>{{ item.duration || 'Flexible duration' }}</span>
-                            <span>{{ item.location || 'Dubai & UAE' }}</span>
+                        <div class="card-body">
+                            <p class="card-tag">Package</p>
+                            <h3>{{ item.title }}</h3>
+                            <p class="package-card__desc">{{ item.summary }}</p>
+                            <div class="package-meta-list">
+                                <span>{{ item.duration || 'Flexible duration' }}</span>
+                                <span>{{ packageAudience(item) }}</span>
+                            </div>
+                            <p v-if="item.priceFrom" class="price-line"><span>From</span>{{ item.priceFrom }}</p>
+                            <Link class="card-link" :href="`/packages/${item.slug}`">View Itinerary</Link>
                         </div>
-                        <p v-if="item.priceFrom" class="price-line"><span>From</span>{{ item.priceFrom }}</p>
-                        <Link class="button-primary card-button" :href="`/packages/${item.slug}`">View itinerary</Link>
                     </article>
                 </div>
 
@@ -147,13 +233,12 @@ const visiblePackages = computed(() => {
                 </div>
 
                 <div class="pricing-note">
-                    Package prices may vary based on travel dates, hotel availability, room type, number of guests, and
-                    selected add-ons. Final quote is confirmed before payment.
+                    Package prices may vary based on travel dates, hotel availability, room type, number of guests, and selected add-ons. Final quote is confirmed before payment.
                 </div>
             </div>
         </section>
 
-        <section class="section-block package-guide-section">
+        <section class="section-block">
             <div class="container">
                 <div class="section-heading">
                     <div>
@@ -164,37 +249,39 @@ const visiblePackages = computed(() => {
                 </div>
 
                 <div class="guide-grid">
-                    <article class="about-card">
-                        <p class="about-card__label">Start with duration</p>
-                        <p>Short stays work best when the route is tight. Longer holidays allow Abu Dhabi, theme parks, and slower family pacing.</p>
-                    </article>
-                    <article class="about-card">
-                        <p class="about-card__label">Match the traveler type</p>
-                        <p>Families usually need gentler timing and private transfers; couples often prefer premium dinners, desert moments, and skyline views.</p>
-                    </article>
-                    <article class="about-card">
-                        <p class="about-card__label">Keep add-ons flexible</p>
-                        <p>Visa, flights, insurance, extra nights, and attraction upgrades can be added once the core itinerary is clear.</p>
-                    </article>
-                    <article class="about-card">
-                        <p class="about-card__label">Confirm before payment</p>
-                        <p>Hotel availability, room type, guest count, and final travel dates should be confirmed before checkout.</p>
+                    <article v-for="card in guideCards" :key="card.number" class="guide-card">
+                        <div class="guide-card__num">{{ card.number }}</div>
+                        <h3>{{ card.title }}</h3>
+                        <p>{{ card.copy }}</p>
                     </article>
                 </div>
             </div>
         </section>
 
-        <section class="client-confidence-band">
-            <div class="container client-confidence-band__inner">
-                <div>
-                    <p class="eyebrow">Booking confidence</p>
-                    <h2>Book with more confidence, not guesswork.</h2>
-                    <p>
-                        Acute Tourism helps convert package ideas into confirmed travel details, with a clearer route
-                        from comparison to payment.
-                    </p>
+        <section class="trust-strip">
+            <div class="container trust-box">
+                <h2>Book with more confidence, not guesswork.</h2>
+                <ul class="trust-list">
+                    <li v-for="item in trustList" :key="item">{{ item }}</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="section-block">
+            <div class="container">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">Common questions</p>
+                        <h2>Holiday package FAQs</h2>
+                        <p>Answers to the questions customers usually ask before opening or comparing package itineraries.</p>
+                    </div>
                 </div>
-                <Link class="button-primary" href="/contact">Build a custom package</Link>
+                <div class="faq-list">
+                    <details v-for="(item, index) in faqItems" :key="item.question" class="faq-item" :open="index === 0">
+                        <summary>{{ item.question }}</summary>
+                        <p>{{ item.answer }}</p>
+                    </details>
+                </div>
             </div>
         </section>
     </div>

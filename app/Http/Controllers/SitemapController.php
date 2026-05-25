@@ -30,6 +30,18 @@ class SitemapController extends Controller
         $push(url('/packages'), 'daily', '0.9');
         $push(url('/visa-services'), 'weekly', '0.85');
         $push(url('/schengen-visa'), 'weekly', '0.85');
+        $push(url('/uk-visa'), 'weekly', '0.85');
+        $push(url('/usa-visa'), 'weekly', '0.85');
+        $push(url('/canada-visa'), 'weekly', '0.85');
+        $push(url('/japan-visa'), 'weekly', '0.85');
+        $push(url('/australia-visa'), 'weekly', '0.85');
+        $push(url('/turkey-visa'), 'weekly', '0.85');
+        $push(url('/malaysia-visa'), 'weekly', '0.85');
+        $push(url('/vietnam-visa'), 'weekly', '0.85');
+        $push(url('/brazil-visa'), 'weekly', '0.85');
+        $push(url('/south-africa-visa'), 'weekly', '0.85');
+        $push(url('/evisa-assistance'), 'weekly', '0.85');
+        $push(url('/tourist-visa-assistance'), 'weekly', '0.85');
         $push(url('/about'), 'monthly', '0.6');
         $push(url('/corporate-events'), 'monthly', '0.6');
         $push(url('/contact'), 'monthly', '0.7');

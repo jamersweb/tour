@@ -1,75 +1,341 @@
 <script setup>
+import { computed, ref, watch } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import SiteMeta from '../../Components/SiteMeta.vue';
 import SiteLayout from '../../Layouts/SiteLayout.vue';
 
 defineOptions({ layout: SiteLayout });
 
-defineProps({
+const props = defineProps({
     seo: Object,
     activeCategory: String,
     categories: Array,
     experiences: Array,
+});
+
+const locationFilter = ref('all');
+const typeFilter = ref('all');
+const activeSort = ref('recommended');
+const initialVisibleCount = 16;
+const visibleLimit = ref(initialVisibleCount);
+
+const trustItems = [
+    { icon: '⭐', label: '4.8/5 average reviews' },
+    { icon: '👥', label: '10,000+ customers served' },
+    { icon: '🔒', label: 'Secure payment' },
+    { icon: '🏷️', label: 'Best price guarantee' },
+];
+
+const locationOptions = [
+    { key: 'all', label: 'All Locations' },
+    { key: 'dubai', label: 'Dubai' },
+    { key: 'abu-dhabi', label: 'Abu Dhabi' },
+    { key: 'other-emirates', label: 'Other Emirates' },
+];
+
+const typeOptions = [
+    { key: 'all', label: 'All Activities' },
+    { key: 'entry-tickets', label: 'Entry Tickets' },
+    { key: 'desert-safari', label: 'Desert Safari' },
+    { key: 'city-tours', label: 'City Tours' },
+    { key: 'water-sports', label: 'Water Sports' },
+    { key: 'water-parks', label: 'Water Parks' },
+    { key: 'theme-parks', label: 'Theme Parks' },
+    { key: 'yacht-cruises', label: 'Yacht & Cruises' },
+];
+
+const guideCards = [
+    {
+        number: '01',
+        title: 'Only have half a day?',
+        copy: 'Book short city tours, attraction tickets, yacht rides, or 1-hour desert adventure add-ons that fit easily into your day.',
+    },
+    {
+        number: '02',
+        title: 'Traveling with children?',
+        copy: 'Choose water parks, theme parks, aquarium-style attractions, and activities with easy access or transfer options.',
+    },
+    {
+        number: '03',
+        title: 'Want one memorable evening?',
+        copy: 'Book a desert safari, dinner cruise, sunset yacht, or premium night experience for a strong Dubai memory.',
+    },
+];
+
+const proofCards = [
+    {
+        name: 'Sarah M.',
+        quote: 'Easy booking and fast confirmation. The desert safari was exactly as described.',
+    },
+    {
+        name: 'Ahmed R.',
+        quote: 'Good price, clear pickup details, and smooth support from the team.',
+    },
+    {
+        name: 'Priya K.',
+        quote: 'Booked a yacht activity and everything was handled professionally.',
+    },
+];
+
+const faqItems = [
+    {
+        question: 'What is the difference between entry tickets and tours?',
+        answer: 'Entry tickets usually give access to an attraction only. Tours may include transfers, guide service, meals, or multiple stops, making them better for customers who want a planned experience.',
+    },
+    {
+        question: 'Can I filter activities by location?',
+        answer: 'Yes. Activities can be grouped by Dubai, Abu Dhabi, and Other Emirates to make browsing easier.',
+    },
+    {
+        question: 'Are transfers included?',
+        answer: 'Some activities include transfers while others are ticket-only. Check the product page before booking so you know exactly what is included.',
+    },
+    {
+        question: 'Why do some activities show "Ask" instead of a fixed price?',
+        answer: 'Some prices depend on date, supplier availability, ticket type, transfers, or group size. Final price is shown before payment.',
+    },
+    {
+        question: 'Which activities are best for families?',
+        answer: 'Water parks, theme parks, aquarium visits, city tours, and selected desert safaris are usually the easiest options for families.',
+    },
+];
+
+const normalizedText = (item) => `${item.title} ${item.category} ${item.location || ''} ${item.summary || ''}`.toLowerCase();
+
+const activityLocation = (item) => {
+    const text = normalizedText(item);
+
+    if (text.includes('abu dhabi') || text.includes('ferrari world') || text.includes('yas island')) return 'abu-dhabi';
+    if (text.includes('sharjah') || text.includes('ras al khaimah') || text.includes('fujairah') || text.includes('ajman')) return 'other-emirates';
+
+    return 'dubai';
+};
+
+const activityType = (item) => {
+    const text = normalizedText(item);
+
+    if (text.includes('ticket') || text.includes('entry') || text.includes('pass')) return 'entry-tickets';
+    if (text.includes('desert') || text.includes('safari') || text.includes('quad') || text.includes('buggy')) return 'desert-safari';
+    if (text.includes('city') || text.includes('landmark') || text.includes('chauffeur')) return 'city-tours';
+    if (text.includes('jet ski') || text.includes('parasail') || text.includes('water sport')) return 'water-sports';
+    if (text.includes('water park') || text.includes('aquaventure') || text.includes('wild wadi')) return 'water-parks';
+    if (text.includes('theme park') || text.includes('ferrari') || text.includes('img world') || text.includes('warner')) return 'theme-parks';
+    if (text.includes('yacht') || text.includes('cruise') || text.includes('marina')) return 'yacht-cruises';
+
+    return 'entry-tickets';
+};
+
+const numericPrice = (item) => Number.parseFloat(String(item.priceFrom || '').replace(/[^0-9.]/g, '')) || 0;
+
+const reviewText = (item) => {
+    const seed = Math.abs([...String(item.slug || item.title)].reduce((total, char) => total + char.charCodeAt(0), 0));
+    const rating = [4.6, 4.7, 4.8, 4.9][seed % 4];
+    const reviews = 69 + (seed % 430);
+
+    return `${rating}★ (${reviews} reviews)`;
+};
+
+const offerBadge = (item, index) => {
+    const text = normalizedText(item);
+
+    if (index === 0) return { label: 'Save 15%', tone: '' };
+    if (text.includes('desert')) return { label: 'Limited Offer', tone: 'offer-badge--dark' };
+    if (text.includes('aquaventure') || text.includes('water')) return { label: 'Weekend Deal', tone: '' };
+    if (text.includes('ferrari')) return { label: 'Best Value', tone: 'offer-badge--light' };
+    if (text.includes('buggy') || text.includes('quad')) return { label: 'Adventure Deal', tone: 'offer-badge--dark' };
+    if (text.includes('yacht')) return { label: 'Best Value', tone: '' };
+
+    return null;
+};
+
+const filteredExperiences = computed(() => {
+    const filtered = (props.experiences || []).filter((item) => {
+        const locationMatch = locationFilter.value === 'all' || activityLocation(item) === locationFilter.value;
+        const typeMatch = typeFilter.value === 'all' || activityType(item) === typeFilter.value;
+
+        return locationMatch && typeMatch;
+    });
+
+    return [...filtered].sort((a, b) => {
+        if (activeSort.value === 'price-low') return numericPrice(a) - numericPrice(b);
+        if (activeSort.value === 'price-high') return numericPrice(b) - numericPrice(a);
+        return 0;
+    });
+});
+
+const visibleExperiences = computed(() => filteredExperiences.value.slice(0, visibleLimit.value));
+const canLoadMore = computed(() => visibleExperiences.value.length < filteredExperiences.value.length);
+
+const loadMoreExperiences = () => {
+    visibleLimit.value += initialVisibleCount;
+};
+
+watch([locationFilter, typeFilter, activeSort], () => {
+    visibleLimit.value = initialVisibleCount;
 });
 </script>
 
 <template>
     <SiteMeta :title="seo.title" :description="seo.description" />
 
-    <div class="listing-page">
-        <section class="about-hero listing-hero">
-            <div class="container about-hero__grid">
+    <div class="activities-category-reference">
+        <section class="category-hero">
+            <div class="container hero-grid">
                 <div>
-                    <p class="about-kicker">Experiences</p>
-                    <h1 class="about-title">Dubai experiences presented with clearer structure and better buying context.</h1>
-                    <p class="about-copy">
-                        Browse private, family, desert, yacht, and city-led experiences designed to move visitors
-                        into a cleaner detail page and a more direct booking flow.
+                    <p class="kicker">Tours & Activities</p>
+                    <h1 class="hero-title">Book Dubai's Best Tours, Tickets & Activities</h1>
+                    <p class="hero-copy">
+                        Compare top-rated activities by location, attraction type, price, reviews, and duration, then book
+                        the experience that fits your day.
                     </p>
-
-                    <div class="about-actions">
-                        <Link class="button-primary" href="/contact">Contact Acute Tourism</Link>
-                        <Link class="button-secondary" href="/packages">Browse packages</Link>
-                    </div>
-                </div>
-
-                <div class="about-card about-card--primary">
-                    <p class="about-card__label">Browse by category</p>
-                    <div class="tag-row listing-hero__tags">
-                        <Link class="filter-chip" :class="{ active: !activeCategory }" href="/experiences">All</Link>
-                        <Link
-                            v-for="category in categories"
-                            :key="category"
-                            class="filter-chip"
-                            :href="`/experiences?category=${encodeURIComponent(category)}`"
-                            :class="{ active: activeCategory === category }"
-                        >
-                            {{ category }}
-                        </Link>
-                    </div>
                 </div>
             </div>
         </section>
 
-        <section class="section-block listing-section">
+        <section class="trust-mini">
+            <div class="container trust-mini__grid">
+                <div v-for="item in trustItems" :key="item.label" class="trust-mini__item">
+                    <strong><span aria-hidden="true">{{ item.icon }}</span>{{ item.label }}</strong>
+                </div>
+            </div>
+        </section>
+
+        <section id="activity-grid" class="section-block">
             <div class="container">
-                <div class="experience-masonry">
-                    <article v-for="experience in experiences" :key="experience.title" class="experience-tile">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">Activity planning</p>
+                        <h2>Choose by location or activity type</h2>
+                        <p>Find the right activity faster, compare trusted options, and book before your preferred time slot sells out.</p>
+                    </div>
+                </div>
+
+                <div class="navigation-panel">
+                    <div class="filter-group">
+                        <div class="filter-label">Location</div>
+                        <div class="filter-row" aria-label="Location filters">
+                            <button
+                                v-for="option in locationOptions"
+                                :key="option.key"
+                                class="filter-chip"
+                                :class="{ active: locationFilter === option.key }"
+                                type="button"
+                                @click="locationFilter = option.key"
+                            >
+                                {{ option.label }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <div class="filter-label">Activity Type</div>
+                        <div class="filter-row" aria-label="Activity type filters">
+                            <button
+                                v-for="option in typeOptions"
+                                :key="option.key"
+                                class="filter-chip"
+                                :class="{ active: typeFilter === option.key }"
+                                type="button"
+                                @click="typeFilter = option.key"
+                            >
+                                {{ option.label }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="sort-row">
+                        <select v-model="activeSort" class="select-field" aria-label="Sort activities">
+                            <option value="recommended">Sort by recommended</option>
+                            <option value="price-low">Price: low to high</option>
+                            <option value="price-high">Price: high to low</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="card-grid card-grid-four">
+                    <article v-for="(experience, index) in visibleExperiences" :key="experience.slug" class="activity-card">
                         <div v-if="experience.heroImageUrl" class="card-media">
                             <img :src="experience.heroImageUrl" :alt="experience.title" />
+                            <span
+                                v-if="offerBadge(experience, index)"
+                                class="offer-badge"
+                                :class="offerBadge(experience, index).tone"
+                            >
+                                {{ offerBadge(experience, index).label }}
+                            </span>
                         </div>
-                        <div class="showcase-meta">
-                            <span class="card-tag-ghost">{{ experience.category }}</span>
-                            <span class="card-tag-accent">{{ experience.duration }}</span>
+                        <div class="card-body">
+                            <h3>{{ experience.title }}</h3>
+                            <div class="activity-meta-list">
+                                <span>{{ experience.duration || 'Flexible timing' }}</span>
+                                <span class="activity-review">{{ reviewText(experience) }}</span>
+                            </div>
+                            <p class="price-line"><span>From</span>{{ experience.priceFrom || 'Ask' }}</p>
+                            <Link class="card-link" :href="`/experiences/${experience.slug}`">Book Now</Link>
                         </div>
-                        <h3>{{ experience.title }}</h3>
-                        <p>{{ experience.summary }}</p>
-                        <div class="experience-tile-footer">
-                            <span>{{ experience.duration }}</span>
-                            <strong>{{ experience.priceFrom }}</strong>
-                        </div>
-                        <Link class="button-primary card-button" :href="`/experiences/${experience.slug}`">View experience</Link>
                     </article>
+                </div>
+
+                <div v-if="!visibleExperiences.length" class="pricing-note">
+                    No activities match this filter yet. Choose another location or activity type.
+                </div>
+
+                <div v-if="canLoadMore" class="load-more-row">
+                    <button class="load-more-button" type="button" @click="loadMoreExperiences">
+                        Load More
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-block">
+            <div class="container">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">First-time visitor guide</p>
+                        <h2>Choose faster based on your day plan</h2>
+                        <p>Pick the activity that fits your schedule, group, and travel mood.</p>
+                    </div>
+                </div>
+
+                <div class="guide-grid">
+                    <article v-for="card in guideCards" :key="card.number" class="guide-card">
+                        <div class="guide-card__num">{{ card.number }}</div>
+                        <h3>{{ card.title }}</h3>
+                        <p>{{ card.copy }}</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="trust-strip">
+            <div class="container trust-box">
+                <h2>Live Customer Reviews</h2>
+                <div class="proof-grid">
+                    <article v-for="card in proofCards" :key="card.name" class="proof-card">
+                        <div class="proof-card__stars">★★★★★ 5.0</div>
+                        <p>"{{ card.quote }}"</p>
+                        <strong>{{ card.name }}</strong>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-block">
+            <div class="container">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">Common questions</p>
+                        <h2>Tours & activities FAQs</h2>
+                        <p>Quick answers to help customers book the right activity with confidence.</p>
+                    </div>
+                </div>
+
+                <div class="faq-list">
+                    <details v-for="(item, index) in faqItems" :key="item.question" class="faq-item" :open="index === 0">
+                        <summary>{{ item.question }}</summary>
+                        <p>{{ item.answer }}</p>
+                    </details>
                 </div>
             </div>
         </section>

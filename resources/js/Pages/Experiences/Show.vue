@@ -39,22 +39,54 @@ const quickFacts = computed(() => [
 ]);
 const expectationSteps = computed(() => [
     {
-        label: 'Pickup',
-        copy: 'Your driver collects you from your hotel or selected location when pickup is included.',
+        label: 'Hotel Pickup',
+        copy: 'Your driver collects you from your hotel or selected location in Dubai.',
     },
     {
-        label: 'Hosted experience',
-        copy: 'The operating team manages the flow so the day feels structured without becoming rushed.',
+        label: 'Desert Arrival',
+        copy: 'Enjoy the desert scenery and take photos during the golden sunset period.',
     },
     {
-        label: 'Return',
-        copy: 'After the experience, you return to the agreed drop-off point with final timing confirmed after booking.',
+        label: 'Hosted Camp Experience',
+        copy: 'Relax at the camp with refreshments, dinner, and a more comfortable evening setup.',
+    },
+    {
+        label: 'Dinner & Evening Atmosphere',
+        copy: 'Enjoy your dinner experience with relaxed pacing and hosted service.',
+    },
+    {
+        label: 'Return Transfer',
+        copy: 'After the experience, you will be dropped back at your hotel or selected location.',
     },
 ]);
 const bestFor = computed(() => [
-    'Travelers who want a polished Dubai experience with clear inclusions.',
-    'Couples, families, and small groups who prefer direct booking and payment.',
-    'Guests who want operational details reconfirmed after checkout.',
+    'Couples looking for a private desert evening',
+    'Families who want comfort and smooth coordination',
+    'Travelers who dislike crowded shared tours',
+    'Guests celebrating birthdays, anniversaries, or special occasions',
+    'Visitors who want a premium desert experience in Dubai',
+]);
+const faqItems = computed(() => [
+    {
+        question: 'Is this a private desert safari?',
+        answer: 'Yes. This is designed as a private premium experience with private pickup and a more relaxed pace.',
+    },
+    {
+        question: 'Is hotel pickup included?',
+        answer: 'Yes. Hotel pickup and drop-off are included. Final pickup timing is confirmed after booking based on your location.',
+    },
+    {
+        question: 'Can I customize the experience?',
+        answer: 'Yes. Selected upgrades such as photography, celebration setup, quad biking, or private seating may be available on request.',
+    },
+    {
+        question: 'What should I wear?',
+        answer: 'Comfortable clothing and closed-toe shoes are recommended. Sunglasses are also useful for the desert.',
+    },
+    {
+        question: 'What is the cancellation policy?',
+        answer: 'You can cancel at least 24 hours before the tour start time for a full refund.',
+    },
 ]);
 const reviewStars = computed(() => '★★★★★');
 const activeMediaIndex = ref(null);
@@ -86,10 +118,54 @@ const totalAmount = computed(() => {
     }).format(unitAmount * guestCount)}`;
 });
 
+const focusBookingForm = (field = 'date') => {
+    const bookingWidget = document.querySelector('#booking-widget');
+
+    bookingWidget?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    window.setTimeout(() => {
+        const inputSelector = field === 'guests' ? 'input[type="number"]' : 'input[type="date"]';
+        bookingWidget?.querySelector(inputSelector)?.focus();
+    }, 450);
+};
+
 const addToCart = () => {
+    const guestCount = Math.max(1, Number.parseInt(form.guest_count, 10) || 1);
+
+    if (!form.travel_date) {
+        focusBookingForm('date');
+        return;
+    }
+
+    if (!guestCount) {
+        focusBookingForm('guests');
+        return;
+    }
+
     cartForm.travel_date = form.travel_date;
-    cartForm.guest_count = Math.max(1, Number.parseInt(form.guest_count, 10) || 1);
+    cartForm.guest_count = guestCount;
     cartForm.post('/cart', { preserveScroll: true });
+};
+
+const bookNow = () => {
+    const guestCount = Math.max(1, Number.parseInt(form.guest_count, 10) || 1);
+
+    if (!form.travel_date) {
+        focusBookingForm('date');
+        return;
+    }
+
+    if (!guestCount) {
+        focusBookingForm('guests');
+        return;
+    }
+
+    const params = new URLSearchParams({
+        travel_date: form.travel_date,
+        guest_count: String(guestCount),
+    });
+
+    window.location.assign(`/checkout/experiences/${props.experience.slug}?${params.toString()}`);
 };
 
 const openMedia = (index) => {
@@ -127,8 +203,8 @@ const closeMedia = () => {
 
                 <div class="experience-operator-layout experience-operator-layout--package">
                     <div class="experience-operator-main">
-                        <div class="package-detail-top-grid">
-                        <section ref="mosaicRef" class="experience-operator-mosaic package-detail-mosaic">
+                        <div class="experience-top-grid package-detail-top-grid">
+                        <section ref="mosaicRef" class="experience-operator-mosaic package-detail-mosaic" aria-label="Experience photo gallery">
                             <button
                                 v-for="(item, idx) in heroTiles"
                                 :key="`${item.type}-${item.url}-${idx}`"
@@ -161,16 +237,16 @@ const closeMedia = () => {
                             </button>
                         </section>
 
-                            <article class="experience-operator-booking package-detail-booking">
-                                <div>
-                                    <div class="package-detail-booking__topline">
-                                        <p class="experience-operator-booking__badge">Best Seller</p>
-                                        <span v-if="experience.duration">{{ experience.duration }}</span>
+                            <article id="booking-widget" class="experience-booking-card experience-operator-booking package-detail-booking" aria-label="Booking calendar">
+                                <div class="experience-booking-card__top">
+                                    <div>
+                                        <span class="experience-operator-booking__label">Reserve</span>
                                     </div>
-                                    <p class="experience-operator-booking__label">Reserve</p>
-                                    <h2 v-if="experience.priceFrom" class="experience-operator-booking__price">
-                                        {{ experience.priceFrom }} <span>per person</span>
-                                    </h2>
+                                    <div v-if="experience.priceFrom" class="experience-booking-price">
+                                        <span>From</span>
+                                        <strong>{{ experience.priceFrom }}</strong>
+                                        <span>per person</span>
+                                    </div>
                                     <p v-else class="experience-operator-booking__price experience-operator-booking__price--muted">
                                         Send an enquiry for current pricing.
                                     </p>
@@ -185,33 +261,35 @@ const closeMedia = () => {
 
                                 <div class="experience-operator-cart-fields package-detail-booking__fields">
                                     <label class="field">
-                                        <span>Travel Date</span>
+                                        <span>Date</span>
                                         <input v-model="form.travel_date" type="date" />
                                         <small v-if="cartForm.errors.travel_date">{{ cartForm.errors.travel_date }}</small>
                                     </label>
 
                                     <label class="field">
-                                        <span>Guests</span>
+                                        <span>Participants</span>
                                         <input v-model="form.guest_count" type="number" min="1" max="100" />
                                         <small v-if="cartForm.errors.guest_count">{{ cartForm.errors.guest_count }}</small>
                                     </label>
 
                                     <div class="experience-operator-total">
-                                        <span>Estimated Total</span>
+                                        <span>Estimated total</span>
                                         <strong>{{ totalAmount }}</strong>
                                     </div>
                                 </div>
 
-                                <div class="package-detail-booking__actions">
+                                <div class="experience-booking-actions package-detail-booking__actions">
                                     <button
-                                        class="button-primary add-cart-button"
+                                        class="button-secondary add-cart-button"
                                         type="button"
                                         :disabled="cartForm.processing || !experience.priceFrom"
                                         @click="addToCart"
                                     >
                                         {{ cartForm.processing ? 'Adding...' : 'Add to Cart' }}
                                     </button>
-                                    <Link class="button-secondary add-cart-button" href="/cart">Checkout</Link>
+                                    <button class="button-primary add-cart-button" type="button" @click="bookNow">
+                                        Checkout
+                                    </button>
                                 </div>
                             </article>
                         </div>
@@ -234,33 +312,10 @@ const closeMedia = () => {
                         <article v-if="experience.highlights?.length" class="experience-operator-section">
                             <div class="experience-operator-section__head">
                                 <span class="experience-operator-section__kicker">What stands out</span>
-                                <h2>Notable Highlights</h2>
+                                <h2>Why This Safari Feels Different</h2>
                             </div>
                             <ul class="experience-operator-list experience-operator-list--chips">
                                 <li v-for="highlight in experience.highlights" :key="highlight">{{ highlight }}</li>
-                            </ul>
-                        </article>
-
-                        <article class="experience-operator-section">
-                            <div class="experience-operator-section__head">
-                                <span class="experience-operator-section__kicker">Guest flow</span>
-                                <h2>What to Expect</h2>
-                            </div>
-                            <div class="detail-timeline">
-                                <article v-for="step in expectationSteps" :key="step.label" class="detail-timeline__item">
-                                    <strong>{{ step.label }}</strong>
-                                    <p>{{ step.copy }}</p>
-                                </article>
-                            </div>
-                        </article>
-
-                        <article class="experience-operator-section">
-                            <div class="experience-operator-section__head">
-                                <span class="experience-operator-section__kicker">Best fit</span>
-                                <h2>Who This Tour Is Best For</h2>
-                            </div>
-                            <ul class="experience-operator-list experience-operator-list--chips">
-                                <li v-for="item in bestFor" :key="item">{{ item }}</li>
                             </ul>
                         </article>
 
@@ -286,20 +341,48 @@ const closeMedia = () => {
 
                         <article class="experience-operator-section">
                             <div class="experience-operator-section__head">
+                                <span class="experience-operator-section__kicker">Evening flow</span>
+                                <h2>What to Expect</h2>
+                            </div>
+                            <div class="experience-operator-mini-flow">
+                                <details
+                                    v-for="(step, index) in expectationSteps"
+                                    :key="step.label"
+                                    class="experience-operator-mini-flow__item"
+                                    :open="index === 0"
+                                >
+                                    <summary>{{ step.label }}</summary>
+                                    <span>{{ step.copy }}</span>
+                                </details>
+                            </div>
+                        </article>
+
+                        <article class="experience-operator-section">
+                            <div class="experience-operator-section__head">
+                                <span class="experience-operator-section__kicker">Good to know</span>
+                                <h2>Who This Tour Is Best For</h2>
+                            </div>
+                            <ul class="experience-operator-list experience-operator-list--checks">
+                                <li v-for="item in bestFor" :key="item">{{ item }}</li>
+                            </ul>
+                        </article>
+
+                        <article class="experience-operator-section">
+                            <div class="experience-operator-section__head">
                                 <span class="experience-operator-section__kicker">Booking terms</span>
                                 <h2>Cancellation Policy</h2>
                             </div>
                             <p>For a full refund, cancel at least 24 hours in advance of the start date of the experience.</p>
                         </article>
 
-                        <article class="experience-operator-section package-support-strip">
+                        <article class="experience-operator-section">
                             <div class="experience-operator-section__head">
                                 <span class="experience-operator-section__kicker">Need help?</span>
-                                <h2>Experience support</h2>
+                                <h2>Contact Us</h2>
                             </div>
                             <p>
-                                If you want to confirm pickup, timing, group needs, or payment before checkout, contact
-                                the Acute Tourism team at <strong>(+971) 58 516 1554</strong> or info@acutetourism.org.
+                                If you have questions about this tour or need help making your booking, we would be happy
+                                to help. Just call <strong>(+971) 58 516 1554</strong> or email info@acutetourism.org.
                             </p>
                         </article>
 
@@ -328,6 +411,24 @@ const closeMedia = () => {
                                         <span>{{ review.tag || review.source }}</span>
                                     </div>
                                 </article>
+                            </div>
+                        </article>
+
+                        <article class="experience-operator-section">
+                            <div class="experience-operator-section__head">
+                                <span class="experience-operator-section__kicker">Common questions</span>
+                                <h2>Frequently Asked Questions</h2>
+                            </div>
+                            <div class="experience-operator-mini-flow">
+                                <details
+                                    v-for="(item, index) in faqItems"
+                                    :key="item.question"
+                                    class="experience-operator-mini-flow__item"
+                                    :open="index === 0"
+                                >
+                                    <summary>{{ item.question }}</summary>
+                                    <span>{{ item.answer }}</span>
+                                </details>
                             </div>
                         </article>
                     </div>
@@ -392,7 +493,14 @@ const closeMedia = () => {
                 >
                     {{ cartForm.processing ? 'Adding...' : 'Add to Cart' }}
                 </button>
-                <Link class="button-secondary" href="/cart">Checkout</Link>
+                <button
+                    class="button-secondary"
+                    type="button"
+                    :disabled="!experience.priceFrom"
+                    @click="bookNow"
+                >
+                    Checkout
+                </button>
             </div>
         </div>
     </div>

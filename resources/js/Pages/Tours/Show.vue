@@ -65,10 +65,54 @@ const totalAmount = computed(() => {
     }).format(unitAmount * guestCount)}`;
 });
 
+const focusBookingForm = (field = 'date') => {
+    const bookingWidget = document.querySelector('#booking-widget');
+
+    bookingWidget?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    window.setTimeout(() => {
+        const inputSelector = field === 'guests' ? 'input[type="number"]' : 'input[type="date"]';
+        bookingWidget?.querySelector(inputSelector)?.focus();
+    }, 450);
+};
+
 const addToCart = () => {
+    const guestCount = Math.max(1, Number.parseInt(form.guest_count, 10) || 1);
+
+    if (!form.travel_date) {
+        focusBookingForm('date');
+        return;
+    }
+
+    if (!guestCount) {
+        focusBookingForm('guests');
+        return;
+    }
+
     cartForm.travel_date = form.travel_date;
-    cartForm.guest_count = Math.max(1, Number.parseInt(form.guest_count, 10) || 1);
+    cartForm.guest_count = guestCount;
     cartForm.post('/cart', { preserveScroll: true });
+};
+
+const bookNow = () => {
+    const guestCount = Math.max(1, Number.parseInt(form.guest_count, 10) || 1);
+
+    if (!form.travel_date) {
+        focusBookingForm('date');
+        return;
+    }
+
+    if (!guestCount) {
+        focusBookingForm('guests');
+        return;
+    }
+
+    const params = new URLSearchParams({
+        travel_date: form.travel_date,
+        guest_count: String(guestCount),
+    });
+
+    window.location.assign(`/checkout/tours/${props.tour.slug}?${params.toString()}`);
 };
 
 const openMedia = (index) => {
@@ -215,7 +259,7 @@ const closeMedia = () => {
                     </div>
 
                     <aside class="experience-operator-sidebar">
-                        <article class="experience-operator-booking">
+                        <article id="booking-widget" class="experience-operator-booking">
                             <p class="experience-operator-booking__badge">Best Seller</p>
                             <p class="experience-operator-booking__label">From</p>
                             <h2 v-if="tour.priceFrom" class="experience-operator-booking__price">
@@ -265,7 +309,9 @@ const closeMedia = () => {
                             >
                                 {{ cartForm.processing ? 'Adding...' : 'Add to Cart' }}
                             </button>
-                            <Link class="button-secondary add-cart-button" href="/cart">View Cart</Link>
+                            <button class="button-secondary add-cart-button" type="button" @click="bookNow">
+                                Checkout
+                            </button>
                         </article>
                     </aside>
                 </div>
@@ -328,7 +374,14 @@ const closeMedia = () => {
                 >
                     {{ cartForm.processing ? 'Adding...' : 'Add to Cart' }}
                 </button>
-                <Link class="button-secondary" href="/cart">Cart</Link>
+                <button
+                    class="button-secondary"
+                    type="button"
+                    :disabled="!tour.priceFrom"
+                    @click="bookNow"
+                >
+                    Checkout
+                </button>
             </div>
         </div>
     </div>

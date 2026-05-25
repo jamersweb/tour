@@ -21,6 +21,18 @@ Route::get('/packages', [PageController::class, 'packages'])->name('packages.ind
 Route::get('/packages/{slug}', [PageController::class, 'package'])->name('packages.show');
 Route::get('/visa-services', [PageController::class, 'visaServices'])->name('visa.index');
 Route::get('/schengen-visa', [PageController::class, 'schengenVisa'])->name('visa.schengen');
+Route::get('/uk-visa', [PageController::class, 'visaProduct'])->defaults('slug', 'uk-visa')->name('visa.uk');
+Route::get('/usa-visa', [PageController::class, 'visaProduct'])->defaults('slug', 'usa-visa')->name('visa.usa');
+Route::get('/canada-visa', [PageController::class, 'canadaVisa'])->name('visa.canada');
+Route::get('/japan-visa', [PageController::class, 'visaProduct'])->defaults('slug', 'japan-visa')->name('visa.japan');
+Route::get('/australia-visa', [PageController::class, 'visaProduct'])->defaults('slug', 'australia-visa')->name('visa.australia');
+Route::get('/turkey-visa', [PageController::class, 'visaProduct'])->defaults('slug', 'turkey-visa')->name('visa.turkey');
+Route::get('/malaysia-visa', [PageController::class, 'visaProduct'])->defaults('slug', 'malaysia-visa')->name('visa.malaysia');
+Route::get('/vietnam-visa', [PageController::class, 'visaProduct'])->defaults('slug', 'vietnam-visa')->name('visa.vietnam');
+Route::get('/brazil-visa', [PageController::class, 'visaProduct'])->defaults('slug', 'brazil-visa')->name('visa.brazil');
+Route::get('/south-africa-visa', [PageController::class, 'visaProduct'])->defaults('slug', 'south-africa-visa')->name('visa.south-africa');
+Route::get('/evisa-assistance', [PageController::class, 'visaProduct'])->defaults('slug', 'evisa-assistance')->name('visa.evisa');
+Route::get('/tourist-visa-assistance', [PageController::class, 'visaProduct'])->defaults('slug', 'tourist-visa-assistance')->name('visa.tourist');
 Route::get('/collections/{slug}', [PageController::class, 'collection'])->name('collections.show');
 Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/cancellation-policy', [PageController::class, 'cancellationPolicy'])->name('cancellation-policy');

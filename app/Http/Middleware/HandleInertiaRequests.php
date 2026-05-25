@@ -122,7 +122,7 @@ class HandleInertiaRequests extends Middleware
                     ['label' => 'Experiences', 'href' => route('experiences.index')],
                     ['label' => 'Tours', 'href' => route('tours.index')],
                     ['label' => 'Packages', 'href' => route('packages.index')],
-                    ['label' => 'Schengen Visa', 'href' => route('visa.schengen')],
+                    ['label' => 'Visa Services', 'href' => route('visa.index')],
                     ['label' => 'About', 'href' => route('about')],
                     ['label' => 'Cancellation Policy', 'href' => route('cancellation-policy')],
                     ['label' => 'Terms & Conditions', 'href' => route('terms-and-conditions')],

@@ -96,30 +96,30 @@ class PageController extends Controller
             [
                 'title' => 'Dubai Holiday Packages',
                 'summary' => 'Hotels, transfers, attractions, and desert experiences arranged into one city break plan.',
-                'priceLine' => 'Custom quote by travel date',
-                'detail' => 'Best for families, couples, and first-time Dubai visitors.',
+                'priceLine' => 'From AED 2,950 / person',
+                'detail' => 'Duration: 4 days',
                 'href' => route('packages.index'),
-                'cta' => 'Request Quote',
+                'cta' => 'Book Now',
                 'image' => $packageImages->get(0) ?: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80',
                 'highlights' => ['Hotels', 'Transfers', 'Attractions'],
             ],
             [
-                'title' => 'Event & Abu Dhabi Packages',
-                'summary' => 'UAE event travel, Abu Dhabi add-ons, attraction tickets, and transfer planning for tighter schedules.',
-                'priceLine' => 'From AED pricing when available',
-                'detail' => 'Best for event weekends, groups, and mixed city itineraries.',
+                'title' => 'Event & UAE Packages',
+                'summary' => 'UAE event travel, attraction tickets, and transfer planning for tighter schedules.',
+                'priceLine' => 'From AED 2,200 / person',
+                'detail' => 'Duration: 3 days',
                 'href' => route('packages.index'),
-                'cta' => 'View Packages',
+                'cta' => 'Book Now',
                 'image' => $packageImages->get(1) ?: 'https://images.unsplash.com/photo-1512632578888-169bbbc64f33?auto=format&fit=crop&w=1200&q=80',
                 'highlights' => ['Event travel', 'Abu Dhabi', 'Tickets'],
             ],
             [
                 'title' => 'International Holiday Planning',
                 'summary' => 'Outbound trip planning with visa support, hotel guidance, transfers, and practical document timing.',
-                'priceLine' => 'Custom quote after consultation',
-                'detail' => 'Best for travelers who want trip planning and visa support together.',
+                'priceLine' => 'Custom quote',
+                'detail' => 'Duration: Flexible',
                 'href' => route('packages.index'),
-                'cta' => 'Customize Package',
+                'cta' => 'Book Now',
                 'image' => $packageImages->get(2) ?: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80',
                 'highlights' => ['Outbound', 'Visa support', 'Hotels'],
             ],
@@ -149,56 +149,56 @@ class PageController extends Controller
                 'slug' => 'uk-visa',
                 'summary' => 'Tourist and short-stay guidance for UAE-based applicants heading to the United Kingdom.',
                 'tag' => 'Popular',
-                'href' => route('visa.index').'#uk-visa',
+                'href' => route('visa.uk'),
             ],
             [
                 'title' => 'USA Visa',
                 'slug' => 'usa-visa',
                 'summary' => 'Profile review and application support focused on B1/B2 visitor intent and interview readiness.',
                 'tag' => 'High Intent',
-                'href' => route('visa.index').'#usa-visa',
+                'href' => route('visa.usa'),
             ],
             [
                 'title' => 'Japan Visa',
                 'slug' => 'japan-visa',
                 'summary' => 'Travel plan and documentation support for short-term Japan tourist applications.',
                 'tag' => 'Tourist',
-                'href' => route('visa.index').'#japan-visa',
+                'href' => route('visa.japan'),
             ],
             [
                 'title' => 'Canada Visa',
                 'slug' => 'canada-visa',
                 'summary' => 'Visitor visa assistance with strong document preparation and expectation setting.',
                 'tag' => 'Visitor',
-                'href' => route('visa.index').'#canada-visa',
+                'href' => route('visa.canada'),
             ],
             [
                 'title' => 'Australia Visa',
                 'slug' => 'australia-visa',
                 'summary' => 'UAE residents: visitor visas with GTE-aware documentation and realistic timelines.',
                 'tag' => 'Pacific',
-                'href' => route('visa.index').'#australia-visa',
+                'href' => route('visa.australia'),
             ],
             [
                 'title' => 'Malaysia Visa',
                 'slug' => 'malaysia-visa',
                 'summary' => 'Tourist and eVisa routes from the UAE—eligibility, checklist, and submission support.',
                 'tag' => 'Southeast Asia',
-                'href' => route('visa.index').'#malaysia-visa',
+                'href' => route('visa.malaysia'),
             ],
             [
                 'title' => 'Vietnam Visa',
                 'slug' => 'vietnam-visa',
                 'summary' => 'eVisa and tourist visas with itinerary-aligned documents and clear application steps.',
                 'tag' => 'Southeast Asia',
-                'href' => route('visa.index').'#vietnam-visa',
+                'href' => route('visa.vietnam'),
             ],
             [
                 'title' => 'E-Visa Assistance',
                 'slug' => 'evisa-assistance',
                 'summary' => 'Fast-turn support for online visa workflows where document clarity and submission accuracy matter.',
                 'tag' => 'Fast Track',
-                'href' => route('visa.index').'#evisa-assistance',
+                'href' => route('visa.evisa'),
             ],
         ]);
 
@@ -211,22 +211,22 @@ class PageController extends Controller
                 'description' => 'Luxury travel planning, premium Dubai experiences, and professional visa services from one polished travel brand.',
             ],
             'hero' => [
-                'eyebrow' => 'Acute Tourism Dubai',
-                'title' => 'Your Dubai Holiday, Handled',
+                'eyebrow' => $settings->home_hero_eyebrow ?: 'Acute Tourism Dubai',
+                'title' => $settings->home_hero_title ?: 'Your Dubai Holiday, Handled',
                 'mobileTitle' => 'Tours, Packages & Visa Assistance',
-                'description' => 'From private tours and custom holiday packages to international visa assistance, Acute Tourism helps you plan every part of your journey with ease.',
+                'description' => $settings->home_hero_description ?: 'From private tours and custom holiday packages to international visa assistance, Acute Tourism helps you plan every part of your journey with ease.',
                 'heroImageUrl' => 'https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=2000&q=80',
                 'videoUrl' => 'https://acutetourism.org/videos/hero-section-intro.mp4',
-                'primaryCta' => ['label' => 'Explore Dubai Experiences', 'href' => route('experiences.index')],
-                'secondaryCta' => ['label' => 'View Packages', 'href' => route('packages.index')],
+                'primaryCta' => ['label' => $settings->home_primary_cta_label ?: 'Explore Dubai Experiences', 'href' => route('experiences.index')],
+                'secondaryCta' => ['label' => $settings->home_secondary_cta_label ?: 'View Packages', 'href' => route('packages.index')],
                 'tertiaryCta' => ['label' => 'Visa Services', 'href' => route('visa.index')],
                 'trustLine' => '2,500+ travelers | 12 years in Dubai | Licensed operator',
             ],
             'homeSections' => [
                 'ribbonEyebrow' => 'In Dubai & beyond',
                 'ribbonTitle' => 'Curated Travel Moments',
-                'collectionsEyebrow' => 'Destinations',
-                'collectionsTitle' => 'Our Core Travel Services',
+                'collectionsEyebrow' => $settings->home_collections_eyebrow ?: 'Destinations',
+                'collectionsTitle' => $settings->home_collections_title ?: 'Our Core Travel Services',
                 'mustDoEyebrow' => 'Start here',
                 'mustDoTitle' => "Dubai's Must-Do Experiences",
                 'topRatedEyebrow' => 'Guest favourites',
@@ -270,25 +270,25 @@ class PageController extends Controller
             'recommendations' => $visaServices,
             'serviceFocus' => [
                 [
-                    'title' => 'Tours & Experiences',
-                    'copy' => 'Desert safaris, yacht charters, city tours, theme parks, and private Dubai activities.',
+                    'title' => 'Things to do',
+                    'copy' => 'Book activities, tickets, and experiences.',
                     'href' => route('experiences.index'),
-                    'cta' => 'View Tours',
-                    'tag' => 'Dubai activities',
+                    'cta' => 'Explore now',
+                    'tag' => 'Tours & tickets',
                 ],
                 [
-                    'title' => 'Holiday Packages',
-                    'copy' => 'Custom Dubai, UAE, and international holiday packages for families, couples, groups, and corporate travel.',
+                    'title' => 'Holiday packages',
+                    'copy' => 'Plan hotels, transfers, and activities.',
                     'href' => route('packages.index'),
-                    'cta' => 'View Packages',
-                    'tag' => 'Holiday packages',
+                    'cta' => 'View packages',
+                    'tag' => 'Custom trips',
                 ],
                 [
-                    'title' => 'Visa Assistance',
-                    'copy' => 'Support for Schengen, UK, USA, Canada, Japan, Australia, and other international visa applications.',
+                    'title' => 'Visa services',
+                    'copy' => 'Prepare documents with consultant support.',
                     'href' => route('visa.index'),
-                    'cta' => 'View Visa Services',
-                    'tag' => 'Documentation support',
+                    'cta' => 'Check visas',
+                    'tag' => 'Visa guidance',
                 ],
             ],
             'testimonials' => [
@@ -392,13 +392,13 @@ class PageController extends Controller
             'featuredPackages' => $featuredPackages,
             'visaCategories' => [
                 ['emoji' => 'EU', 'title' => 'Schengen Visa', 'copy' => '27 European countries', 'href' => route('visa.schengen')],
-                ['emoji' => 'UK', 'title' => 'UK Visa', 'copy' => 'United Kingdom support', 'href' => route('visa.index').'#uk-visa'],
-                ['emoji' => 'US', 'title' => 'USA Visa', 'copy' => 'Visitor and profile review', 'href' => route('visa.index').'#usa-visa'],
-                ['emoji' => 'JP', 'title' => 'Japan Visa', 'copy' => 'Short-stay planning', 'href' => route('visa.index').'#japan-visa'],
-                ['emoji' => 'CA', 'title' => 'Canada Visa', 'copy' => 'Visitor visa assistance', 'href' => route('visa.index').'#canada-visa'],
-                ['emoji' => 'BR', 'title' => 'Brazil Visa', 'copy' => 'Travel document support', 'href' => route('visa.index').'#brazil-visa'],
-                ['emoji' => 'ZA', 'title' => 'South Africa Visa', 'copy' => 'Tourist application guidance', 'href' => route('visa.index').'#south-africa-visa'],
-                ['emoji' => 'EV', 'title' => 'E-Visa Assistance', 'copy' => 'Online processing routes', 'href' => route('visa.index').'#evisa-assistance'],
+                ['emoji' => 'UK', 'title' => 'UK Visa', 'copy' => 'United Kingdom support', 'href' => route('visa.uk')],
+                ['emoji' => 'US', 'title' => 'USA Visa', 'copy' => 'Visitor and profile review', 'href' => route('visa.usa')],
+                ['emoji' => 'JP', 'title' => 'Japan Visa', 'copy' => 'Short-stay planning', 'href' => route('visa.japan')],
+                ['emoji' => 'CA', 'title' => 'Canada Visa', 'copy' => 'Visitor visa assistance', 'href' => route('visa.canada')],
+                ['emoji' => 'BR', 'title' => 'Brazil Visa', 'copy' => 'Travel document support', 'href' => route('visa.brazil')],
+                ['emoji' => 'ZA', 'title' => 'South Africa Visa', 'copy' => 'Tourist application guidance', 'href' => route('visa.south-africa')],
+                ['emoji' => 'EV', 'title' => 'E-Visa Assistance', 'copy' => 'Online processing routes', 'href' => route('visa.evisa')],
             ],
             'processSteps' => [
                 ['step' => '01', 'title' => 'Call or WhatsApp Acute', 'copy' => 'Reach the team directly using the numbers on the page instead of filling a long multi-step funnel.'],
@@ -475,6 +475,7 @@ class PageController extends Controller
                     'slug' => $experience->slug,
                     'category' => $experience->category,
                     'duration' => $experience->duration,
+                    'location' => $experience->location,
                     'summary' => $experience->short_description,
                     'priceFrom' => $this->formatMoney($experience->price_from, $experience->currency),
                     'heroImageUrl' => $experience->hero_image_url,
@@ -781,6 +782,8 @@ class PageController extends Controller
 
     public function schengenVisa(): Response
     {
+        return $this->renderVisaProduct('schengen-visa');
+
         $settings = SiteSetting::current();
 
         return Inertia::render('VisaLanding', [
@@ -1041,6 +1044,301 @@ class PageController extends Controller
         ]);
     }
 
+    public function canadaVisa(): Response
+    {
+        return $this->renderVisaProduct('canada-visa');
+    }
+
+    public function visaProduct(string $slug): Response
+    {
+        return $this->renderVisaProduct($slug);
+    }
+
+    private function renderVisaProduct(string $slug): Response
+    {
+        $settings = SiteSetting::current();
+        $visa = $this->visaProductPages()[$slug] ?? abort(404);
+
+        return Inertia::render('VisaProduct', [
+            'seo' => [
+                'title' => $visa['seoTitle'],
+                'description' => $visa['seoDescription'],
+            ],
+            'contact' => [
+                'email' => $settings->contact_email,
+                'phone' => $settings->contact_phone,
+                'phoneSecondary' => $settings->contact_phone_secondary,
+                'address' => $settings->contact_address,
+                'whatsappNumber' => $settings->whatsapp_number,
+            ],
+            'interestOptions' => $settings->interest_options ?? [],
+            'visa' => $visa,
+        ]);
+    }
+
+    /**
+     * Customer-facing visa product page content. This keeps all visa detail pages
+     * driven by one reusable Vue template until an admin CRUD is needed.
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    private function visaProductPages(): array
+    {
+        return collect([
+            'schengen-visa' => [
+                'shortTitle' => 'Schengen Visa',
+                'kicker' => 'Schengen Visa Assistance',
+                'title' => 'Prepare Your Schengen Visa File With Clear Guidance',
+                'copy' => 'Understand the Schengen tourist visa route, required documents, insurance, travel itinerary, and appointment expectations before an Acute Tourism consultant reviews your file.',
+                'image' => 'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=1000&q=80',
+                'badge' => 'Europe Visa',
+                'processing' => '15-30',
+                'fee' => 'AED 350',
+                'type' => 'Sticker visa',
+                'style' => 'Embassy appointment',
+                'mainDocs' => 'Passport, bank statement, insurance, itinerary',
+                'bestFor' => 'Europe tourism and short stays',
+                'authority' => 'issuing Schengen embassy or consulate',
+            ],
+            'uk-visa' => [
+                'shortTitle' => 'UK Visa',
+                'kicker' => 'UK Visa Assistance',
+                'title' => 'Prepare Your UK Visitor Visa With Clear Document Guidance',
+                'copy' => 'Understand the UK visitor visa route, required evidence, and common weak points before an Acute Tourism consultant reviews your file and next steps.',
+                'image' => 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1000&q=80',
+                'badge' => 'Standard Visitor',
+                'processing' => '8-15',
+                'fee' => 'AED 300',
+                'type' => 'Standard Visitor Visa',
+                'style' => 'Online + VFS biometrics',
+                'mainDocs' => 'Passport, funds, travel proof',
+                'bestFor' => 'Tourism, family visit, short stay',
+                'authority' => 'UK Visas and Immigration',
+            ],
+            'usa-visa' => [
+                'shortTitle' => 'USA Visa',
+                'kicker' => 'USA Visa Assistance',
+                'title' => 'Get B1/B2 Visitor Visa Guidance Before Your Interview',
+                'copy' => 'Review the DS-160 route, interview expectations, travel purpose, and supporting profile before you move ahead with your USA visitor visa application.',
+                'image' => 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&w=1000&q=80',
+                'badge' => 'B1/B2 Visitor',
+                'processing' => '30-90',
+                'fee' => 'AED 450',
+                'type' => 'B1/B2 Visitor Visa',
+                'style' => 'DS-160 + embassy interview',
+                'mainDocs' => 'Passport, DS-160, profile, funds',
+                'bestFor' => 'Tourism, business visit, family visit',
+                'authority' => 'United States embassy or consulate',
+            ],
+            'canada-visa' => [
+                'shortTitle' => 'Canada Visa',
+                'kicker' => 'Canada Visa Assistance',
+                'title' => 'Get Canada Visitor Visa Guidance Without the Confusion',
+                'copy' => 'Get enough clarity online to understand the Canada visitor visa route, then speak with an Acute Tourism visa consultant to review your profile, documents, and next steps before you proceed.',
+                'image' => 'https://images.unsplash.com/photo-1503614472-8c93d56cd55d?auto=format&fit=crop&w=1000&q=80',
+                'badge' => 'Visitor Visa',
+                'processing' => '60-120',
+                'fee' => 'AED 400',
+                'type' => 'Temporary Resident Visa',
+                'style' => 'Online + biometrics',
+                'mainDocs' => 'Passport, funds, travel purpose',
+                'bestFor' => 'Tourism, family visit, short stay',
+                'authority' => 'Canadian immigration authority',
+            ],
+            'japan-visa' => [
+                'shortTitle' => 'Japan Visa',
+                'kicker' => 'Japan Visa Assistance',
+                'title' => 'Prepare a Cleaner Japan Tourist Visa File',
+                'copy' => 'Get guidance on itinerary structure, financial proof, UAE residence documents, and embassy expectations before submitting a Japan short-stay visa file.',
+                'image' => 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1000&q=80',
+                'badge' => 'Short-stay Visa',
+                'processing' => '5-10',
+                'fee' => 'AED 280',
+                'type' => 'Short-stay Tourist Visa',
+                'style' => 'Embassy submission',
+                'mainDocs' => 'Passport, itinerary, bank proof',
+                'bestFor' => 'Tourism, family visit, short stay',
+                'authority' => 'Japanese embassy or consulate',
+            ],
+            'australia-visa' => [
+                'shortTitle' => 'Australia Visa',
+                'kicker' => 'Australia Visa Assistance',
+                'title' => 'Get Australia Visitor Visa Support With Stronger File Clarity',
+                'copy' => 'Prepare your visitor visa route with clearer travel purpose, financial proof, employment evidence, and realistic timeline expectations.',
+                'image' => 'https://images.unsplash.com/photo-1523482580672-f109ba8cb9be?auto=format&fit=crop&w=1000&q=80',
+                'badge' => 'Visitor Visa',
+                'processing' => '20-40',
+                'fee' => 'AED 380',
+                'type' => 'Visitor Visa',
+                'style' => 'Online application',
+                'mainDocs' => 'Passport, funds, travel purpose',
+                'bestFor' => 'Tourism, family visit, short stay',
+                'authority' => 'Australian immigration authority',
+            ],
+            'turkey-visa' => [
+                'shortTitle' => 'Turkey eVisa',
+                'kicker' => 'Turkey eVisa Assistance',
+                'title' => 'Check Turkey eVisa Eligibility and Apply With Clear Details',
+                'copy' => 'Confirm the right online route, document details, and travel information before your Turkey eVisa application is prepared.',
+                'image' => 'https://images.unsplash.com/photo-1527838832700-5059252407fa?auto=format&fit=crop&w=1000&q=80',
+                'badge' => 'Fast eVisa',
+                'processing' => '24-72',
+                'fee' => 'AED 150',
+                'type' => 'Turkey eVisa',
+                'style' => 'Online application',
+                'mainDocs' => 'Passport, photo, travel details',
+                'bestFor' => 'Tourism and short stays',
+                'authority' => 'Turkish immigration authority',
+            ],
+            'malaysia-visa' => [
+                'shortTitle' => 'Malaysia Visa',
+                'kicker' => 'Malaysia Visa Assistance',
+                'title' => 'Prepare Your Malaysia Tourist or eVisa Application Clearly',
+                'copy' => 'Check eligibility, documents, and online submission details before moving ahead with a Malaysia tourist visa or eVisa route.',
+                'image' => 'https://images.unsplash.com/photo-1515444744559-5f3205c7e4c7?auto=format&fit=crop&w=1000&q=80',
+                'badge' => 'Tourist / eVisa',
+                'processing' => '3-5',
+                'fee' => 'AED 120',
+                'type' => 'Tourist / eVisa',
+                'style' => 'Online application',
+                'mainDocs' => 'Passport, photo, travel details',
+                'bestFor' => 'Tourism and short stays',
+                'authority' => 'Malaysian immigration authority',
+            ],
+            'vietnam-visa' => [
+                'shortTitle' => 'Vietnam Visa',
+                'kicker' => 'Vietnam Visa Assistance',
+                'title' => 'Prepare Your Vietnam Tourist or eVisa Route Clearly',
+                'copy' => 'Get help checking the right Vietnam visa route, travel information, passport details, and online submission steps before you proceed.',
+                'image' => 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1000&q=80',
+                'badge' => 'Tourist / eVisa',
+                'processing' => '3-7',
+                'fee' => 'AED 150',
+                'type' => 'Tourist / eVisa',
+                'style' => 'Online application',
+                'mainDocs' => 'Passport, photo, travel details',
+                'bestFor' => 'Tourism and short stays',
+                'authority' => 'Vietnamese immigration authority',
+            ],
+            'brazil-visa' => [
+                'shortTitle' => 'Brazil Visa',
+                'kicker' => 'Brazil Visa Assistance',
+                'title' => 'Get Brazil Visa Document Guidance Before You Apply',
+                'copy' => 'Prepare a cleaner Brazil tourist visa file with clearer travel purpose, financial proof, accommodation details, and supporting documents.',
+                'image' => 'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&w=1000&q=80',
+                'badge' => 'Tourist Visa',
+                'processing' => '10-20',
+                'fee' => 'AED 300',
+                'type' => 'Tourist visa',
+                'style' => 'Consular / online route',
+                'mainDocs' => 'Passport, funds, itinerary, accommodation',
+                'bestFor' => 'Tourism and family visits',
+                'authority' => 'Brazilian consulate or immigration authority',
+            ],
+            'south-africa-visa' => [
+                'shortTitle' => 'South Africa Visa',
+                'kicker' => 'South Africa Visa Assistance',
+                'title' => 'Prepare Your South Africa Tourist Visa With Better Clarity',
+                'copy' => 'Get practical document guidance for South Africa travel, including passport, funds, itinerary, accommodation, and travel-purpose support.',
+                'image' => 'https://images.unsplash.com/photo-1484318571209-661cf29a69fa?auto=format&fit=crop&w=1000&q=80',
+                'badge' => 'Tourist Visa',
+                'processing' => '10-20',
+                'fee' => 'AED 300',
+                'type' => 'Tourist visa',
+                'style' => 'Consular submission',
+                'mainDocs' => 'Passport, funds, itinerary, accommodation',
+                'bestFor' => 'Tourism and short stays',
+                'authority' => 'South African consulate or immigration authority',
+            ],
+            'evisa-assistance' => [
+                'shortTitle' => 'eVisa Assistance',
+                'kicker' => 'Online Visa Assistance',
+                'title' => 'Get Help With Online Visa Applications and eVisa Routes',
+                'copy' => 'Use Acute Tourism for clearer data entry, document preparation, and route selection when the destination offers an online visa process.',
+                'image' => 'https://images.unsplash.com/photo-1526772662000-3f88f10405ff?auto=format&fit=crop&w=1000&q=80',
+                'badge' => 'Online Visa',
+                'processing' => 'Varies',
+                'fee' => 'On request',
+                'type' => 'eVisa / Online Visa',
+                'style' => 'Online submission',
+                'mainDocs' => 'Passport, photo, travel details',
+                'bestFor' => 'Online visa destinations',
+                'authority' => 'destination immigration authority',
+            ],
+            'tourist-visa-assistance' => [
+                'shortTitle' => 'Tourist Visa Assistance',
+                'kicker' => 'Tourist Visa Assistance',
+                'title' => 'Find the Right Tourist Visa Route Before You Apply',
+                'copy' => 'If you are unsure which visa route applies, Acute Tourism can review your destination, nationality, UAE residence status, timing, and document readiness.',
+                'image' => 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1000&q=80',
+                'badge' => 'General Visa Help',
+                'processing' => 'Varies',
+                'fee' => 'On request',
+                'type' => 'Tourist visa support',
+                'style' => 'Route depends on destination',
+                'mainDocs' => 'Passport, funds, travel plan',
+                'bestFor' => 'Travelers unsure of the right route',
+                'authority' => 'destination embassy, consulate, or immigration authority',
+            ],
+        ])->map(fn (array $page, string $slug) => $this->makeVisaProductPage($slug, $page))->all();
+    }
+
+    /**
+     * @param  array<string, mixed>  $page
+     * @return array<string, mixed>
+     */
+    private function makeVisaProductPage(string $slug, array $page): array
+    {
+        $shortTitle = $page['shortTitle'];
+        $authority = $page['authority'];
+        $processing = $page['processing'];
+        $fee = $page['fee'];
+
+        return $page + [
+            'slug' => $slug,
+            'seoTitle' => "{$shortTitle} Assistance | Acute Tourism",
+            'seoDescription' => "{$shortTitle} assistance for UAE residents with document guidance, file review, processing timeline clarity, and application preparation support.",
+            'requirementsTitle' => "{$shortTitle} Requirements",
+            'requirementsCopy' => 'Use this as a starting checklist. Exact requirements depend on nationality, UAE residence status, employment type, travel history, and purpose of visit.',
+            'feesCopy' => "{$shortTitle} processing can vary by applicant profile, season, appointment availability, and authority review time.",
+            'processTitle' => "How {$shortTitle} Support Works",
+            'processCopy' => 'The page gives you the basic information. The real value is the direct consultation where an Acute visa agent reviews your situation and guides you personally.',
+            'whyTitle' => 'Information Online. Final Clarity With a Real Agent.',
+            'whyCopy' => "{$shortTitle} applications can feel complicated because the strength of the file depends on your personal situation, not just a general checklist.",
+            'disclaimer' => "{$shortTitle} approval is decided only by the {$authority}. Acute Tourism provides document guidance, application preparation support, and file readiness review, but does not guarantee approval or processing time.",
+            'faqTitle' => "{$shortTitle} FAQs",
+            'faqCopy' => "Quick answers to help UAE residents understand the {$shortTitle} support process.",
+            'stats' => [
+                ['4.8★', 'Customer rating'],
+                [$processing, 'Working days estimate'],
+                [$fee, 'Service fee from'],
+            ],
+            'quickFacts' => [
+                ['Visa type', $page['type']],
+                ['Application style', $page['style']],
+                ['Main documents', $page['mainDocs']],
+                ['Best for', $page['bestFor']],
+            ],
+            'feeCards' => [
+                ['Acute Service Fee', $fee, ['Document checklist guidance', 'Profile-based document review', 'Application preparation support', 'Clear next-step guidance'], true],
+                ['Processing Estimate', $processing, ['Working days estimate', 'Timeline may vary', 'Appointment or biometrics may be required', 'Authority decision only'], false],
+                ['Application Style', $page['style'], ['Route-specific preparation', 'Document consistency review', 'Submission guidance', 'Follow-up steps explained'], false],
+            ],
+            'reviewCards' => [
+                ["The team helped me understand what was missing in my {$shortTitle} documents before I applied.", 'Ahmed R.'],
+                ['Clear guidance and fast response. The document checklist made the process easier to manage.', 'Mariam A.'],
+                ['I liked that they explained the weak areas in my file instead of just asking for documents.', 'Priya S.'],
+            ],
+            'faqItems' => [
+                ["Can Acute Tourism guarantee {$shortTitle} approval?", "No. {$shortTitle} approval is decided only by the {$authority}. Acute Tourism helps with document guidance, file preparation, and readiness review."],
+                ["How long does {$shortTitle} processing take?", "The estimate shown here is {$processing} working days where applicable. Actual timelines can vary based on applicant profile, appointments, season, and authority review."],
+                ['What documents are most important?', 'Passport, UAE residence proof, bank statement, employment or business proof, travel purpose, and supporting documents are commonly important. Exact requirements vary.'],
+                ['Can you help if I started the application already?', 'Yes. Acute can help review your file readiness and identify missing or weak documents, depending on your application stage.'],
+                ['What happens after I send the form?', 'A visa consultant reviews your details and contacts you with a clearer checklist, route, and next step.'],
+            ],
+        ];
+    }
+
     public function visaServices(): Response
     {
         $settings = SiteSetting::current();
@@ -1076,66 +1374,96 @@ class PageController extends Controller
                     'title' => 'UK Visa',
                     'tag' => 'Tourist',
                     'copy' => 'Short-stay UK travel support with attention to documentation quality, profile clarity, and timeline planning.',
+                    'href' => route('visa.uk'),
+                    'cta' => 'Open UK page',
                 ],
                 [
                     'id' => 'usa-visa',
                     'title' => 'USA Visa',
                     'tag' => 'Interview',
                     'copy' => 'B1/B2 visitor-focused guidance for profile review, supporting file preparation, and expectation setting.',
+                    'href' => route('visa.usa'),
+                    'cta' => 'Open USA page',
                 ],
                 [
                     'id' => 'japan-visa',
                     'title' => 'Japan Visa',
                     'tag' => 'Travel Planning',
                     'copy' => 'Short-stay Japan visitor visa support with a stronger focus on itinerary structure and documentation consistency.',
+                    'href' => route('visa.japan'),
+                    'cta' => 'Open Japan page',
                 ],
                 [
                     'id' => 'canada-visa',
                     'title' => 'Canada Visa',
                     'tag' => 'Visitor',
                     'copy' => 'Tourist and family-visit support with a cleaner narrative around financial proof, residence status, and travel purpose.',
+                    'href' => route('visa.canada'),
+                    'cta' => 'Open Canada page',
                 ],
                 [
                     'id' => 'evisa-assistance',
                     'title' => 'E-visa Assistance',
                     'tag' => 'Online Processing',
                     'copy' => 'Online application support for destinations where submission speed and data accuracy matter.',
+                    'href' => route('visa.evisa'),
+                    'cta' => 'Open eVisa page',
                 ],
                 [
                     'id' => 'brazil-visa',
                     'title' => 'Brazil Visa',
                     'tag' => 'Tourist',
                     'copy' => 'Application planning and supporting-document guidance for travelers heading to Brazil.',
+                    'href' => route('visa.brazil'),
+                    'cta' => 'Open Brazil page',
                 ],
                 [
                     'id' => 'south-africa-visa',
                     'title' => 'South Africa Visa',
                     'tag' => 'Tourist',
                     'copy' => 'Visa support for South Africa itineraries with practical document preparation and travel-purpose framing.',
+                    'href' => route('visa.south-africa'),
+                    'cta' => 'Open South Africa page',
                 ],
                 [
                     'id' => 'australia-visa',
                     'title' => 'Australia Visa',
                     'tag' => 'Visitor',
                     'copy' => 'Visitor and short-stay Australia visas for UAE residents with documentation support, Genuine Temporary Entrant (GTE) framing, and realistic embassy timelines.',
+                    'href' => route('visa.australia'),
+                    'cta' => 'Open Australia page',
+                ],
+                [
+                    'id' => 'turkey-visa',
+                    'title' => 'Turkey eVisa',
+                    'tag' => 'eVisa',
+                    'copy' => 'Fast online visa assistance based on eligibility and travel plan.',
+                    'href' => route('visa.turkey'),
+                    'cta' => 'Open Turkey page',
                 ],
                 [
                     'id' => 'malaysia-visa',
                     'title' => 'Malaysia Visa',
                     'tag' => 'Tourist / eVisa',
                     'copy' => 'Malaysia tourist and eVisa routes from the UAE: eligibility checks, checklist-led preparation, and submission support.',
+                    'href' => route('visa.malaysia'),
+                    'cta' => 'Open Malaysia page',
                 ],
                 [
                     'id' => 'vietnam-visa',
                     'title' => 'Vietnam Visa',
                     'tag' => 'Tourist / eVisa',
                     'copy' => 'Vietnam eVisa and tourist routes with itinerary-aligned documents and clear steps from application to approval.',
+                    'href' => route('visa.vietnam'),
+                    'cta' => 'Open Vietnam page',
                 ],
                 [
                     'id' => 'tourist-visa-assistance',
                     'title' => 'Tourist Visa Assistance',
                     'tag' => 'General Support',
                     'copy' => 'A broader consultation route for travelers who are unsure which visa process applies to their trip.',
+                    'href' => route('visa.tourist'),
+                    'cta' => 'Open Tourist Visa page',
                 ],
             ],
             'servicePoints' => [

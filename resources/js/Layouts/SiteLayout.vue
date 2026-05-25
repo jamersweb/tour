@@ -1,5 +1,5 @@
 <script setup>
-import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 import WhatsappFloat from '../Components/WhatsappFloat.vue';
 
@@ -8,6 +8,11 @@ const logoutForm = useForm({});
 const headerRef = ref(null);
 const footerRef = ref(null);
 const mobileNavOpen = ref(false);
+const showMobileBottomNav = computed(() => {
+    const currentPath = String(page.url || '/').split('?')[0].replace(/\/+$/, '') || '/';
+
+    return currentPath === '/';
+});
 const partnerUrl = 'http://tourgratbat.acutetourism.org/';
 const paymentIcons = [
     { label: 'Cards', image: '/images/payment-card.svg' },
@@ -220,20 +225,51 @@ onBeforeUnmount(() => {
                     />
                 </Link>
 
-                <button
-                    class="mobile-nav-toggle"
-                    type="button"
-                    :aria-expanded="mobileNavOpen ? 'true' : 'false'"
-                    aria-controls="site-primary-nav"
-                    @click="toggleMobileNav"
-                >
-                    <span class="sr-only">{{ mobileNavOpen ? 'Close menu' : 'Open menu' }}</span>
-                    <span class="mobile-nav-toggle__icon" :class="{ 'is-open': mobileNavOpen }" aria-hidden="true">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </span>
-                </button>
+                <div class="mobile-header-tools" aria-label="Mobile quick actions">
+                    <Link
+                        v-if="page.props.auth.user"
+                        class="header-login-link"
+                        :href="page.props.auth.user.dashboardUrl"
+                        aria-label="My Account"
+                        @click="closeMobileNav"
+                    >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </Link>
+                    <Link v-else class="header-login-link" href="/login" aria-label="Log in" @click="closeMobileNav">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </Link>
+
+                    <Link class="header-cart-link" :href="page.props.cart.url" aria-label="Cart" @click="closeMobileNav">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M5 6h2l1.1 8.2a2 2 0 0 0 2 1.8h6.5a2 2 0 0 0 1.9-1.4L20 9H8"></path>
+                            <path d="M10 20h.01"></path>
+                            <path d="M17 20h.01"></path>
+                        </svg>
+                        <span v-if="page.props.cart.count" class="header-cart-link__count">{{ page.props.cart.count }}</span>
+                    </Link>
+
+                    <button
+                        class="mobile-nav-toggle"
+                        type="button"
+                        :aria-label="mobileNavOpen ? 'Close menu' : 'Open menu'"
+                        :aria-expanded="mobileNavOpen ? 'true' : 'false'"
+                        aria-controls="site-primary-nav"
+                        @click="toggleMobileNav"
+                    >
+                        <span class="mobile-nav-toggle__label">Menu</span>
+                        <span class="mobile-nav-toggle__icon" :class="{ 'is-open': mobileNavOpen }" aria-hidden="true">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </span>
+                    </button>
+                </div>
 
                 <div class="site-header-panel" :class="{ 'is-open': mobileNavOpen }">
                     <nav id="site-primary-nav" class="primary-nav" aria-label="Main">
@@ -451,7 +487,7 @@ onBeforeUnmount(() => {
             </div>
         </footer>
 
-        <nav class="mobile-bottom-nav" aria-label="Mobile quick navigation">
+        <nav v-if="showMobileBottomNav" class="mobile-bottom-nav" aria-label="Mobile quick navigation">
             <Link class="mobile-bottom-nav__item" href="/experiences">
                 <span aria-hidden="true">
                     <svg viewBox="0 0 24 24">

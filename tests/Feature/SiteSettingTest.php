@@ -23,14 +23,16 @@ class SiteSettingTest extends TestCase
 
     public function test_home_page_uses_settings_driven_content(): void
     {
+        $settings = SiteSetting::current();
+
         $response = $this->get('/');
 
         $response->assertOk();
         $response->assertInertia(fn (Assert $page) => $page
             ->component('Home')
-            ->where('hero.eyebrow', 'Tailor-Made Dubai & UAE Holidays')
-            ->where('homeSections.collectionsEyebrow', 'Destinations')
-            ->where('homeSections.collectionsTitle', 'Explore Other Emirates')
+            ->where('hero.eyebrow', $settings->home_hero_eyebrow)
+            ->where('homeSections.collectionsEyebrow', $settings->home_collections_eyebrow)
+            ->where('homeSections.collectionsTitle', $settings->home_collections_title)
             ->where('site.organization.type', 'TravelAgency')
             ->where('site.organization.legalName', 'Acute Tourism LLC')
         );

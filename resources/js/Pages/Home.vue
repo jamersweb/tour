@@ -365,7 +365,7 @@ onUnmounted(() => detachMediaListeners());
             <div class="container home-dashboard-stack">
                 <div class="home-dashboard-heading home-dashboard-heading--center">
                     <div>
-                        <h2>Choose your travel path</h2>
+                        <h2>Start with your travel need</h2>
                     </div>
                 </div>
                 <div class="home-routing-grid">
@@ -399,7 +399,9 @@ onUnmounted(() => detachMediaListeners());
             <div class="container home-dashboard-stack">
                 <div class="home-dashboard-heading">
                     <div>
-                        <h2>Featured Dubai Tours</h2>
+                        <p class="eyebrow">Tours &amp; tickets</p>
+                        <h2>Things To Do In Dubai</h2>
+                        <p class="home-dashboard-subcopy">Tours, attraction tickets, water parks, theme parks, and private experiences in one place.</p>
                     </div>
                     <div class="home-featured-actions">
                         <button
@@ -418,7 +420,7 @@ onUnmounted(() => detachMediaListeners());
                         >
                             <span aria-hidden="true">&gt;</span>
                         </button>
-                        <Link class="home-dashboard-more" href="/experiences">View All Tours</Link>
+                        <Link class="home-dashboard-more" href="/experiences">View All &rarr;</Link>
                     </div>
                 </div>
                 <div
@@ -447,7 +449,7 @@ onUnmounted(() => detachMediaListeners());
                         <div class="home-dashboard-card__body">
                             <h3>{{ experience.title }}</h3>
                             <strong class="home-dashboard-card__price">{{ experience.priceFrom }}</strong>
-                            <Link class="home-dashboard-card__button" :href="`/experiences/${experience.slug}`">View Tour</Link>
+                            <Link class="home-dashboard-card__button" :href="`/experiences/${experience.slug}`">Book Now</Link>
                         </div>
                     </article>
                 </div>
@@ -458,74 +460,7 @@ onUnmounted(() => detachMediaListeners());
                         :class="{ 'is-active': activeSlides.mustDo === index }"
                     ></span>
                 </div>
-                <Link class="home-mobile-view-all" href="/experiences">View All Tours</Link>
-            </div>
-        </section>
-
-        <section class="home-dashboard-section home-dashboard-section--light home-featured-section" data-reveal>
-            <div class="container home-dashboard-stack">
-                <div class="home-dashboard-heading">
-                    <div>
-                        <h2>Top-Rated Dubai Experiences</h2>
-                    </div>
-                    <div class="home-featured-actions">
-                        <button
-                            class="home-carousel-control"
-                            type="button"
-                            aria-label="Previous top-rated experience"
-                            @click="scrollCarousel('topRated', -1)"
-                        >
-                            <span aria-hidden="true">&lt;</span>
-                        </button>
-                        <button
-                            class="home-carousel-control"
-                            type="button"
-                            aria-label="Next top-rated experience"
-                            @click="scrollCarousel('topRated', 1)"
-                        >
-                            <span aria-hidden="true">&gt;</span>
-                        </button>
-                        <Link class="home-dashboard-more" href="/experiences">View All Tours</Link>
-                    </div>
-                </div>
-                <div
-                    :ref="(el) => setCarouselRef('topRated', el)"
-                    class="home-dashboard-grid home-dashboard-grid--four home-dashboard-grid--featured home-featured-carousel home-mobile-carousel"
-                    @scroll.passive="updateCarousel('topRated', $event)"
-                >
-                    <article
-                        v-for="experience in topRatedCards"
-                        :key="experience.slug"
-                        class="home-dashboard-card home-dashboard-card--lean"
-                        data-carousel-card
-                    >
-                        <Link class="home-dashboard-card__media" :href="`/experiences/${experience.slug}`">
-                            <img
-                                v-if="experience.heroImageUrl"
-                                :src="experience.heroImageUrl"
-                                :alt="experience.title"
-                                width="640"
-                                height="530"
-                                loading="lazy"
-                                decoding="async"
-                            />
-                            <span class="home-dashboard-badge">{{ experience.tag || experience.category }}</span>
-                        </Link>
-                        <div class="home-dashboard-card__body">
-                            <h3>{{ experience.title }}</h3>
-                            <strong class="home-dashboard-card__price">{{ experience.priceFrom }}</strong>
-                            <Link class="home-dashboard-card__button" :href="`/experiences/${experience.slug}`">Check Availability</Link>
-                        </div>
-                    </article>
-                </div>
-                <div class="home-carousel-dots" aria-hidden="true">
-                    <span
-                        v-for="(_, index) in topRatedCards"
-                        :key="index"
-                        :class="{ 'is-active': activeSlides.topRated === index }"
-                    ></span>
-                </div>
-                <Link class="home-mobile-view-all" href="/experiences">View All Tours</Link>
+                <Link class="home-mobile-view-all" href="/experiences">View All &rarr;</Link>
             </div>
         </section>
 
@@ -533,9 +468,11 @@ onUnmounted(() => detachMediaListeners());
             <div class="container home-dashboard-stack">
                 <div class="home-dashboard-heading">
                     <div>
-                        <h2>Our Top <em>Holiday</em> Packages</h2>
+                        <p class="eyebrow">Holiday planning</p>
+                        <h2>Holiday Packages</h2>
+                        <p class="home-dashboard-subcopy">Starting prices and key highlights are visible before customers request a quote.</p>
                     </div>
-                    <Link class="home-dashboard-more" href="/packages">View All Packages</Link>
+                    <Link class="home-dashboard-more" href="/packages">View All Packages &rarr;</Link>
                 </div>
                 <div
                     class="home-dashboard-grid home-dashboard-grid--three home-mobile-carousel"
@@ -563,7 +500,7 @@ onUnmounted(() => detachMediaListeners());
                             <div class="home-dashboard-card__meta">
                                 <span>{{ item.detail }}</span>
                             </div>
-                            <Link class="home-dashboard-card__button home-dashboard-card__button--light" :href="item.href">{{ item.cta }}</Link>
+                            <Link class="home-dashboard-card__button home-dashboard-card__button--light" :href="item.href">Book Now</Link>
                         </div>
                     </article>
                 </div>
@@ -574,7 +511,7 @@ onUnmounted(() => detachMediaListeners());
                         :class="{ 'is-active': activeSlides.packages === index }"
                     ></span>
                 </div>
-                <Link class="home-mobile-view-all" href="/packages">View All Packages</Link>
+                <Link class="home-mobile-view-all" href="/packages">View All Packages &rarr;</Link>
             </div>
         </section>
 
@@ -605,46 +542,13 @@ onUnmounted(() => detachMediaListeners());
             </div>
         </section>
 
-        <section class="home-dashboard-section home-dashboard-section--light home-dashboard-section--reviews" data-reveal>
-            <div class="container home-dashboard-stack">
-                <div class="home-dashboard-heading">
-                    <div>
-                        <h2>What our travelers say</h2>
-                    </div>
-                </div>
-                <div
-                    class="home-dashboard-grid home-dashboard-grid--three home-mobile-carousel"
-                    @scroll.passive="updateCarousel('testimonials', $event)"
-                >
-                    <article v-for="t in testimonials" :key="t.name" class="home-dashboard-review" data-carousel-card>
-                        <p class="home-dashboard-review__stars">5/5 rating</p>
-                        <p class="home-dashboard-review__quote">"{{ t.quote }}"</p>
-                        <div class="home-dashboard-review__author">
-                            <strong>{{ t.name }}</strong>
-                            <span>{{ t.tag }}</span>
-                        </div>
-                    </article>
-                </div>
-                <div class="home-carousel-dots" aria-hidden="true">
-                    <span
-                        v-for="(_, index) in testimonials"
-                        :key="index"
-                        :class="{ 'is-active': activeSlides.testimonials === index }"
-                    ></span>
-                </div>
-                <div v-if="trustProof.reviewsUrl" class="home-review-link-row">
-                    <a :href="trustProof.reviewsUrl" target="_blank" rel="noreferrer">
-                        Read All {{ trustProof.reviewSource }} Reviews
-                    </a>
-                </div>
-            </div>
-        </section>
-
         <section class="home-dashboard-section home-dashboard-section--light home-visa-section" data-reveal>
             <div class="container home-dashboard-stack">
                 <div class="home-dashboard-heading">
                     <div>
-                        <h2>Visa services &amp; international travel</h2>
+                        <p class="eyebrow">International travel</p>
+                        <h2>Visa Services</h2>
+                        <p class="home-dashboard-subcopy">Clear visa guidance with a consultant-led process before customers commit.</p>
                     </div>
                     <div class="home-featured-actions">
                         <button
@@ -663,10 +567,10 @@ onUnmounted(() => detachMediaListeners());
                         >
                             <span aria-hidden="true">&gt;</span>
                         </button>
-                        <Link class="home-dashboard-more" href="/visa-services">All Visa Services</Link>
+                        <Link class="home-dashboard-more" href="/visa-services">View All Visa Services &rarr;</Link>
                     </div>
                 </div>
-                <details class="home-visa-disclaimer" open>
+                <details class="home-visa-disclaimer">
                     <summary>
                         <span aria-hidden="true"></span>
                         <strong>Important visa note</strong>
@@ -727,7 +631,7 @@ onUnmounted(() => detachMediaListeners());
                         </div>
                         <h3>{{ item.title }}</h3>
                         <p>{{ item.summary }}</p>
-                        <Link class="home-dashboard-card__button" :href="item.href">Check Requirements</Link>
+                        <Link class="home-dashboard-card__button" :href="item.href">Start Visa Review</Link>
                     </article>
                 </div>
                 <div class="home-carousel-dots" aria-hidden="true">
@@ -736,6 +640,41 @@ onUnmounted(() => detachMediaListeners());
                         :key="index"
                         :class="{ 'is-active': activeSlides.visa === index }"
                     ></span>
+                </div>
+            </div>
+        </section>
+
+        <section class="home-dashboard-section home-dashboard-section--light home-dashboard-section--reviews" data-reveal>
+            <div class="container home-dashboard-stack">
+                <div class="home-dashboard-heading">
+                    <div>
+                        <h2>What our travelers say</h2>
+                    </div>
+                </div>
+                <div
+                    class="home-dashboard-grid home-dashboard-grid--three home-mobile-carousel"
+                    @scroll.passive="updateCarousel('testimonials', $event)"
+                >
+                    <article v-for="t in testimonials" :key="t.name" class="home-dashboard-review" data-carousel-card>
+                        <p class="home-dashboard-review__stars">5/5 rating</p>
+                        <p class="home-dashboard-review__quote">"{{ t.quote }}"</p>
+                        <div class="home-dashboard-review__author">
+                            <strong>{{ t.name }}</strong>
+                            <span>{{ t.tag }}</span>
+                        </div>
+                    </article>
+                </div>
+                <div class="home-carousel-dots" aria-hidden="true">
+                    <span
+                        v-for="(_, index) in testimonials"
+                        :key="index"
+                        :class="{ 'is-active': activeSlides.testimonials === index }"
+                    ></span>
+                </div>
+                <div v-if="trustProof.reviewsUrl" class="home-review-link-row">
+                    <a :href="trustProof.reviewsUrl" target="_blank" rel="noreferrer">
+                        Read All {{ trustProof.reviewSource }} Reviews
+                    </a>
                 </div>
             </div>
         </section>
