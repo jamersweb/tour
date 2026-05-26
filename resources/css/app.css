@@ -11528,6 +11528,11 @@ textarea {
     background: #25d366;
 }
 
+.btn-check[disabled] {
+    background: rgba(202, 164, 106, 0.48);
+    cursor: not-allowed;
+}
+
 .checker-disclaimer {
     margin: 0;
     color: var(--muted);
@@ -15742,5 +15747,58 @@ textarea {
     .journal-page .card-media,
     .journal-page .showcase-media {
         height: 160px;
+    }
+}
+
+/* Package product mobile: keep the custom request panel from overlapping form fields. */
+@media (max-width: 768px) {
+    .package-custom-panel {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1rem;
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
+        padding: 1rem;
+    }
+
+    .package-custom-panel__copy,
+    .package-custom-form,
+    .package-custom-form label,
+    .package-custom-form__wide {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .package-custom-panel__copy h2 {
+        max-width: 100%;
+        margin: 0.35rem 0 0.55rem;
+        font-size: clamp(1.75rem, 9vw, 2.3rem);
+        line-height: 1.02;
+    }
+
+    .package-custom-panel__copy p {
+        max-width: 100%;
+        margin: 0;
+        font-size: 0.9rem;
+        line-height: 1.55;
+    }
+
+    .package-custom-form {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.75rem;
+    }
+
+    .package-custom-form input,
+    .package-custom-form select,
+    .package-custom-form textarea {
+        max-width: 100%;
+        min-height: 3rem;
+        font-size: 1rem;
+    }
+
+    .package-custom-form textarea {
+        min-height: 8rem;
     }
 }

@@ -272,6 +272,18 @@ const visibleCards = computed(() => {
 });
 
 const selectedSummary = computed(() => destinationData[selectedDestination.value]);
+const checkerLinks = {
+    'schengen-visa': '/schengen-visa',
+    'uk-visa': '/uk-visa',
+    'usa-visa': '/usa-visa',
+    'canada-visa': '/canada-visa',
+    'japan-visa': '/japan-visa',
+    'australia-visa': '/australia-visa',
+    'turkey-visa': '/turkey-visa',
+    'malaysia-visa': '/malaysia-visa',
+};
+const checkerHref = computed(() => checkerLinks[selectedDestination.value] || '');
+const checkerDestinationLabel = computed(() => selectedSummary.value?.label || 'visa');
 const fiveStars = '\u2605\u2605\u2605\u2605\u2605';
 const visaRatingValue = '4.8\u2605';
 
@@ -347,7 +359,9 @@ const faqItems = [
 
 const whatsappHref = computed(() => {
     const number = props.contact?.whatsappNumber?.replace(/[^0-9]/g, '');
-    const text = encodeURIComponent('Hi, I need help with a visa application.');
+    const nationality = selectedNationality.value ? ` Nationality: ${selectedNationality.value}.` : '';
+    const destination = selectedSummary.value ? ` Destination: ${selectedSummary.value.label}.` : '';
+    const text = encodeURIComponent(`Hi, I need help checking visa eligibility and requirements.${destination}${nationality}`);
 
     return number ? `https://wa.me/${number}?text=${text}` : null;
 });
@@ -418,7 +432,12 @@ const whatsappHref = computed(() => {
                                 </span>
                             </div>
                         </div>
-                        <button class="btn-check" type="button">Check Eligibility & Requirements</button>
+                        <a v-if="checkerHref" class="btn-check" :href="checkerHref">
+                            Check {{ checkerDestinationLabel }} Requirements
+                        </a>
+                        <button v-else class="btn-check" type="button" disabled>
+                            Select a Destination First
+                        </button>
                         <a v-if="whatsappHref" class="btn-wa-checker" :href="whatsappHref" target="_blank" rel="noreferrer">
                             Ask on WhatsApp - Fast Response
                         </a>
