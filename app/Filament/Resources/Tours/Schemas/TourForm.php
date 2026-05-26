@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Tours\Schemas;
 
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
@@ -68,6 +69,39 @@ class TourForm
                     TagsInput::make('inclusions')->placeholder('Add an inclusion'),
                     TagsInput::make('exclusions')->placeholder('Add an exclusion'),
                 ]),
+            Section::make('Product Page Sections')
+                ->description('These fields control the extra sections shown on the public tour product page.')
+                ->schema([
+                    TagsInput::make('important_notices')
+                        ->label('Important notices')
+                        ->placeholder('Add an important notice'),
+                    Repeater::make('expectation_steps')
+                        ->label('What to expect')
+                        ->schema([
+                            TextInput::make('label')->required()->maxLength(80),
+                            Textarea::make('copy')->required()->rows(2)->maxLength(300),
+                        ])
+                        ->columns(2)
+                        ->defaultItems(0)
+                        ->columnSpanFull(),
+                    TagsInput::make('best_for')
+                        ->label('Best for')
+                        ->placeholder('Add a traveler type or use case'),
+                    Repeater::make('faqs')
+                        ->label('Frequently asked questions')
+                        ->schema([
+                            TextInput::make('question')->required()->maxLength(180),
+                            Textarea::make('answer')->required()->rows(2)->maxLength(500),
+                        ])
+                        ->columns(2)
+                        ->defaultItems(0)
+                        ->columnSpanFull(),
+                    Textarea::make('cancellation_policy')
+                        ->rows(3)
+                        ->maxLength(700)
+                        ->columnSpanFull(),
+                ])
+                ->columns(1),
             Section::make('Pricing')
                 ->schema([
                     TextInput::make('price_from')->numeric()->prefix('AED'),

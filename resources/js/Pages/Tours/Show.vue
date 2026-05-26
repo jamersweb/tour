@@ -25,11 +25,22 @@ const heroTiles = computed(() => {
     return Array.from({ length: Math.min(5, Math.max(5, mediaItems.value.length)) }, (_, index) => mediaItems.value[index % mediaItems.value.length]);
 });
 
-const importantNotices = computed(() => [
+const defaultImportantNotices = [
     'Please share your contact number during booking for pickup and coordination updates.',
     'Start time and exact meeting point are reconfirmed after booking.',
     'Carry valid identification where required for venue or attraction access.',
-]);
+];
+
+const importantNotices = computed(() => (
+    props.tour.importantNotices?.length ? props.tour.importantNotices : defaultImportantNotices
+));
+
+const expectationSteps = computed(() => props.tour.expectationSteps || []);
+const bestFor = computed(() => props.tour.bestFor || []);
+const faqItems = computed(() => props.tour.faqs || []);
+const cancellationPolicy = computed(() => (
+    props.tour.cancellationPolicy || 'For a full refund, cancel at least 24 hours in advance of the start date of the tour.'
+));
 const bookingHighlights = computed(() => [
     props.tour.duration,
     props.tour.location,
@@ -221,12 +232,40 @@ const closeMedia = () => {
                             </ul>
                         </article>
 
+                        <article v-if="expectationSteps.length" class="experience-operator-section">
+                            <div class="experience-operator-section__head">
+                                <span class="experience-operator-section__kicker">Tour flow</span>
+                                <h2>What to Expect</h2>
+                            </div>
+                            <div class="experience-operator-mini-flow">
+                                <details
+                                    v-for="(step, index) in expectationSteps"
+                                    :key="step.label"
+                                    class="experience-operator-mini-flow__item"
+                                    :open="index === 0"
+                                >
+                                    <summary>{{ step.label }}</summary>
+                                    <span>{{ step.copy }}</span>
+                                </details>
+                            </div>
+                        </article>
+
+                        <article v-if="bestFor.length" class="experience-operator-section">
+                            <div class="experience-operator-section__head">
+                                <span class="experience-operator-section__kicker">Good to know</span>
+                                <h2>Who This Tour Is Best For</h2>
+                            </div>
+                            <ul class="experience-operator-list experience-operator-list--checks">
+                                <li v-for="item in bestFor" :key="item">{{ item }}</li>
+                            </ul>
+                        </article>
+
                         <article class="experience-operator-section">
                             <div class="experience-operator-section__head">
                                 <span class="experience-operator-section__kicker">Booking terms</span>
                                 <h2>Cancellation Policy</h2>
                             </div>
-                            <p>For a full refund, cancel at least 24 hours in advance of the start date of the tour.</p>
+                            <p>{{ cancellationPolicy }}</p>
                         </article>
 
                         <article class="experience-operator-section">
@@ -237,6 +276,24 @@ const closeMedia = () => {
                             <ul class="experience-operator-list experience-operator-list--muted">
                                 <li v-for="notice in importantNotices" :key="notice">{{ notice }}</li>
                             </ul>
+                        </article>
+
+                        <article v-if="faqItems.length" class="experience-operator-section">
+                            <div class="experience-operator-section__head">
+                                <span class="experience-operator-section__kicker">Common questions</span>
+                                <h2>Frequently Asked Questions</h2>
+                            </div>
+                            <div class="experience-operator-mini-flow">
+                                <details
+                                    v-for="(item, index) in faqItems"
+                                    :key="item.question"
+                                    class="experience-operator-mini-flow__item"
+                                    :open="index === 0"
+                                >
+                                    <summary>{{ item.question }}</summary>
+                                    <span>{{ item.answer }}</span>
+                                </details>
+                            </div>
                         </article>
 
                         <article v-if="tour.reviews?.length" id="tour-reviews" class="experience-operator-section">

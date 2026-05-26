@@ -21,6 +21,12 @@ class ExperienceResource extends Resource
 {
     protected static ?string $model = Experience::class;
 
+    protected static ?string $navigationLabel = 'Tours & Tickets';
+
+    protected static ?string $modelLabel = 'tour or ticket';
+
+    protected static ?string $pluralModelLabel = 'tours and tickets';
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static string|UnitEnum|null $navigationGroup = 'Content';

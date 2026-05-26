@@ -25,11 +25,15 @@ const heroTiles = computed(() => {
     return Array.from({ length: Math.min(5, Math.max(5, mediaItems.value.length)) }, (_, index) => mediaItems.value[index % mediaItems.value.length]);
 });
 
-const importantNotices = computed(() => [
+const defaultImportantNotices = [
     'Please share your contact number during booking for easier pickup coordination.',
     'Pickup times are reconfirmed after booking based on your location and date.',
     'Comfortable clothing and light walking shoes are recommended.',
-]);
+];
+
+const importantNotices = computed(() => (
+    props.experience.importantNotices?.length ? props.experience.importantNotices : defaultImportantNotices
+));
 
 const quickFacts = computed(() => [
     { label: 'Duration', value: props.experience.duration || 'Flexible' },
@@ -37,7 +41,7 @@ const quickFacts = computed(() => [
     { label: 'Category', value: props.experience.category || 'Experience' },
     { label: 'Price From', value: props.experience.priceFrom || 'On request' },
 ]);
-const expectationSteps = computed(() => [
+const defaultExpectationSteps = [
     {
         label: 'Hotel Pickup',
         copy: 'Your driver collects you from your hotel or selected location in Dubai.',
@@ -58,15 +62,25 @@ const expectationSteps = computed(() => [
         label: 'Return Transfer',
         copy: 'After the experience, you will be dropped back at your hotel or selected location.',
     },
-]);
-const bestFor = computed(() => [
+];
+
+const expectationSteps = computed(() => (
+    props.experience.expectationSteps?.length ? props.experience.expectationSteps : defaultExpectationSteps
+));
+
+const defaultBestFor = [
     'Couples looking for a private desert evening',
     'Families who want comfort and smooth coordination',
     'Travelers who dislike crowded shared tours',
     'Guests celebrating birthdays, anniversaries, or special occasions',
     'Visitors who want a premium desert experience in Dubai',
-]);
-const faqItems = computed(() => [
+];
+
+const bestFor = computed(() => (
+    props.experience.bestFor?.length ? props.experience.bestFor : defaultBestFor
+));
+
+const defaultFaqItems = [
     {
         question: 'Is this a private desert safari?',
         answer: 'Yes. This is designed as a private premium experience with private pickup and a more relaxed pace.',
@@ -87,7 +101,15 @@ const faqItems = computed(() => [
         question: 'What is the cancellation policy?',
         answer: 'You can cancel at least 24 hours before the tour start time for a full refund.',
     },
-]);
+];
+
+const faqItems = computed(() => (
+    props.experience.faqs?.length ? props.experience.faqs : defaultFaqItems
+));
+
+const cancellationPolicy = computed(() => (
+    props.experience.cancellationPolicy || 'For a full refund, cancel at least 24 hours in advance of the start date of the experience.'
+));
 const reviewStars = computed(() => '★★★★★');
 const activeMediaIndex = ref(null);
 const mosaicRef = useMobileAutoCarousel();
@@ -372,7 +394,7 @@ const closeMedia = () => {
                                 <span class="experience-operator-section__kicker">Booking terms</span>
                                 <h2>Cancellation Policy</h2>
                             </div>
-                            <p>For a full refund, cancel at least 24 hours in advance of the start date of the experience.</p>
+                            <p>{{ cancellationPolicy }}</p>
                         </article>
 
                         <article class="experience-operator-section">

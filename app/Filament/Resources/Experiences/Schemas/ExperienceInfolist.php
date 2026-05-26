@@ -57,6 +57,21 @@ class ExperienceInfolist
                 TextEntry::make('exclusions')
                     ->placeholder('-')
                     ->columnSpanFull(),
+                TextEntry::make('important_notices')
+                    ->placeholder('-')
+                    ->columnSpanFull(),
+                TextEntry::make('expectation_steps')
+                    ->placeholder('-')
+                    ->columnSpanFull(),
+                TextEntry::make('best_for')
+                    ->placeholder('-')
+                    ->columnSpanFull(),
+                TextEntry::make('faqs')
+                    ->placeholder('-')
+                    ->columnSpanFull(),
+                TextEntry::make('cancellation_policy')
+                    ->placeholder('-')
+                    ->columnSpanFull(),
                 TextEntry::make('pickup_note')
                     ->placeholder('-'),
                 TextEntry::make('sort_order')
