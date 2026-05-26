@@ -102,6 +102,20 @@ class TourForm
                         ->columnSpanFull(),
                 ])
                 ->columns(1),
+            Section::make('Booking Preferences')
+                ->description('Optional choices shown on checkout for this tour. Leave blank to use default flexible choices.')
+                ->schema([
+                    TagsInput::make('preferred_time_options')
+                        ->label('Preferred tour time choices')
+                        ->placeholder('Morning, 09:00 AM, Sunset, Flexible...'),
+                    TagsInput::make('preferred_language_options')
+                        ->label('Preferred language choices')
+                        ->placeholder('English, Arabic, Russian...'),
+                    TagsInput::make('tour_options')
+                        ->label('Tour option choices')
+                        ->placeholder('Standard, Private transfer, Without food tasting...'),
+                ])
+                ->columns(1),
             Section::make('Pricing')
                 ->schema([
                     TextInput::make('price_from')->numeric()->prefix('AED'),

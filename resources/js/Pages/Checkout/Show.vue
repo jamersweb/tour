@@ -19,6 +19,7 @@ const form = useForm({
     phone: '',
     travel_date: props.checkout.defaults?.travel_date || '',
     guest_count: props.checkout.defaults?.guest_count || 1,
+    tour_option: '',
     preferred_time: '',
     preferred_language: '',
     special_request: '',
@@ -26,6 +27,20 @@ const form = useForm({
         { name: '', email: '', phone: '' },
     ],
 });
+
+const supportsTourPreferences = computed(() => Boolean(props.checkout.supportsTourPreferences));
+
+const preferenceOptions = computed(() => props.checkout.preferenceOptions || {});
+
+const timeOptions = computed(() => (
+    preferenceOptions.value.times?.length ? preferenceOptions.value.times : ['Morning', 'Afternoon', 'Evening']
+));
+
+const languageOptions = computed(() => (
+    preferenceOptions.value.languages?.length ? preferenceOptions.value.languages : ['English', 'Arabic', 'Russian', 'Hindi / Urdu']
+));
+
+const tourOptions = computed(() => preferenceOptions.value.tourOptions || []);
 
 const totalAmount = computed(() => {
     if (props.checkout.isCart) {
@@ -46,13 +61,24 @@ const selectedRows = computed(() => {
         return [];
     }
 
-    return [
+    const rows = [
         { label: 'Selected item', value: props.checkout.title },
         { label: 'Date', value: form.travel_date || 'Selected during booking' },
         { label: 'Travelers', value: form.guest_count },
-        { label: 'Tour time', value: form.preferred_time || 'Flexible' },
-        { label: 'Language', value: form.preferred_language || 'English' },
     ];
+
+    if (supportsTourPreferences.value) {
+        if (tourOptions.value.length) {
+            rows.push({ label: 'Tour option', value: form.tour_option || 'Selected later' });
+        }
+
+        rows.push(
+            { label: 'Tour time', value: form.preferred_time || 'Flexible' },
+            { label: 'Language', value: form.preferred_language || 'English' },
+        );
+    }
+
+    return rows;
 });
 
 const submit = () => {
@@ -102,24 +128,29 @@ const submit = () => {
                         <small v-if="form.errors.email">{{ form.errors.email }}</small>
                     </label>
 
-                    <label v-if="!checkout.isCart" class="field">
+                    <label v-if="supportsTourPreferences && tourOptions.length" class="field">
+                        <span>Tour option</span>
+                        <select v-model="form.tour_option">
+                            <option value="">Select option later</option>
+                            <option v-for="option in tourOptions" :key="option" :value="option">{{ option }}</option>
+                        </select>
+                        <small v-if="form.errors.tour_option">{{ form.errors.tour_option }}</small>
+                    </label>
+
+                    <label v-if="supportsTourPreferences" class="field">
                         <span>Preferred tour time</span>
                         <select v-model="form.preferred_time">
                             <option value="">Flexible</option>
-                            <option value="Morning">Morning</option>
-                            <option value="Afternoon">Afternoon</option>
-                            <option value="Evening">Evening</option>
+                            <option v-for="option in timeOptions" :key="option" :value="option">{{ option }}</option>
                         </select>
                         <small v-if="form.errors.preferred_time">{{ form.errors.preferred_time }}</small>
                     </label>
 
-                    <label v-if="!checkout.isCart" class="field">
+                    <label v-if="supportsTourPreferences" class="field">
                         <span>Preferred tour language</span>
                         <select v-model="form.preferred_language">
                             <option value="">English</option>
-                            <option value="Arabic">Arabic</option>
-                            <option value="Russian">Russian</option>
-                            <option value="Hindi / Urdu">Hindi / Urdu</option>
+                            <option v-for="option in languageOptions" :key="option" :value="option">{{ option }}</option>
                         </select>
                         <small v-if="form.errors.preferred_language">{{ form.errors.preferred_language }}</small>
                     </label>

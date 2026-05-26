@@ -75,6 +75,11 @@ class CheckoutTest extends TestCase
     public function test_experience_checkout_page_renders_for_priced_experience(): void
     {
         $experience = Experience::query()->where('slug', 'private-heritage-desert-safari')->firstOrFail();
+        $experience->update([
+            'preferred_time_options' => ['09:00 AM', 'Sunset'],
+            'preferred_language_options' => ['English', 'Arabic'],
+            'tour_options' => ['Standard', 'Private transfer'],
+        ]);
 
         $response = $this->get("/checkout/experiences/{$experience->slug}");
 
@@ -83,6 +88,10 @@ class CheckoutTest extends TestCase
             ->component('Checkout/Show')
             ->where('checkout.slug', $experience->slug)
             ->where('checkout.type', 'experience')
+            ->where('checkout.supportsTourPreferences', true)
+            ->where('checkout.preferenceOptions.times.0', '09:00 AM')
+            ->where('checkout.preferenceOptions.languages.1', 'Arabic')
+            ->where('checkout.preferenceOptions.tourOptions.1', 'Private transfer')
         );
     }
 
@@ -108,6 +117,10 @@ class CheckoutTest extends TestCase
             'phone' => '+971500000001',
             'travel_date' => now()->addWeek()->toDateString(),
             'guest_count' => 2,
+            'tour_option' => 'Private transfer',
+            'preferred_time' => 'Sunset',
+            'preferred_language' => 'Arabic',
+            'special_request' => 'Window-side pickup if possible.',
             'traveler_contacts' => [
                 [
                     'name' => 'Bilal Ahmed',
@@ -131,6 +144,7 @@ class CheckoutTest extends TestCase
             'status' => 'pending',
             'guest_count' => 2,
             'amount' => (string) ($experience->price_from * 2),
+            'notes' => "Tour option: Private transfer\nPreferred time: Sunset\nPreferred language: Arabic\nSpecial request: Window-side pickup if possible.",
         ]);
 
         $this->assertDatabaseHas('payment_transaction_travelers', [

@@ -72,6 +72,15 @@ class ExperienceInfolist
                 TextEntry::make('cancellation_policy')
                     ->placeholder('-')
                     ->columnSpanFull(),
+                TextEntry::make('preferred_time_options')
+                    ->placeholder('-')
+                    ->columnSpanFull(),
+                TextEntry::make('preferred_language_options')
+                    ->placeholder('-')
+                    ->columnSpanFull(),
+                TextEntry::make('tour_options')
+                    ->placeholder('-')
+                    ->columnSpanFull(),
                 TextEntry::make('pickup_note')
                     ->placeholder('-'),
                 TextEntry::make('sort_order')

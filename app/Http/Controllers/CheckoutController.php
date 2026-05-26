@@ -51,6 +51,8 @@ class CheckoutController extends Controller
                 currency: $experience->currency,
                 image: $experience->hero_image_url,
                 defaults: $this->checkoutDefaults($request, 2),
+                supportsTourPreferences: true,
+                preferenceOptions: $this->bookingPreferenceOptions($experience),
             ),
         ]);
     }
@@ -107,6 +109,8 @@ class CheckoutController extends Controller
                 currency: $tour->currency,
                 image: $tour->hero_image_url,
                 defaults: $this->checkoutDefaults($request),
+                supportsTourPreferences: true,
+                preferenceOptions: $this->bookingPreferenceOptions($tour),
             ),
         ]);
     }
@@ -321,6 +325,7 @@ class CheckoutController extends Controller
         $totalAmount = round((float) ($overrides['amount'] ?? ($unitAmount * max(1, $guestCount))), 2);
         $currency = (string) ($overrides['currency'] ?? $payable->currency);
         $preferenceNotes = collect([
+            'Tour option' => $validated['tour_option'] ?? null,
             'Preferred time' => $validated['preferred_time'] ?? null,
             'Preferred language' => $validated['preferred_language'] ?? null,
             'Special request' => $validated['special_request'] ?? null,
@@ -452,7 +457,19 @@ class CheckoutController extends Controller
         return Inertia::location($gatewayOrder['payment_url']);
     }
 
-    protected function checkoutPayload(string $label, string $type, string $slug, string $title, ?string $summary, string $amount, string $currency, ?string $image, array $defaults = []): array
+    protected function checkoutPayload(
+        string $label,
+        string $type,
+        string $slug,
+        string $title,
+        ?string $summary,
+        string $amount,
+        string $currency,
+        ?string $image,
+        array $defaults = [],
+        bool $supportsTourPreferences = false,
+        array $preferenceOptions = [],
+    ): array
     {
         $unitAmount = (float) $amount;
 
@@ -467,7 +484,28 @@ class CheckoutController extends Controller
             'amount' => "{$currency} ".number_format($unitAmount, 2),
             'image' => $image,
             'defaults' => $defaults,
+            'supportsTourPreferences' => $supportsTourPreferences,
+            'preferenceOptions' => $preferenceOptions,
         ];
+    }
+
+    protected function bookingPreferenceOptions(Model $payable): array
+    {
+        return [
+            'times' => $this->cleanPreferenceOptions($payable->preferred_time_options ?? []),
+            'languages' => $this->cleanPreferenceOptions($payable->preferred_language_options ?? []),
+            'tourOptions' => $this->cleanPreferenceOptions($payable->tour_options ?? []),
+        ];
+    }
+
+    protected function cleanPreferenceOptions(?array $options): array
+    {
+        return collect($options ?? [])
+            ->filter(fn ($value) => is_string($value) && filled($value))
+            ->map(fn (string $value) => trim($value))
+            ->unique()
+            ->values()
+            ->all();
     }
 
     protected function checkoutDefaults(Request $request, int $minimumGuests = 1): array
