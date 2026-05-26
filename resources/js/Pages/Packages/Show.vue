@@ -59,12 +59,40 @@ const packageOptions = computed(() => [
         copy: 'Add visa support, flights, insurance, extra nights, or attraction upgrades once the base itinerary is clear.',
     },
 ]);
+const packageFlexibility = computed(() => [
+    'Hotel category can be adjusted based on budget and travel style.',
+    'Private transfers can be upgraded to premium vehicle options.',
+    'Attraction sequence may change based on operating days and availability.',
+    'Visa assistance, flights, travel insurance, and extra nights can be added on request.',
+]);
 const bestFor = computed(() => [
     'First-time visitors who want Dubai highlights arranged in one plan.',
     'Families and groups who need hotels, transfers, and attractions coordinated together.',
     'Travelers who prefer a final quote based on dates, room type, guest count, and add-ons.',
 ]);
 const reviewStars = computed(() => '★★★★★');
+const packageFaqs = computed(() => [
+    {
+        question: 'Can this package be customized?',
+        answer: 'Yes. Hotel category, travel dates, extra nights, attractions, transfers, and add-ons can be adjusted based on your preference.',
+    },
+    {
+        question: 'Are flights included?',
+        answer: 'Flights are not included by default but can be added if required.',
+    },
+    {
+        question: 'Is visa included?',
+        answer: 'Visa is not included by default. Visa assistance can be added depending on nationality and travel requirements.',
+    },
+    {
+        question: 'Can I choose the hotel?',
+        answer: 'Yes. Hotel options can be shared based on your budget, preferred area, room type, and travel dates.',
+    },
+    {
+        question: 'Why can the final price change?',
+        answer: 'Hotel rates, attraction availability, travel dates, number of guests, and selected upgrades can affect the final quotation.',
+    },
+]);
 const activeMediaIndex = ref(null);
 const openItineraryIndex = ref(null);
 const mosaicRef = useMobileAutoCarousel();
@@ -421,6 +449,16 @@ const closeMedia = () => {
                             </div>
                         </article>
 
+                        <article class="experience-operator-section">
+                            <div class="experience-operator-section__head">
+                                <span class="experience-operator-section__kicker">Hotel &amp; package flexibility</span>
+                                <h2>Flexible Package Planning</h2>
+                            </div>
+                            <ul class="experience-operator-list experience-operator-list--chips">
+                                <li v-for="item in packageFlexibility" :key="item">{{ item }}</li>
+                            </ul>
+                        </article>
+
                         <article id="customize-package" class="experience-operator-section package-custom-panel">
                             <div class="package-custom-panel__copy">
                                 <span class="experience-operator-section__kicker">Customize your trip</span>
@@ -556,6 +594,24 @@ const closeMedia = () => {
                                         <span>{{ review.tag || review.source }}</span>
                                     </div>
                                 </article>
+                            </div>
+                        </article>
+
+                        <article class="experience-operator-section">
+                            <div class="experience-operator-section__head">
+                                <span class="experience-operator-section__kicker">Common questions</span>
+                                <h2>Frequently Asked Questions</h2>
+                            </div>
+                            <div class="experience-operator-mini-flow">
+                                <details
+                                    v-for="(item, index) in packageFaqs"
+                                    :key="item.question"
+                                    class="experience-operator-mini-flow__item"
+                                    :open="index === 0"
+                                >
+                                    <summary>{{ item.question }}</summary>
+                                    <span>{{ item.answer }}</span>
+                                </details>
                             </div>
                         </article>
                     </div>

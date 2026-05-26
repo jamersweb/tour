@@ -563,17 +563,6 @@ onBeforeUnmount(() => {
                 </span>
                 Visas
             </Link>
-            <Link class="mobile-bottom-nav__item mobile-bottom-nav__item--cart" :href="page.props.cart.url">
-                <span aria-hidden="true">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M5 6h2l1.1 8.2a2 2 0 0 0 2 1.8h6.5a2 2 0 0 0 1.9-1.4L20 9H8"></path>
-                        <path d="M10 20h.01"></path>
-                        <path d="M17 20h.01"></path>
-                    </svg>
-                    <b v-if="page.props.cart.count">{{ page.props.cart.count }}</b>
-                </span>
-                Cart
-            </Link>
         </nav>
 
         <WhatsappFloat />
