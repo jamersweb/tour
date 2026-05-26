@@ -5,7 +5,7 @@ import SiteLayout from '../Layouts/SiteLayout.vue';
 
 defineOptions({ layout: SiteLayout });
 
-defineProps({
+const props = defineProps({
     seo: Object,
     contact: Object,
     interestOptions: Array,
@@ -19,7 +19,7 @@ const form = useForm({
     phone: '',
     travel_date: '',
     guest_count: 2,
-    interest: 'General Planning',
+    interest: props.interestOptions?.[0] || 'Tours',
     message: '',
 });
 
