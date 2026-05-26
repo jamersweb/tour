@@ -41,6 +41,20 @@ const totalAmount = computed(() => {
     }).format(unitAmount * guestCount)}`;
 });
 
+const selectedRows = computed(() => {
+    if (props.checkout.isCart) {
+        return [];
+    }
+
+    return [
+        { label: 'Selected item', value: props.checkout.title },
+        { label: 'Date', value: form.travel_date || 'Selected during booking' },
+        { label: 'Travelers', value: form.guest_count },
+        { label: 'Tour time', value: form.preferred_time || 'Flexible' },
+        { label: 'Language', value: form.preferred_language || 'English' },
+    ];
+});
+
 const submit = () => {
     const guestCount = Math.max(1, Number.parseInt(form.guest_count, 10) || 1);
 
@@ -58,17 +72,93 @@ const submit = () => {
 <template>
     <SiteMeta :title="seo.title" :description="seo.description" />
 
-    <section class="page-intro">
-        <div class="container detail-grid">
-            <div class="detail-stack">
-                <article class="info-card">
-                    <p class="card-tag">{{ checkout.label }}</p>
-                    <h1 class="page-title">{{ checkout.title }}</h1>
-                    <p class="page-copy">{{ checkout.summary }}</p>
+    <section class="page-intro checkout-page">
+        <div class="container checkout-layout">
+            <article class="info-card checkout-form-card">
+                <p class="card-tag">{{ checkout.label }}</p>
+                <h1 class="checkout-title">Enter your contact details</h1>
+                <p class="meta-copy">Required fields are used for booking confirmation and customer support.</p>
 
-                    <div v-if="checkout.image" class="page-hero-media">
-                        <img :src="checkout.image" :alt="checkout.title" />
-                    </div>
+                <div v-if="page.props.flash.error" class="error-banner">
+                    {{ page.props.flash.error }}
+                </div>
+
+                <form class="lead-form checkout-lead-form" @submit.prevent="submit">
+                    <label class="field">
+                        <span>Name</span>
+                        <input v-model="form.name" type="text" autocomplete="name" placeholder="Full name *" />
+                        <small v-if="form.errors.name">{{ form.errors.name }}</small>
+                    </label>
+
+                    <label class="field">
+                        <span>Contact number</span>
+                        <input v-model="form.phone" type="text" autocomplete="tel" placeholder="Mobile number *" />
+                        <small v-if="form.errors.phone">{{ form.errors.phone }}</small>
+                    </label>
+
+                    <label class="field">
+                        <span>Email address</span>
+                        <input v-model="form.email" type="email" autocomplete="email" placeholder="Email address *" />
+                        <small v-if="form.errors.email">{{ form.errors.email }}</small>
+                    </label>
+
+                    <label v-if="!checkout.isCart" class="field">
+                        <span>Preferred tour time</span>
+                        <select v-model="form.preferred_time">
+                            <option value="">Flexible</option>
+                            <option value="Morning">Morning</option>
+                            <option value="Afternoon">Afternoon</option>
+                            <option value="Evening">Evening</option>
+                        </select>
+                        <small v-if="form.errors.preferred_time">{{ form.errors.preferred_time }}</small>
+                    </label>
+
+                    <label v-if="!checkout.isCart" class="field">
+                        <span>Preferred tour language</span>
+                        <select v-model="form.preferred_language">
+                            <option value="">English</option>
+                            <option value="Arabic">Arabic</option>
+                            <option value="Russian">Russian</option>
+                            <option value="Hindi / Urdu">Hindi / Urdu</option>
+                        </select>
+                        <small v-if="form.errors.preferred_language">{{ form.errors.preferred_language }}</small>
+                    </label>
+
+                    <label class="field field-full">
+                        <span>Special request</span>
+                        <textarea
+                            v-model="form.special_request"
+                            rows="5"
+                            placeholder="Type your special request here..."
+                        ></textarea>
+                        <small v-if="form.errors.special_request">{{ form.errors.special_request }}</small>
+                    </label>
+
+                    <button
+                        class="button-primary"
+                        type="submit"
+                        :disabled="form.processing || !page.props.payments?.networkCheckoutReady"
+                    >
+                        {{
+                            !page.props.payments?.networkCheckoutReady
+                                ? 'Payment setup required'
+                                : form.processing
+                                  ? 'Redirecting...'
+                                  : 'Proceed to Payment'
+                        }}
+                    </button>
+                </form>
+            </article>
+
+            <aside class="checkout-summary-card" aria-label="Selected booking summary">
+                <div v-if="checkout.image" class="checkout-summary-media">
+                    <img :src="checkout.image" :alt="checkout.title" />
+                </div>
+
+                <div class="checkout-summary-body">
+                    <p class="card-tag">Selected booking</p>
+                    <h2>{{ checkout.title }}</h2>
+                    <p v-if="checkout.summary" class="meta-copy">{{ checkout.summary }}</p>
 
                     <div v-if="checkout.isCart" class="checkout-cart-items">
                         <article v-for="item in checkout.items" :key="`${item.type}-${item.slug}`" class="checkout-cart-item">
@@ -81,103 +171,26 @@ const submit = () => {
                         </article>
                     </div>
 
-                    <div v-else class="checkout-selection-summary">
-                        <span>Selected booking</span>
-                        <strong>{{ checkout.title }}</strong>
-                        <p>
-                            <template v-if="form.travel_date">Date: {{ form.travel_date }} · </template>
-                            Travelers: {{ form.guest_count }}
-                        </p>
-                    </div>
-                </article>
-            </div>
+                    <dl v-else class="checkout-selected-list">
+                        <div v-for="row in selectedRows" :key="row.label">
+                            <dt>{{ row.label }}</dt>
+                            <dd>{{ row.value }}</dd>
+                        </div>
+                    </dl>
 
-            <div class="detail-stack">
-                <article class="info-card">
-                    <p class="card-tag">Pay with N-Genius Online (Network International)</p>
-                    <h3>{{ checkout.amount }}</h3>
-                    <p class="meta-copy">{{ checkout.isCart ? 'Total for all cart items' : 'Base price per guest' }}</p>
-                    <p class="hero-copy">
-                        You complete card payment on Network’s secure hosted page, then return here
-                        so we can confirm your booking and send confirmation by email.
+                    <div class="checkout-total-row">
+                        <span>Total</span>
+                        <strong>{{ totalAmount }}</strong>
+                    </div>
+
+                    <p class="checkout-payment-note">
+                        You complete card payment on Network's secure hosted page, then return here for confirmation.
                     </p>
                     <p v-if="!page.props.payments?.networkCheckoutReady" class="meta-copy">
-                        Online payment is not fully configured (enable N-Genius and set outlet + API
-                        credentials). Submitting the form will fail until checkout is ready.
+                        Online payment is not fully configured. Submitting the form will fail until checkout is ready.
                     </p>
-
-                    <div v-if="page.props.flash.error" class="error-banner">
-                        {{ page.props.flash.error }}
-                    </div>
-
-                    <form class="lead-form" @submit.prevent="submit">
-                        <label class="field">
-                            <span>Name</span>
-                            <input v-model="form.name" type="text" autocomplete="name" />
-                            <small v-if="form.errors.name">{{ form.errors.name }}</small>
-                        </label>
-
-                        <label class="field">
-                            <span>Email</span>
-                            <input v-model="form.email" type="email" autocomplete="email" />
-                            <small v-if="form.errors.email">{{ form.errors.email }}</small>
-                        </label>
-
-                        <label class="field">
-                            <span>Phone</span>
-                            <input v-model="form.phone" type="text" autocomplete="tel" />
-                            <small v-if="form.errors.phone">{{ form.errors.phone }}</small>
-                        </label>
-
-                        <label v-if="!checkout.isCart" class="field">
-                            <span>Preferred tour time</span>
-                            <select v-model="form.preferred_time">
-                                <option value="">Flexible</option>
-                                <option value="Morning">Morning</option>
-                                <option value="Afternoon">Afternoon</option>
-                                <option value="Evening">Evening</option>
-                            </select>
-                            <small v-if="form.errors.preferred_time">{{ form.errors.preferred_time }}</small>
-                        </label>
-
-                        <label v-if="!checkout.isCart" class="field">
-                            <span>Preferred language</span>
-                            <select v-model="form.preferred_language">
-                                <option value="">English</option>
-                                <option value="Arabic">Arabic</option>
-                                <option value="Russian">Russian</option>
-                                <option value="Hindi / Urdu">Hindi / Urdu</option>
-                            </select>
-                            <small v-if="form.errors.preferred_language">{{ form.errors.preferred_language }}</small>
-                        </label>
-
-                        <label class="field field-full">
-                            <span>Special request</span>
-                            <textarea v-model="form.special_request" rows="4" placeholder="Pickup notes, celebration details, hotel name, or accessibility requests"></textarea>
-                            <small v-if="form.errors.special_request">{{ form.errors.special_request }}</small>
-                        </label>
-
-                        <div class="field">
-                            <span>Total Price</span>
-                            <strong class="detail-price">{{ totalAmount }}</strong>
-                        </div>
-
-                        <button
-                            class="button-primary"
-                            type="submit"
-                            :disabled="form.processing || !page.props.payments?.networkCheckoutReady"
-                        >
-                            {{
-                                !page.props.payments?.networkCheckoutReady
-                                    ? 'Payment setup required'
-                                    : form.processing
-                                      ? 'Redirecting...'
-                                      : 'Proceed to Payment'
-                            }}
-                        </button>
-                    </form>
-                </article>
-            </div>
+                </div>
+            </aside>
         </div>
     </section>
 </template>
