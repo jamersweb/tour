@@ -39,7 +39,7 @@ const submit = () => {
             <div class="container about-hero__grid">
                 <div class="about-hero__content">
                     <p class="about-kicker">Contact</p>
-                    <h1 class="about-title">Speak with the team and move from browsing to a real plan faster.</h1>
+                    <h1 class="about-title">Plan your Dubai trip with Acute Tourism.</h1>
                     <p class="about-copy">
                         Use this page for custom itineraries, package requests, group travel, direct support, and product
                         clarification across the Dubai and UAE catalog.

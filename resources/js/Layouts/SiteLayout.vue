@@ -498,7 +498,7 @@ onBeforeUnmount(() => {
                         <path d="M9 7V5h6v2"></path>
                     </svg>
                 </span>
-                Tours
+                Tours &amp; Tickets
             </Link>
             <Link class="mobile-bottom-nav__item" href="/packages">
                 <span aria-hidden="true">
@@ -508,7 +508,7 @@ onBeforeUnmount(() => {
                         <path d="M4 13h16"></path>
                     </svg>
                 </span>
-                Packages
+                Holiday Packages
             </Link>
             <Link class="mobile-bottom-nav__item" href="/visa-services">
                 <span aria-hidden="true">

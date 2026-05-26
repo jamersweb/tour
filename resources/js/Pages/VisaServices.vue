@@ -98,11 +98,11 @@ const cardImages = {
     'schengen-visa': 'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=900&q=80',
     'uk-visa': 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=900&q=80',
     'usa-visa': 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&w=900&q=80',
-    'canada-visa': 'https://images.unsplash.com/photo-1503614472-8c93d56cd55d?auto=format&fit=crop&w=900&q=80',
+    'canada-visa': 'https://images.unsplash.com/photo-1517935706615-2717063c2225?auto=format&fit=crop&w=900&q=80',
     'japan-visa': 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=900&q=80',
     'australia-visa': 'https://images.unsplash.com/photo-1523482580672-f109ba8cb9be?auto=format&fit=crop&w=900&q=80',
     'turkey-visa': 'https://images.unsplash.com/photo-1527838832700-5059252407fa?auto=format&fit=crop&w=900&q=80',
-    'malaysia-visa': 'https://images.unsplash.com/photo-1515444744559-5f3205c7e4c7?auto=format&fit=crop&w=900&q=80',
+    'malaysia-visa': 'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=900&q=80',
     'evisa-assistance': 'https://images.unsplash.com/photo-1526772662000-3f88f10405ff?auto=format&fit=crop&w=900&q=80',
 };
 

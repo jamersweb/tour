@@ -20,7 +20,7 @@ const defaultVisa = {
     kicker: 'Canada Visa Assistance',
     title: 'Get Canada Visitor Visa Guidance Without the Confusion',
     copy: 'Get enough clarity online to understand the Canada visitor visa route, then speak with an Acute Tourism visa consultant to review your profile, documents, and next steps before you proceed.',
-    image: 'https://images.unsplash.com/photo-1503614472-8c93d56cd55d?auto=format&fit=crop&w=1000&q=80',
+    image: 'https://images.unsplash.com/photo-1517935706615-2717063c2225?auto=format&fit=crop&w=1000&q=80',
     badge: 'Visitor Visa',
     requirementsTitle: 'Canada Visa Requirements',
     requirementsCopy: 'Use this as a starting checklist. Exact requirements depend on nationality, UAE residence status, employment type, travel history, and purpose of visit.',

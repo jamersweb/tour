@@ -7256,7 +7256,13 @@ textarea {
 .home-dashboard-grid--featured .home-dashboard-card {
     background: #fff;
     border: 1px solid rgba(var(--royal-rgb), 0.18);
-    box-shadow: 0 18px 38px rgba(var(--royal-rgb), 0.12);
+    box-shadow: none;
+}
+
+.home-dashboard-grid--featured .home-dashboard-card:hover,
+.home-dashboard-grid--featured .home-dashboard-card:focus-within {
+    transform: none;
+    box-shadow: none;
 }
 
 .home-dashboard-grid--featured .home-dashboard-card__media {
@@ -13894,16 +13900,21 @@ textarea {
 }
 
 .home-dashboard-hero__content.home-hero-video__content {
-    width: min(58.75rem, calc(100% - 2rem));
+    width: min(72rem, calc(100% - 2rem));
     padding: clamp(2.75rem, 8vh, 4.75rem) 1rem clamp(2rem, 6vh, 3.5rem);
     align-self: center;
     justify-items: center;
 }
 
 .home-dashboard-hero .home-hero-video__title {
-    max-width: 13ch;
-    font-size: clamp(3.75rem, 5vw, 5.4rem);
-    line-height: 0.94;
+    display: -webkit-box;
+    max-width: min(70rem, 100%);
+    max-height: calc(1.04em * 2);
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    font-size: clamp(2.75rem, 4.2vw, 4rem);
+    line-height: 1.04;
 }
 
 .home-dashboard-hero .home-hero-video__lead {
@@ -13928,7 +13939,7 @@ textarea {
     }
 
     .home-dashboard-hero .home-hero-video__title {
-        font-size: clamp(3rem, 8.5vw, 4.25rem);
+        font-size: clamp(2.5rem, 7.5vw, 3.5rem);
     }
 }
 
@@ -13944,9 +13955,9 @@ textarea {
     }
 
     .home-dashboard-hero .home-hero-video__title {
-        max-width: 11ch;
-        font-size: clamp(2.35rem, 10vw, 3.15rem);
-        line-height: 0.96;
+        max-width: 16ch;
+        font-size: clamp(2.15rem, 8.5vw, 2.75rem);
+        line-height: 1.04;
     }
 
     .home-dashboard-hero .home-hero-video__lead {
@@ -15316,6 +15327,13 @@ textarea {
     line-height: 0.98;
 }
 
+.contact-page .about-title {
+    max-width: 640px;
+    font-size: clamp(38px, 4vw, 52px);
+    letter-spacing: 0;
+    line-height: 1.04;
+}
+
 .about-page .about-copy,
 .contact-page .about-copy,
 .corporate-page .about-copy,
@@ -15641,6 +15659,13 @@ textarea {
         font-size: 34px;
         line-height: 1.04;
         letter-spacing: -0.03em;
+    }
+
+    .contact-page .about-title {
+        max-width: 20ch;
+        font-size: 30px;
+        letter-spacing: 0;
+        line-height: 1.08;
     }
 
     .about-page .about-copy,
