@@ -291,7 +291,7 @@ const visaTrustMiniItems = [
     ['\uD83C\uDFDB\uFE0F Licensed UAE company', 'Registered tourism support'],
     ['\u2B50 4.8 / 5 rating', '180+ reviews'],
     ['\u23F1\uFE0F On-time file guidance', 'Prepare before deadlines'],
-    ['\uD83D\uDCAC WhatsApp support', 'Daily, 9am-9pm GST'],
+    ['\uD83D\uDCAC WhatsApp support', 'Available 24/7'],
 ];
 
 const visaDocumentCards = [
@@ -391,7 +391,7 @@ const whatsappHref = computed(() => {
 
                 <article class="checker-card">
                     <div class="checker-header">
-                        <p class="checker-header-label">Quick eligibility check</p>
+                        <p class="checker-header-label">Visa Destination Finder</p>
                         <h2 class="checker-header-title">Where do you want to go?</h2>
                         <p class="checker-header-sub">Select a destination to see processing time, documents needed, and fee estimate.</p>
                     </div>

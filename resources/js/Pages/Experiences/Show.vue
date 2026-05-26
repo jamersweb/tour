@@ -288,7 +288,7 @@ const closeMedia = () => {
                                         {{ cartForm.processing ? 'Adding...' : 'Add to Cart' }}
                                     </button>
                                     <button class="button-primary add-cart-button" type="button" @click="bookNow">
-                                        Checkout
+                                        Book Now
                                     </button>
                                 </div>
                             </article>
@@ -499,7 +499,7 @@ const closeMedia = () => {
                     :disabled="!experience.priceFrom"
                     @click="bookNow"
                 >
-                    Checkout
+                    Book Now
                 </button>
             </div>
         </div>

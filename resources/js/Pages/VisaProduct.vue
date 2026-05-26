@@ -430,7 +430,7 @@ const faqItems = computed(() => props.visa?.faqItems ?? defaultFaqItems);
 
         <div class="visa-product-sticky-cta">
             <a class="visa-product-sticky-cta__gold" href="#consultant">Request Visa Review</a>
-            <a class="visa-product-sticky-cta__outline" :href="whatsappHref || phoneHref">Call Consultant</a>
+            <a class="visa-product-sticky-cta__outline" :href="phoneHref">Call Consultant</a>
         </div>
     </div>
 </template>

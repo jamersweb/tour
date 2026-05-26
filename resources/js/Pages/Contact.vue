@@ -136,9 +136,9 @@ const submit = () => {
 
             <div class="container">
                 <div class="about-actions contact-actions">
-                    <Link class="button-secondary" href="/experiences">Browse experiences</Link>
-                    <Link class="button-secondary" href="/tours">Browse tours</Link>
-                    <Link class="button-secondary" href="/packages">Browse packages</Link>
+                    <Link class="button-secondary" href="/experiences">Book Tours</Link>
+                    <Link class="button-secondary" href="/visa-services">Book Visa Service</Link>
+                    <Link class="button-secondary" href="/packages">Book Holiday Package</Link>
                 </div>
             </div>
         </section>

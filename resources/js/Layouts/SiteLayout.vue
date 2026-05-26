@@ -8,12 +8,18 @@ const logoutForm = useForm({});
 const headerRef = ref(null);
 const footerRef = ref(null);
 const mobileNavOpen = ref(false);
+const selectedLanguage = ref('en');
 const showMobileBottomNav = computed(() => {
     const currentPath = String(page.url || '/').split('?')[0].replace(/\/+$/, '') || '/';
 
     return currentPath === '/';
 });
 const partnerUrl = 'http://tourgratbat.acutetourism.org/';
+const languageOptions = [
+    { code: 'en', label: 'EN' },
+    { code: 'ar', label: 'AR' },
+    { code: 'ru', label: 'RU' },
+];
 const paymentIcons = [
     { label: 'Cards', image: '/images/payment-card.svg' },
     { label: 'Wallet', image: '/images/payment-wallet.svg' },
@@ -102,6 +108,17 @@ function toggleMobileNav() {
     }
 }
 
+function applyLanguage(code) {
+    const language = languageOptions.some((item) => item.code === code) ? code : 'en';
+    selectedLanguage.value = language;
+    document.documentElement.lang = language;
+    window.localStorage?.setItem('acute-language', language);
+}
+
+function onLanguageChange(event) {
+    applyLanguage(event.target.value);
+}
+
 /** Keep only one flyout open; native toggle runs before this (toggle fires after state change). */
 function onNavGroupToggle(event) {
     const el = event.target;
@@ -181,6 +198,7 @@ function onDocumentKeydown(event) {
 }
 
 onMounted(() => {
+    applyLanguage(window.localStorage?.getItem('acute-language') || document.documentElement.lang || 'en');
     document.addEventListener('pointerdown', onDocumentPointerDown, true);
     document.addEventListener('keydown', onDocumentKeydown);
     window.addEventListener('scroll', onWindowScroll, { passive: true });
@@ -322,6 +340,13 @@ onBeforeUnmount(() => {
                         >
                             Partner with us
                         </a>
+                        <label class="language-select" aria-label="Language">
+                            <select :value="selectedLanguage" @change="onLanguageChange">
+                                <option v-for="item in languageOptions" :key="item.code" :value="item.code">
+                                    {{ item.label }}
+                                </option>
+                            </select>
+                        </label>
                         <Link class="header-cart-link" :href="page.props.cart.url" aria-label="Cart" @click="closeMobileNav">
                             <svg viewBox="0 0 24 24" aria-hidden="true">
                                 <path d="M5 6h2l1.1 8.2a2 2 0 0 0 2 1.8h6.5a2 2 0 0 0 1.9-1.4L20 9H8"></path>
@@ -406,7 +431,16 @@ onBeforeUnmount(() => {
                     <summary class="footer-label">Explore</summary>
                     <ul class="footer-list">
                         <li v-for="item in page.props.site.footerNavigation" :key="item.href">
-                            <Link class="footer-link" :href="item.href">{{ item.label }}</Link>
+                            <a
+                                v-if="String(item.href).startsWith('http')"
+                                class="footer-link"
+                                :href="item.href"
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                {{ item.label }}
+                            </a>
+                            <Link v-else class="footer-link" :href="item.href">{{ item.label }}</Link>
                         </li>
                     </ul>
                 </details>
@@ -477,6 +511,14 @@ onBeforeUnmount(() => {
                             <img :src="item.image" :alt="item.label" width="64" height="64" loading="lazy" />
                         </span>
                     </div>
+                    <label class="footer-language-select" aria-label="Language">
+                        <span>Language</span>
+                        <select :value="selectedLanguage" @change="onLanguageChange">
+                            <option v-for="item in languageOptions" :key="`footer-${item.code}`" :value="item.code">
+                                {{ item.label }}
+                            </option>
+                        </select>
+                    </label>
                 </details>
             </div>
 

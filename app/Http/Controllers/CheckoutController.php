@@ -319,6 +319,14 @@ class CheckoutController extends Controller
         $unitAmount = (float) $payable->price_from;
         $totalAmount = round((float) ($overrides['amount'] ?? ($unitAmount * max(1, $guestCount))), 2);
         $currency = (string) ($overrides['currency'] ?? $payable->currency);
+        $preferenceNotes = collect([
+            'Preferred time' => $validated['preferred_time'] ?? null,
+            'Preferred language' => $validated['preferred_language'] ?? null,
+            'Special request' => $validated['special_request'] ?? null,
+        ])
+            ->filter(fn (?string $value) => filled($value))
+            ->map(fn (string $value, string $label) => "{$label}: {$value}")
+            ->implode("\n");
 
         $transaction = PaymentTransaction::query()->create([
             'payable_type' => $payable::class,
@@ -337,6 +345,7 @@ class CheckoutController extends Controller
             'amount' => $totalAmount,
             'amount_minor' => (int) round($totalAmount * 100),
             'currency' => $currency,
+            'notes' => $preferenceNotes ?: null,
         ]);
 
         $transaction->travelers()->createMany(

@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\SiteSetting;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreInquiryRequest extends FormRequest
@@ -14,8 +13,6 @@ class StoreInquiryRequest extends FormRequest
 
     public function rules(): array
     {
-        $interestOptions = SiteSetting::current()->interest_options ?? [];
-
         return [
             'experience_slug' => ['nullable', 'string', 'exists:experiences,slug'],
             'source' => ['nullable', 'string', 'max:40'],
@@ -24,7 +21,7 @@ class StoreInquiryRequest extends FormRequest
             'phone' => ['nullable', 'string', 'max:40'],
             'travel_date' => ['nullable', 'date', 'after_or_equal:today'],
             'guest_count' => ['nullable', 'integer', 'min:1', 'max:100'],
-            'interest' => ['required', 'string', 'max:120', ...($interestOptions ? ['in:'.implode(',', $interestOptions)] : [])],
+            'interest' => ['required', 'string', 'max:120'],
             'message' => ['required', 'string', 'max:2000'],
         ];
     }

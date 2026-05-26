@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\MediaUrl;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -52,7 +53,7 @@ class Article extends Model
         }
 
         if (str_starts_with($this->hero_image_path, 'http://') || str_starts_with($this->hero_image_path, 'https://')) {
-            return $this->hero_image_path;
+            return MediaUrl::normalize($this->hero_image_path);
         }
 
         return Storage::disk('uploads')->url($this->hero_image_path);

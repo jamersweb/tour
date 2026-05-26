@@ -74,14 +74,14 @@ const activeMediaItem = computed(() => (
 
 const form = useForm({
     travel_date: '',
-    guest_count: 1,
+    guest_count: 2,
 });
 
 const cartForm = useForm({
     type: 'package',
     slug: props.packageItem.slug,
     travel_date: '',
-    guest_count: 1,
+    guest_count: 2,
 });
 
 const customPackageForm = useForm({
@@ -98,7 +98,7 @@ const customPackageForm = useForm({
 });
 
 const totalAmount = computed(() => {
-    const guestCount = Math.max(1, Number.parseInt(form.guest_count, 10) || 1);
+    const guestCount = Math.max(2, Number.parseInt(form.guest_count, 10) || 2);
     const rawAmount = String(props.packageItem.priceFrom || '0').replace(/[^0-9.]/g, '');
     const unitAmount = Number.parseFloat(rawAmount || '0');
 
@@ -120,7 +120,7 @@ const focusBookingForm = (field = 'date') => {
 };
 
 const addToCart = () => {
-    const guestCount = Math.max(1, Number.parseInt(form.guest_count, 10) || 1);
+    const guestCount = Math.max(2, Number.parseInt(form.guest_count, 10) || 2);
 
     if (!form.travel_date) {
         focusBookingForm('date');
@@ -138,7 +138,7 @@ const addToCart = () => {
 };
 
 const bookNow = () => {
-    const guestCount = Math.max(1, Number.parseInt(form.guest_count, 10) || 1);
+    const guestCount = Math.max(2, Number.parseInt(form.guest_count, 10) || 2);
 
     if (!form.travel_date) {
         focusBookingForm('date');
@@ -298,7 +298,7 @@ const closeMedia = () => {
 
                                     <label class="field">
                                         <span>Guests</span>
-                                        <input v-model="form.guest_count" type="number" min="1" max="100" />
+                                        <input v-model="form.guest_count" type="number" min="2" max="100" />
                                         <small v-if="cartForm.errors.guest_count">{{ cartForm.errors.guest_count }}</small>
                                     </label>
 
@@ -318,8 +318,11 @@ const closeMedia = () => {
                                         {{ cartForm.processing ? 'Adding...' : 'Add to Cart' }}
                                     </button>
                                     <button class="button-secondary add-cart-button" type="button" @click="bookNow">
-                                        Checkout
+                                        Book Now
                                     </button>
+                                    <a class="button-secondary add-cart-button" href="#customize-package">
+                                        Customize Your Package
+                                    </a>
                                 </div>
                             </article>
                         </div>
@@ -418,7 +421,7 @@ const closeMedia = () => {
                             </div>
                         </article>
 
-                        <article class="experience-operator-section package-custom-panel">
+                        <article id="customize-package" class="experience-operator-section package-custom-panel">
                             <div class="package-custom-panel__copy">
                                 <span class="experience-operator-section__kicker">Customize your trip</span>
                                 <h2>Adjust this package around your dates, hotel, and add-ons</h2>
@@ -623,7 +626,7 @@ const closeMedia = () => {
                     :disabled="!packageItem.priceFrom"
                     @click="bookNow"
                 >
-                    Checkout
+                    Book Now
                 </button>
             </div>
         </div>

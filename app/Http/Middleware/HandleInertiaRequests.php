@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\SiteSetting;
+use App\Support\MediaUrl;
 use App\Support\NetworkPayments;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -37,6 +38,8 @@ class HandleInertiaRequests extends Middleware
             $footerLogoUrl = 'https://acutetourism.org/uploads/0000/6/2025/03/14/4-2.png';
         }
 
+        $logoUrl = MediaUrl::normalize($logoUrl);
+        $footerLogoUrl = MediaUrl::normalize($footerLogoUrl);
         $socialUrls = $this->socialUrls($settings->social_links ?? []);
         $footerSocialLinks = $this->footerSocialLinks($socialUrls);
 
@@ -127,6 +130,7 @@ class HandleInertiaRequests extends Middleware
                     ['label' => 'Terms & Conditions', 'href' => route('terms-and-conditions')],
                     ['label' => 'Privacy Policy', 'href' => route('privacy-policy')],
                     ['label' => 'Corporate Events', 'href' => route('corporate-events')],
+                    ['label' => 'Partner With Us', 'href' => 'http://tourgratbat.acutetourism.org/'],
                     ['label' => 'Contact', 'href' => route('contact')],
                 ],
                 'primaryNavigation' => [

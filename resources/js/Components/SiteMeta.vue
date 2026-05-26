@@ -1,7 +1,6 @@
 <script setup>
 import { Head, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
-import JsonLdScript from './JsonLdScript.vue';
 
 const props = defineProps({
     title: {
@@ -27,53 +26,47 @@ const organization = computed(() => page.props.site.organization);
 const resolvedTitle = computed(() => props.title || defaultMeta.value.title);
 const resolvedDescription = computed(() => props.description || defaultMeta.value.description);
 const resolvedImage = computed(() => props.image || defaultMeta.value.image);
-const fullTitle = computed(() =>
-    resolvedTitle.value === siteName.value ? siteName.value : `${resolvedTitle.value} | ${siteName.value}`,
-);
-const structuredData = computed(() =>
-    JSON.stringify(
-        [
-            {
-                '@context': 'https://schema.org',
-                '@type': organization.value.type || 'Organization',
-                name: organization.value.name,
-                legalName: organization.value.legalName,
-                url: organization.value.url || canonicalUrl.value,
-                logo: organization.value.logo || undefined,
-                sameAs: organization.value.socialLinks?.length ? organization.value.socialLinks : undefined,
-                contactPoint: (() => {
-                    const c = organization.value.contact;
-                    if (!c?.email && !c?.phone) {
-                        return undefined;
-                    }
-                    const tel = [c.phone, c.phoneSecondary].filter(Boolean).join(' / ') || undefined;
-                    return {
-                        '@type': 'ContactPoint',
-                        email: c.email || undefined,
-                        telephone: tel,
-                        contactType: 'customer service',
-                    };
-                })(),
-                address: organization.value.contact?.address
-                    ? {
-                          '@type': 'PostalAddress',
-                          streetAddress: organization.value.contact.address,
-                          addressLocality: 'Dubai',
-                          addressCountry: 'AE',
-                      }
-                    : undefined,
-            },
-            {
-                '@context': 'https://schema.org',
-                '@type': 'WebSite',
-                name: siteName.value,
-                url: organization.value.url || canonicalUrl.value,
-            },
-        ],
-        null,
-        0,
-    ),
-);
+const fullTitle = computed(() => (
+    resolvedTitle.value === siteName.value ? siteName.value : `${resolvedTitle.value} | ${siteName.value}`
+));
+const structuredData = computed(() => JSON.stringify([
+    {
+        '@context': 'https://schema.org',
+        '@type': organization.value.type || 'Organization',
+        name: organization.value.name,
+        legalName: organization.value.legalName,
+        url: organization.value.url || canonicalUrl.value,
+        logo: organization.value.logo || undefined,
+        sameAs: organization.value.socialLinks?.length ? organization.value.socialLinks : undefined,
+        contactPoint: (() => {
+            const contact = organization.value.contact;
+            if (!contact?.email && !contact?.phone) {
+                return undefined;
+            }
+
+            return {
+                '@type': 'ContactPoint',
+                email: contact.email || undefined,
+                telephone: [contact.phone, contact.phoneSecondary].filter(Boolean).join(' / ') || undefined,
+                contactType: 'customer service',
+            };
+        })(),
+        address: organization.value.contact?.address
+            ? {
+                '@type': 'PostalAddress',
+                streetAddress: organization.value.contact.address,
+                addressLocality: 'Dubai',
+                addressCountry: 'AE',
+            }
+            : undefined,
+    },
+    {
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: siteName.value,
+        url: organization.value.url || canonicalUrl.value,
+    },
+]));
 </script>
 
 <template>
@@ -90,6 +83,6 @@ const structuredData = computed(() =>
         <meta name="twitter:title" :content="fullTitle" />
         <meta name="twitter:description" :content="resolvedDescription" />
         <meta v-if="resolvedImage" name="twitter:image" :content="resolvedImage" />
-        <JsonLdScript :json="structuredData" />
+        <script type="application/ld+json" v-text="structuredData"></script>
     </Head>
 </template>

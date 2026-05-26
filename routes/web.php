@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\InquiryController;
+use App\Http\Controllers\LegacyMediaController;
 use App\Http\Controllers\NetworkWebhookController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PaymentDocumentController;
@@ -12,6 +13,9 @@ use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PageController::class, 'home'])->name('home');
+Route::get('/legacy-media/uploads/{path}', [LegacyMediaController::class, 'show'])
+    ->where('path', '.*')
+    ->name('legacy-media.show');
 Route::get('/acute-landing', [PageController::class, 'acuteLanding'])->name('landing.acute');
 Route::get('/experiences', [PageController::class, 'experiences'])->name('experiences.index');
 Route::get('/experiences/{slug}', [PageController::class, 'experience'])->name('experiences.show');

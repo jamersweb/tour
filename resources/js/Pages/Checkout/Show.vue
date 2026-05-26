@@ -19,6 +19,9 @@ const form = useForm({
     phone: '',
     travel_date: props.checkout.defaults?.travel_date || '',
     guest_count: props.checkout.defaults?.guest_count || 1,
+    preferred_time: '',
+    preferred_language: '',
+    special_request: '',
     traveler_contacts: [
         { name: '', email: '', phone: '' },
     ],
@@ -77,6 +80,15 @@ const submit = () => {
                             <b>{{ item.lineTotalFormatted }}</b>
                         </article>
                     </div>
+
+                    <div v-else class="checkout-selection-summary">
+                        <span>Selected booking</span>
+                        <strong>{{ checkout.title }}</strong>
+                        <p>
+                            <template v-if="form.travel_date">Date: {{ form.travel_date }} · </template>
+                            Travelers: {{ form.guest_count }}
+                        </p>
+                    </div>
                 </article>
             </div>
 
@@ -118,15 +130,31 @@ const submit = () => {
                         </label>
 
                         <label v-if="!checkout.isCart" class="field">
-                            <span>Travel Date</span>
-                            <input v-model="form.travel_date" type="date" />
-                            <small v-if="form.errors.travel_date">{{ form.errors.travel_date }}</small>
+                            <span>Preferred tour time</span>
+                            <select v-model="form.preferred_time">
+                                <option value="">Flexible</option>
+                                <option value="Morning">Morning</option>
+                                <option value="Afternoon">Afternoon</option>
+                                <option value="Evening">Evening</option>
+                            </select>
+                            <small v-if="form.errors.preferred_time">{{ form.errors.preferred_time }}</small>
                         </label>
 
                         <label v-if="!checkout.isCart" class="field">
-                            <span>Guests</span>
-                            <input v-model="form.guest_count" type="number" min="1" max="100" />
-                            <small v-if="form.errors.guest_count">{{ form.errors.guest_count }}</small>
+                            <span>Preferred language</span>
+                            <select v-model="form.preferred_language">
+                                <option value="">English</option>
+                                <option value="Arabic">Arabic</option>
+                                <option value="Russian">Russian</option>
+                                <option value="Hindi / Urdu">Hindi / Urdu</option>
+                            </select>
+                            <small v-if="form.errors.preferred_language">{{ form.errors.preferred_language }}</small>
+                        </label>
+
+                        <label class="field field-full">
+                            <span>Special request</span>
+                            <textarea v-model="form.special_request" rows="4" placeholder="Pickup notes, celebration details, hotel name, or accessibility requests"></textarea>
+                            <small v-if="form.errors.special_request">{{ form.errors.special_request }}</small>
                         </label>
 
                         <div class="field">

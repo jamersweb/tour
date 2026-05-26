@@ -98,7 +98,9 @@ class PageController extends Controller
                 'summary' => 'Hotels, transfers, attractions, and desert experiences arranged into one city break plan.',
                 'priceLine' => 'From AED 2,950 / person',
                 'detail' => 'Duration: 4 days',
-                'href' => route('packages.index'),
+                'href' => filled($packages->get(0)['slug'] ?? null)
+                    ? route('packages.show', $packages->get(0)['slug'])
+                    : route('packages.index'),
                 'cta' => 'Book Now',
                 'image' => $packageImages->get(0) ?: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80',
                 'highlights' => ['Hotels', 'Transfers', 'Attractions'],
@@ -108,7 +110,9 @@ class PageController extends Controller
                 'summary' => 'UAE event travel, attraction tickets, and transfer planning for tighter schedules.',
                 'priceLine' => 'From AED 2,200 / person',
                 'detail' => 'Duration: 3 days',
-                'href' => route('packages.index'),
+                'href' => filled($packages->get(1)['slug'] ?? null)
+                    ? route('packages.show', $packages->get(1)['slug'])
+                    : route('packages.index'),
                 'cta' => 'Book Now',
                 'image' => $packageImages->get(1) ?: 'https://images.unsplash.com/photo-1512632578888-169bbbc64f33?auto=format&fit=crop&w=1200&q=80',
                 'highlights' => ['Event travel', 'Abu Dhabi', 'Tickets'],
@@ -118,7 +122,9 @@ class PageController extends Controller
                 'summary' => 'Outbound trip planning with visa support, hotel guidance, transfers, and practical document timing.',
                 'priceLine' => 'Custom quote',
                 'detail' => 'Duration: Flexible',
-                'href' => route('packages.index'),
+                'href' => filled($packages->get(2)['slug'] ?? null)
+                    ? route('packages.show', $packages->get(2)['slug'])
+                    : route('packages.index'),
                 'cta' => 'Book Now',
                 'image' => $packageImages->get(2) ?: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80',
                 'highlights' => ['Outbound', 'Visa support', 'Hotels'],
@@ -1666,7 +1672,7 @@ class PageController extends Controller
                 'address' => $settings->contact_address,
                 'whatsappNumber' => $settings->whatsapp_number,
             ],
-            'interestOptions' => $settings->interest_options ?? [],
+            'interestOptions' => ['Tours', 'Holiday Package', 'Visa Service'],
         ]);
     }
 
