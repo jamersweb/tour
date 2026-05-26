@@ -15093,7 +15093,35 @@ textarea {
 }
 
 .experience-tour-page .experience-operator-layout--package .detail-fact-grid {
-    display: none;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin: 0 0 30px;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+    background: transparent;
+}
+
+.experience-tour-page .experience-operator-layout--package .detail-fact {
+    min-height: 72px;
+    padding: 14px 16px;
+    border: 1px solid rgba(21, 17, 13, 0.08);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: 0 16px 34px rgba(38, 26, 18, 0.045);
+}
+
+.experience-tour-page .experience-operator-layout--package .detail-fact span {
+    color: var(--gold);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+}
+
+.experience-tour-page .experience-operator-layout--package .detail-fact strong {
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 800;
 }
 
 .experience-tour-page .experience-operator-section {
@@ -15394,6 +15422,11 @@ textarea {
     .experience-tour-page .package-detail-mosaic::-webkit-scrollbar,
     .experience-tour-page .experience-operator-mosaic::-webkit-scrollbar {
         display: none;
+    }
+
+    .experience-tour-page .experience-operator-layout--package .detail-fact-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
     }
 
     .experience-tour-page .experience-operator-mosaic__tile,

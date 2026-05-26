@@ -41,9 +41,9 @@ const contactPhone = '(+971) 58 516 1554';
 const contactEmail = 'info@acutetourism.org';
 const quickFacts = computed(() => [
     { label: 'Duration', value: props.packageItem.duration || 'Flexible' },
-    { label: 'Destination', value: props.packageItem.location || 'Dubai & UAE' },
-    { label: 'Group Size', value: props.packageItem.groupSize || 'Custom group' },
-    { label: 'Price From', value: props.packageItem.priceFrom || 'On request' },
+    { label: 'Destinations', value: props.packageItem.location || 'Dubai & UAE' },
+    { label: 'Hotel', value: 'With daily breakfast' },
+    { label: 'Starting From', value: props.packageItem.priceFrom ? `${props.packageItem.priceFrom} per person` : 'On request' },
 ]);
 const packageOptions = computed(() => [
     {
