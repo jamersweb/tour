@@ -13,7 +13,7 @@ class ArticleInfolist
         return $schema->components([
             TextEntry::make('title'),
             TextEntry::make('slug'),
-            TextEntry::make('category'),
+            TextEntry::make('blogCategory.name')->label('Category'),
             TextEntry::make('excerpt')->columnSpanFull(),
             TextEntry::make('content')->columnSpanFull(),
             TextEntry::make('read_time')->suffix(' min'),

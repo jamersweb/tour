@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Article;
+use App\Models\BlogCategory;
 use App\Models\Faq;
 use Illuminate\Database\Seeder;
 
@@ -10,10 +11,39 @@ class ContentSeeder extends Seeder
 {
     public function run(): void
     {
+        $blogCategories = collect([
+            [
+                'name' => 'Desert Guide',
+                'slug' => 'desert-guide',
+                'description' => 'Desert safari planning articles, private camp guidance, and premium desert experience comparisons.',
+                'sort_order' => 1,
+            ],
+            [
+                'name' => 'Yacht Guide',
+                'slug' => 'yacht-guide',
+                'description' => 'Private yacht charter tips, route planning, onboard inclusions, and booking guidance.',
+                'sort_order' => 2,
+            ],
+            [
+                'name' => 'Family Travel',
+                'slug' => 'family-travel',
+                'description' => 'Family-friendly Dubai planning content focused on comfort, timing, transfers, and suitability.',
+                'sort_order' => 3,
+            ],
+        ])->mapWithKeys(function (array $category): array {
+            $record = BlogCategory::updateOrCreate(
+                ['slug' => $category['slug']],
+                $category + ['is_active' => true],
+            );
+
+            return [$record->name => $record->id];
+        });
+
         collect([
             [
                 'title' => 'How to Choose a Premium Desert Safari in Dubai',
                 'slug' => 'choose-premium-desert-safari-dubai',
+                'blog_category_id' => $blogCategories['Desert Guide'],
                 'category' => 'Desert Guide',
                 'excerpt' => 'What premium travelers actually look for when comparing desert safari operators in Dubai.',
                 'content' => "A premium desert safari should be judged on operations, not just visuals.\n\nLook first at pickup clarity, hosting quality, camp environment, vehicle standards, and how private the pacing really is. Generic suppliers tend to sell similar imagery with inconsistent delivery.\n\nA stronger operator explains what is included, what remains optional, and how the evening is sequenced. That transparency is one of the clearest trust signals for higher-value travelers.",
@@ -29,6 +59,7 @@ class ContentSeeder extends Seeder
             [
                 'title' => 'Private Yacht Charter Dubai: What Matters Before You Book',
                 'slug' => 'private-yacht-charter-dubai-guide',
+                'blog_category_id' => $blogCategories['Yacht Guide'],
                 'category' => 'Yacht Guide',
                 'excerpt' => 'A concise buyer guide for travelers comparing private yacht experiences in Dubai.',
                 'content' => "Yacht buyers compare route quality, boarding logistics, crew standards, and how clearly upgrades are presented.\n\nFor premium positioning, packaging matters as much as inventory. Clear charter duration, inclusions, marina details, and celebration add-ons reduce friction and support higher-intent inquiries.",
@@ -44,6 +75,7 @@ class ContentSeeder extends Seeder
             [
                 'title' => 'Family-Friendly Dubai Experiences Without Planning Friction',
                 'slug' => 'family-friendly-dubai-experiences',
+                'blog_category_id' => $blogCategories['Family Travel'],
                 'category' => 'Family Travel',
                 'excerpt' => 'Why comfort, timing, and pickup clarity matter more than sheer activity count for families.',
                 'content' => "Family products convert better when logistics are explicit.\n\nParents respond to transfer clarity, realistic timing, age suitability, and straightforward inclusion lists. A curated family collection should reduce planning work, not increase it.",

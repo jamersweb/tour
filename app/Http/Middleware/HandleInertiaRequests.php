@@ -126,6 +126,7 @@ class HandleInertiaRequests extends Middleware
                     ['label' => 'Holiday Packages', 'href' => route('packages.index')],
                     ['label' => 'Visa Services', 'href' => route('visa.index')],
                     ['label' => 'About us', 'href' => route('about')],
+                    ['label' => 'Blog', 'href' => route('blog')],
                     ['label' => 'Cancellation Policy', 'href' => route('cancellation-policy')],
                     ['label' => 'Terms & Conditions', 'href' => route('terms-and-conditions')],
                     ['label' => 'Privacy Policy', 'href' => route('privacy-policy')],

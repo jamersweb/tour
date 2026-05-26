@@ -22,6 +22,7 @@ class SitemapTest extends TestCase
         $this->assertStringContainsString('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">', $content);
         $this->assertStringContainsString(url('/experiences/private-heritage-desert-safari'), $content);
         $this->assertStringContainsString(url('/packages/ufc-fight-night-returns-to-abu-dhabi'), $content);
-        $this->assertStringContainsString(url('/journal/private-yacht-charter-dubai-guide'), $content);
+        $this->assertStringContainsString(url('/blog/private-yacht-charter-dubai-guide'), $content);
+        $this->assertStringContainsString(url('/blog?category=yacht-guide'), $content);
     }
 }

@@ -5,11 +5,13 @@ namespace App\Models;
 use App\Support\MediaUrl;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
 
 class Article extends Model
 {
     protected $fillable = [
+        'blog_category_id',
         'title',
         'slug',
         'category',
@@ -34,6 +36,27 @@ class Article extends Model
             'is_published' => 'boolean',
             'published_at' => 'datetime',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::saving(function (Article $article): void {
+            if ($article->blog_category_id && (! $article->category || $article->isDirty('blog_category_id'))) {
+                $article->category = BlogCategory::query()
+                    ->whereKey($article->blog_category_id)
+                    ->value('name') ?: $article->category;
+            }
+        });
+    }
+
+    public function blogCategory(): BelongsTo
+    {
+        return $this->belongsTo(BlogCategory::class);
+    }
+
+    public function getCategoryNameAttribute(): string
+    {
+        return $this->blogCategory?->name ?: $this->category;
     }
 
     public function scopePublished(Builder $query): Builder

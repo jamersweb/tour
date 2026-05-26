@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Articles\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -19,7 +20,12 @@ class ArticleForm
                 ->schema([
                     TextInput::make('title')->required()->maxLength(255),
                     TextInput::make('slug')->required()->maxLength(255)->unique(ignoreRecord: true),
-                    TextInput::make('category')->required()->maxLength(80),
+                    Select::make('blog_category_id')
+                        ->label('Blog category')
+                        ->relationship('blogCategory', 'name', fn ($query) => $query->orderBy('sort_order')->orderBy('name'))
+                        ->searchable()
+                        ->preload()
+                        ->required(),
                     TextInput::make('read_time')->numeric()->required()->default(5)->suffix('min'),
                     Textarea::make('excerpt')->required()->rows(3)->maxLength(280)->columnSpanFull(),
                     Textarea::make('content')->required()->rows(12)->columnSpanFull(),

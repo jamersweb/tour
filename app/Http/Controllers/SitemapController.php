@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use App\Models\BlogCategory;
 use App\Models\Collection;
 use App\Models\Experience;
 use App\Models\Package;
@@ -45,7 +46,7 @@ class SitemapController extends Controller
         $push(url('/about'), 'monthly', '0.6');
         $push(url('/corporate-events'), 'monthly', '0.6');
         $push(url('/contact'), 'monthly', '0.7');
-        $push(url('/journal'), 'weekly', '0.7');
+        $push(url('/blog'), 'weekly', '0.7');
         $push(url('/faq'), 'monthly', '0.6');
 
         Experience::query()
@@ -69,7 +70,13 @@ class SitemapController extends Controller
             ->published()
             ->orderBy('slug')
             ->pluck('slug')
-            ->each(fn (string $slug) => $push(url("/journal/{$slug}"), 'monthly', '0.65'));
+            ->each(fn (string $slug) => $push(url("/blog/{$slug}"), 'monthly', '0.65'));
+
+        BlogCategory::query()
+            ->active()
+            ->orderBy('slug')
+            ->pluck('slug')
+            ->each(fn (string $slug) => $push(url("/blog?category={$slug}"), 'monthly', '0.55'));
 
         $xml = '<?xml version="1.0" encoding="UTF-8"?>'.PHP_EOL;
         $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'.PHP_EOL;

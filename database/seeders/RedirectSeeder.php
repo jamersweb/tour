@@ -29,12 +29,6 @@ class RedirectSeeder extends Seeder
                 'is_active' => true,
             ],
             [
-                'source_path' => '/blog',
-                'destination_url' => '/journal',
-                'status_code' => 301,
-                'is_active' => true,
-            ],
-            [
                 'source_path' => '/package/ufc-fight-night-returns-to-abu-dhabi',
                 'destination_url' => '/packages/ufc-fight-night-returns-to-abu-dhabi',
                 'status_code' => 301,

@@ -61,6 +61,8 @@ Route::post('/checkout/packages/{slug}', [CheckoutController::class, 'startPacka
 Route::get('/payments/network/callback', [CheckoutController::class, 'callback'])->name('payments.network.callback');
 Route::post('/payments/network/webhook', NetworkWebhookController::class)->name('payments.network.webhook');
 Route::get('/checkout/result/{transaction}', [CheckoutController::class, 'result'])->name('checkout.result');
+Route::get('/blog', [PageController::class, 'journal'])->name('blog');
+Route::get('/blog/{slug}', [PageController::class, 'article'])->name('blog.show');
 Route::get('/journal', [PageController::class, 'journal'])->name('journal');
 Route::get('/journal/{slug}', [PageController::class, 'article'])->name('journal.show');
 Route::get('/faq', [PageController::class, 'faq'])->name('faq');

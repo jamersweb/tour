@@ -22,11 +22,11 @@ class RedirectTest extends TestCase
 
     public function test_redirect_match_metrics_are_updated(): void
     {
-        $redirect = Redirect::query()->where('source_path', '/blog')->firstOrFail();
+        $redirect = Redirect::query()->where('source_path', '/faqs')->firstOrFail();
 
         $this->assertSame(0, $redirect->match_hits);
 
-        $this->get('/blog')->assertRedirect('/journal');
+        $this->get('/faqs')->assertRedirect('/faq');
 
         $redirect->refresh();
 
@@ -36,7 +36,7 @@ class RedirectTest extends TestCase
 
     public function test_redirect_middleware_ignores_post_requests(): void
     {
-        $response = $this->post('/blog');
+        $response = $this->post('/faqs');
 
         $response->assertStatus(404);
     }

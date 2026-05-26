@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use App\Models\BlogCategory;
 use App\Models\Collection;
 use App\Models\Experience;
 use App\Models\Faq;
@@ -1676,9 +1677,19 @@ class PageController extends Controller
         ]);
     }
 
-    public function journal(): Response
+    public function journal(Request $request): Response
     {
-        $featuredArticle = Article::query()
+        $selectedCategorySlug = $request->query('category');
+        $selectedCategory = $selectedCategorySlug
+            ? BlogCategory::query()->active()->where('slug', $selectedCategorySlug)->first()
+            : null;
+
+        $articleQuery = Article::query()
+            ->with('blogCategory')
+            ->published()
+            ->when($selectedCategory, fn ($query) => $query->where('blog_category_id', $selectedCategory->id));
+
+        $featuredArticle = (clone $articleQuery)
             ->published()
             ->orderByDesc('is_featured')
             ->orderBy('sort_order')
@@ -1687,20 +1698,38 @@ class PageController extends Controller
 
         return Inertia::render('Journal/Index', [
             'seo' => [
-                'title' => 'Journal',
-                'description' => 'Editorial travel content supporting premium Dubai experience discovery.',
+                'title' => $selectedCategory?->seo_title ?: ($selectedCategory ? "{$selectedCategory->name} Blog" : 'Blog'),
+                'description' => $selectedCategory?->seo_description
+                    ?: ($selectedCategory?->description ?: 'Dubai travel guides, visa explainers, and holiday planning articles from Acute Tourism.'),
             ],
             'featuredArticle' => $featuredArticle ? [
                 'title' => $featuredArticle->title,
                 'slug' => $featuredArticle->slug,
-                'category' => $featuredArticle->category,
+                'category' => $featuredArticle->category_name,
+                'categorySlug' => $featuredArticle->blogCategory?->slug,
                 'excerpt' => $featuredArticle->excerpt,
                 'readTime' => "{$featuredArticle->read_time} min",
                 'publishedAt' => optional($featuredArticle->published_at)->format('F j, Y'),
                 'heroImageUrl' => $featuredArticle->hero_image_url,
             ] : null,
-            'articles' => Article::query()
-                ->published()
+            'categories' => BlogCategory::query()
+                ->active()
+                ->withCount(['articles' => fn ($query) => $query->published()])
+                ->orderBy('sort_order')
+                ->orderBy('name')
+                ->get()
+                ->map(fn (BlogCategory $category) => [
+                    'name' => $category->name,
+                    'slug' => $category->slug,
+                    'description' => $category->description,
+                    'articleCount' => $category->articles_count,
+                ]),
+            'selectedCategory' => $selectedCategory ? [
+                'name' => $selectedCategory->name,
+                'slug' => $selectedCategory->slug,
+                'description' => $selectedCategory->description,
+            ] : null,
+            'articles' => (clone $articleQuery)
                 ->orderByDesc('is_featured')
                 ->orderBy('sort_order')
                 ->orderByDesc('published_at')
@@ -1708,7 +1737,8 @@ class PageController extends Controller
                 ->map(fn (Article $article) => [
                     'title' => $article->title,
                     'slug' => $article->slug,
-                    'category' => $article->category,
+                    'category' => $article->category_name,
+                    'categorySlug' => $article->blogCategory?->slug,
                     'excerpt' => $article->excerpt,
                     'readTime' => "{$article->read_time} min",
                     'publishedAt' => optional($article->published_at)->format('F j, Y'),
@@ -1720,14 +1750,20 @@ class PageController extends Controller
     public function article(string $slug): Response
     {
         $article = Article::query()
+            ->with('blogCategory')
             ->published()
             ->where('slug', $slug)
             ->firstOrFail();
 
         $relatedArticles = Article::query()
+            ->with('blogCategory')
             ->published()
             ->where('id', '!=', $article->id)
-            ->where('category', $article->category)
+            ->when(
+                $article->blog_category_id,
+                fn ($query) => $query->where('blog_category_id', $article->blog_category_id),
+                fn ($query) => $query->where('category', $article->category),
+            )
             ->orderByDesc('is_featured')
             ->orderBy('sort_order')
             ->orderByDesc('published_at')
@@ -1736,7 +1772,8 @@ class PageController extends Controller
             ->map(fn (Article $item) => [
                 'title' => $item->title,
                 'slug' => $item->slug,
-                'category' => $item->category,
+                'category' => $item->category_name,
+                'categorySlug' => $item->blogCategory?->slug,
                 'excerpt' => $item->excerpt,
                 'readTime' => "{$item->read_time} min",
             ]);
@@ -1749,7 +1786,8 @@ class PageController extends Controller
             ],
             'article' => [
                 'title' => $article->title,
-                'category' => $article->category,
+                'category' => $article->category_name,
+                'categorySlug' => $article->blogCategory?->slug,
                 'excerpt' => $article->excerpt,
                 'content' => $article->content,
                 'readTime' => "{$article->read_time} min",

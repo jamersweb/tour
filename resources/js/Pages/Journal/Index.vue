@@ -8,6 +8,8 @@ defineOptions({ layout: SiteLayout });
 defineProps({
     seo: Object,
     featuredArticle: Object,
+    categories: Array,
+    selectedCategory: Object,
     articles: Array,
 });
 </script>
@@ -19,20 +21,24 @@ defineProps({
         <section class="about-hero journal-hero">
             <div class="container about-hero__grid">
                 <div>
-                    <p class="about-kicker">Journal</p>
-                    <h1 class="about-title">Editorial content that helps visitors plan better and buy with more clarity.</h1>
+                    <p class="about-kicker">Blog</p>
+                    <h1 class="about-title">
+                        {{ selectedCategory ? selectedCategory.name : 'Dubai travel articles, visa guides, and holiday planning tips.' }}
+                    </h1>
                     <p class="about-copy">
-                        The journal supports destination discovery with practical buying guidance, comparisons,
-                        and editorial content tied to Dubai and UAE travel planning.
+                        {{
+                            selectedCategory?.description ||
+                            'Read practical travel content for tours, holiday packages, visa planning, and Dubai itineraries.'
+                        }}
                     </p>
                 </div>
 
                 <div class="about-card about-card--primary">
-                    <p class="about-card__label">What you will find</p>
+                    <p class="about-card__label">Blog Categories</p>
                     <ul class="about-list about-list--tight">
                         <li>Planning guides and route comparisons</li>
-                        <li>Experience selection context</li>
-                        <li>Travel content that supports booking intent</li>
+                        <li>Visa and documentation explainers</li>
+                        <li>Holiday package buying guidance</li>
                     </ul>
                 </div>
             </div>
@@ -40,6 +46,19 @@ defineProps({
 
         <section class="section-block journal-section">
             <div class="container">
+                <div v-if="categories.length" class="tag-row">
+                    <Link class="filter-chip" :class="{ active: !selectedCategory }" href="/blog">All articles</Link>
+                    <Link
+                        v-for="category in categories"
+                        :key="category.slug"
+                        class="filter-chip"
+                        :class="{ active: selectedCategory?.slug === category.slug }"
+                        :href="`/blog?category=${category.slug}`"
+                    >
+                        {{ category.name }} <span v-if="category.articleCount">({{ category.articleCount }})</span>
+                    </Link>
+                </div>
+
                 <article v-if="featuredArticle" class="showcase-card journal-feature journal-feature--refined">
                     <div v-if="featuredArticle.heroImageUrl" class="showcase-media">
                         <img :src="featuredArticle.heroImageUrl" :alt="featuredArticle.title" />
@@ -51,7 +70,7 @@ defineProps({
                     <h3>{{ featuredArticle.title }}</h3>
                     <p>{{ featuredArticle.excerpt }}</p>
                     <p v-if="featuredArticle.publishedAt" class="meta-copy">{{ featuredArticle.publishedAt }}</p>
-                    <Link class="button-primary card-button" :href="`/journal/${featuredArticle.slug}`">Read article</Link>
+                    <Link class="button-primary card-button" :href="`/blog/${featuredArticle.slug}`">Read article</Link>
                 </article>
 
                 <div class="card-grid card-grid-three">
@@ -66,7 +85,7 @@ defineProps({
                         <h3>{{ article.title }}</h3>
                         <p>{{ article.excerpt }}</p>
                         <p class="meta-copy">{{ article.publishedAt }}</p>
-                        <Link class="button-primary card-button" :href="`/journal/${article.slug}`">Read article</Link>
+                        <Link class="button-primary card-button" :href="`/blog/${article.slug}`">Read article</Link>
                     </article>
                 </div>
             </div>

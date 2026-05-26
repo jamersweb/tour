@@ -42,7 +42,7 @@ defineProps({
         <section v-if="relatedArticles.length" class="section-block section-contrast journal-section">
             <div class="container">
                 <div class="section-heading">
-                    <p class="eyebrow">Related Journal</p>
+                    <p class="eyebrow">Related Blog</p>
                     <h2>Continue through related planning content.</h2>
                 </div>
 
@@ -54,7 +54,7 @@ defineProps({
                         </div>
                         <h3>{{ item.title }}</h3>
                         <p>{{ item.excerpt }}</p>
-                        <Link class="button-primary card-button" :href="`/journal/${item.slug}`">Read article</Link>
+                        <Link class="button-primary card-button" :href="`/blog/${item.slug}`">Read article</Link>
                     </article>
                 </div>
             </div>
