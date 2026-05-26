@@ -485,22 +485,8 @@ const closeMedia = () => {
                 <span>{{ experience.priceFrom || 'Current price on request' }} · {{ experience.duration || 'Flexible duration' }}</span>
             </div>
             <div class="detail-mobile-cta__actions">
-                <button
-                    class="button-primary"
-                    type="button"
-                    :disabled="cartForm.processing || !experience.priceFrom"
-                    @click="addToCart"
-                >
-                    {{ cartForm.processing ? 'Adding...' : 'Add to Cart' }}
-                </button>
-                <button
-                    class="button-secondary"
-                    type="button"
-                    :disabled="!experience.priceFrom"
-                    @click="bookNow"
-                >
-                    Book Now
-                </button>
+                <a class="button-secondary" href="#booking-widget">Add to Cart</a>
+                <a class="button-primary" href="#booking-widget">Book Now</a>
             </div>
         </div>
     </div>

@@ -338,14 +338,14 @@ const closeMedia = () => {
 
                                 <div class="package-detail-booking__actions">
                                     <button
-                                        class="button-primary add-cart-button"
+                                        class="button-secondary add-cart-button"
                                         type="button"
                                         :disabled="cartForm.processing || !packageItem.priceFrom"
                                         @click="addToCart"
                                     >
                                         {{ cartForm.processing ? 'Adding...' : 'Add to Cart' }}
                                     </button>
-                                    <button class="button-secondary add-cart-button" type="button" @click="bookNow">
+                                    <button class="button-primary add-cart-button" type="button" @click="bookNow">
                                         Book Now
                                     </button>
                                     <a class="button-secondary add-cart-button" href="#customize-package">
@@ -668,22 +668,8 @@ const closeMedia = () => {
                 <span>{{ packageItem.priceFrom || 'Current price on request' }} · {{ packageItem.duration || 'Flexible duration' }}</span>
             </div>
             <div class="detail-mobile-cta__actions">
-                <button
-                    class="button-primary"
-                    type="button"
-                    :disabled="cartForm.processing || !packageItem.priceFrom"
-                    @click="addToCart"
-                >
-                    {{ cartForm.processing ? 'Adding...' : 'Add to Cart' }}
-                </button>
-                <button
-                    class="button-secondary"
-                    type="button"
-                    :disabled="!packageItem.priceFrom"
-                    @click="bookNow"
-                >
-                    Book Now
-                </button>
+                <a class="button-secondary" href="#booking-widget">Add to Cart</a>
+                <a class="button-primary" href="#booking-widget">Book Now</a>
             </div>
         </div>
     </div>
