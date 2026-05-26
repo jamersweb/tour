@@ -43,7 +43,7 @@ class CartController extends Controller
 
         $cart = $this->cart($request);
         $key = $this->cartKey($validated['type'], $validated['slug']);
-        $guestCount = max(1, (int) ($validated['guest_count'] ?? ($cart[$key]['guest_count'] ?? 1)));
+        $guestCount = max($this->minimumGuestsForType($validated['type']), (int) ($validated['guest_count'] ?? ($cart[$key]['guest_count'] ?? 1)));
 
         $cart[$key] = [
             'type' => $validated['type'],
@@ -67,7 +67,7 @@ class CartController extends Controller
         $cart = $this->cart($request);
         abort_if(! isset($cart[$key]), 404);
 
-        $cart[$key]['guest_count'] = (int) $validated['guest_count'];
+        $cart[$key]['guest_count'] = max($this->minimumGuestsForType((string) ($cart[$key]['type'] ?? 'experience')), (int) $validated['guest_count']);
         $cart[$key]['travel_date'] = $validated['travel_date'] ?? null;
 
         $request->session()->put('cart.items', $cart);
@@ -102,7 +102,7 @@ class CartController extends Controller
                     return null;
                 }
 
-                $guestCount = max(1, (int) ($item['guest_count'] ?? 1));
+                $guestCount = max($this->minimumGuestsForType($item['type']), (int) ($item['guest_count'] ?? 1));
                 $unitAmount = (float) $payable->price_from;
                 $total = $unitAmount * $guestCount;
 
@@ -138,7 +138,7 @@ class CartController extends Controller
                     return 0;
                 }
 
-                return (float) $payable->price_from * max(1, (int) ($item['guest_count'] ?? 1));
+                return (float) $payable->price_from * max($this->minimumGuestsForType($item['type']), (int) ($item['guest_count'] ?? 1));
             });
     }
 
@@ -164,6 +164,11 @@ class CartController extends Controller
     protected function cartKey(string $type, string $slug): string
     {
         return "{$type}:{$slug}";
+    }
+
+    protected function minimumGuestsForType(string $type): int
+    {
+        return $type === 'package' ? 2 : 1;
     }
 
     protected function imageFor(Model $payable): ?string

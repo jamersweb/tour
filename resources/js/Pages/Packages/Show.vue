@@ -187,7 +187,7 @@ const bookNow = () => {
 };
 
 const submitCustomPackageRequest = () => {
-    const guestCount = Math.max(1, Number.parseInt(customPackageForm.guest_count, 10) || 1);
+    const guestCount = Math.max(2, Number.parseInt(customPackageForm.guest_count, 10) || 2);
     const requestNote = customPackageForm.message?.trim() || 'No additional notes provided.';
     const visibleMessage = customPackageForm.message;
 
@@ -491,7 +491,7 @@ const closeMedia = () => {
                                 </label>
                                 <label>
                                     <span>Travelers</span>
-                                    <input v-model="customPackageForm.guest_count" type="number" min="1" max="100" placeholder="2" />
+                                    <input v-model="customPackageForm.guest_count" type="number" min="2" max="100" placeholder="2" />
                                     <small v-if="customPackageForm.errors.guest_count">{{ customPackageForm.errors.guest_count }}</small>
                                 </label>
                                 <label>

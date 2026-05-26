@@ -50,7 +50,7 @@ class CheckoutController extends Controller
                 amount: $experience->price_from,
                 currency: $experience->currency,
                 image: $experience->hero_image_url,
-                defaults: $this->checkoutDefaults($request),
+                defaults: $this->checkoutDefaults($request, 2),
             ),
         ]);
     }
@@ -316,6 +316,7 @@ class CheckoutController extends Controller
 
         $validated = $request->validated();
         $guestCount = (int) ($overrides['guest_count'] ?? ($validated['guest_count'] ?? 1));
+        $guestCount = $payable instanceof Package ? max(2, $guestCount) : max(1, $guestCount);
         $unitAmount = (float) $payable->price_from;
         $totalAmount = round((float) ($overrides['amount'] ?? ($unitAmount * max(1, $guestCount))), 2);
         $currency = (string) ($overrides['currency'] ?? $payable->currency);
@@ -469,10 +470,10 @@ class CheckoutController extends Controller
         ];
     }
 
-    protected function checkoutDefaults(Request $request): array
+    protected function checkoutDefaults(Request $request, int $minimumGuests = 1): array
     {
         return [
-            'guest_count' => max(1, min(100, $request->integer('guest_count') ?: 1)),
+            'guest_count' => max($minimumGuests, min(100, $request->integer('guest_count') ?: $minimumGuests)),
             'travel_date' => $request->query('travel_date'),
         ];
     }
@@ -499,7 +500,9 @@ class CheckoutController extends Controller
 
             $currency ??= $itemCurrency;
             $firstPayable ??= $payable;
-            $lineGuestCount = max(1, (int) ($item['guest_count'] ?? 1));
+            $lineGuestCount = $payable instanceof Package
+                ? max(2, (int) ($item['guest_count'] ?? 2))
+                : max(1, (int) ($item['guest_count'] ?? 1));
             $unitAmount = (float) $payable->price_from;
             $lineTotal = round($unitAmount * $lineGuestCount, 2);
             $total += $lineTotal;
