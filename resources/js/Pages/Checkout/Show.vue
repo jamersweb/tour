@@ -21,7 +21,6 @@ const form = useForm({
     guest_count: props.checkout.defaults?.guest_count || 1,
     tour_option: '',
     preferred_time: '',
-    preferred_language: '',
     special_request: '',
     traveler_contacts: [
         { name: '', email: '', phone: '' },
@@ -34,10 +33,6 @@ const preferenceOptions = computed(() => props.checkout.preferenceOptions || {})
 
 const timeOptions = computed(() => (
     preferenceOptions.value.times?.length ? preferenceOptions.value.times : ['Morning', 'Afternoon', 'Evening']
-));
-
-const languageOptions = computed(() => (
-    preferenceOptions.value.languages?.length ? preferenceOptions.value.languages : ['English', 'Arabic', 'Russian', 'Hindi / Urdu']
 ));
 
 const tourOptions = computed(() => preferenceOptions.value.tourOptions || []);
@@ -74,7 +69,6 @@ const selectedRows = computed(() => {
 
         rows.push(
             { label: 'Tour time', value: form.preferred_time || 'Flexible' },
-            { label: 'Language', value: form.preferred_language || 'English' },
         );
     }
 
@@ -144,15 +138,6 @@ const submit = () => {
                             <option v-for="option in timeOptions" :key="option" :value="option">{{ option }}</option>
                         </select>
                         <small v-if="form.errors.preferred_time">{{ form.errors.preferred_time }}</small>
-                    </label>
-
-                    <label v-if="supportsTourPreferences" class="field">
-                        <span>Preferred tour language</span>
-                        <select v-model="form.preferred_language">
-                            <option value="">English</option>
-                            <option v-for="option in languageOptions" :key="option" :value="option">{{ option }}</option>
-                        </select>
-                        <small v-if="form.errors.preferred_language">{{ form.errors.preferred_language }}</small>
                     </label>
 
                     <label class="field field-full">
