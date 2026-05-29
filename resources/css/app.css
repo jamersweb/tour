@@ -10781,7 +10781,7 @@ textarea {
         bottom: 0;
         z-index: 60;
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 0.25rem;
         padding: 0.48rem 0.62rem calc(0.48rem + env(safe-area-inset-bottom, 0px));
         border-top: 1px solid rgba(var(--royal-rgb), 0.14);
@@ -10794,13 +10794,16 @@ textarea {
         position: relative;
         display: grid;
         justify-items: center;
+        align-content: start;
         gap: 0.18rem;
+        min-height: 4.15rem;
         min-width: 0;
         padding: 0.35rem 0.2rem;
         border-radius: 0.65rem;
         color: rgba(8, 18, 67, 0.76);
         font-size: 0.68rem;
         font-weight: 900;
+        line-height: 1.15;
         text-align: center;
     }
 
