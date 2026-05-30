@@ -10776,17 +10776,19 @@ textarea {
 
     .mobile-bottom-nav {
         position: fixed;
-        left: 0;
-        right: 0;
+        left: 50%;
+        right: auto;
         bottom: 0;
         z-index: 60;
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 0.25rem;
+        width: min(100%, 430px);
         padding: 0.48rem 0.62rem calc(0.48rem + env(safe-area-inset-bottom, 0px));
         border-top: 1px solid rgba(var(--royal-rgb), 0.14);
         background: rgba(255, 253, 249, 0.98);
         box-shadow: 0 -16px 34px rgba(var(--royal-rgb), 0.12);
+        transform: translateX(-50%);
         backdrop-filter: blur(18px);
     }
 
@@ -10807,7 +10809,7 @@ textarea {
         text-align: center;
     }
 
-    .mobile-bottom-nav__item span {
+    .mobile-bottom-nav__icon {
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -10817,6 +10819,15 @@ textarea {
         border-radius: 999px;
         background: rgba(var(--royal-rgb), 0.08);
         color: var(--royal);
+    }
+
+    .mobile-bottom-nav__label {
+        display: block;
+        width: 100%;
+        max-width: 6.8rem;
+        margin: 0 auto;
+        overflow-wrap: break-word;
+        text-align: center;
     }
 
     .mobile-bottom-nav__item svg {
@@ -10829,7 +10840,7 @@ textarea {
         stroke-linejoin: round;
     }
 
-    .mobile-bottom-nav__item--cart span {
+    .mobile-bottom-nav__item--cart .mobile-bottom-nav__icon {
         background: var(--gold-gradient);
         color: var(--royal-deep);
     }
@@ -14965,6 +14976,8 @@ textarea {
     flex-direction: column;
     justify-content: space-between;
     gap: 8px;
+    height: auto;
+    min-height: 520px;
 }
 
 .experience-tour-page .experience-booking-card__top {
@@ -15082,7 +15095,7 @@ textarea {
 
 .experience-tour-page .package-detail-booking__actions {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
     margin-top: 0;
 }
@@ -15093,6 +15106,13 @@ textarea {
     min-height: 48px;
     padding: 12px 18px;
     font-size: 14px;
+}
+
+.experience-tour-page .package-detail-booking__customize {
+    grid-column: 1 / -1;
+    min-height: 44px;
+    border-color: rgba(202, 164, 106, 0.42);
+    background: rgba(255, 255, 255, 0.76);
 }
 
 .experience-tour-page .experience-operator-layout--package .detail-fact-grid {
@@ -15455,6 +15475,10 @@ textarea {
 
     .experience-tour-page .package-detail-booking__actions {
         grid-template-columns: 1fr 1fr;
+    }
+
+    .experience-tour-page .package-detail-booking__customize {
+        grid-column: 1 / -1;
     }
 
     .experience-tour-page .experience-operator-total {

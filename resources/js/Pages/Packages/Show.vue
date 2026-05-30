@@ -348,7 +348,7 @@ const closeMedia = () => {
                                     <button class="button-primary add-cart-button" type="button" @click="bookNow">
                                         Book Now
                                     </button>
-                                    <a class="button-secondary add-cart-button" href="#customize-package">
+                                    <a class="button-secondary add-cart-button package-detail-booking__customize" href="#customize-package">
                                         Customize Your Package
                                     </a>
                                 </div>

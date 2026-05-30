@@ -531,7 +531,7 @@ onBeforeUnmount(() => {
 
         <nav v-if="showMobileBottomNav" class="mobile-bottom-nav" aria-label="Mobile quick navigation">
             <Link class="mobile-bottom-nav__item" href="/experiences">
-                <span aria-hidden="true">
+                <span class="mobile-bottom-nav__icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24">
                         <path d="M4 7h16"></path>
                         <path d="M6 7v12"></path>
@@ -540,20 +540,20 @@ onBeforeUnmount(() => {
                         <path d="M9 7V5h6v2"></path>
                     </svg>
                 </span>
-                Tours &amp; Tickets
+                <span class="mobile-bottom-nav__label">Tours &amp; Tickets</span>
             </Link>
             <Link class="mobile-bottom-nav__item" href="/packages">
-                <span aria-hidden="true">
+                <span class="mobile-bottom-nav__icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24">
                         <path d="M4 8h16v11H4z"></path>
                         <path d="M8 8V6a4 4 0 0 1 8 0v2"></path>
                         <path d="M4 13h16"></path>
                     </svg>
                 </span>
-                Holiday Packages
+                <span class="mobile-bottom-nav__label">Holiday Packages</span>
             </Link>
             <Link class="mobile-bottom-nav__item" href="/visa-services">
-                <span aria-hidden="true">
+                <span class="mobile-bottom-nav__icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24">
                         <path d="M7 3h7l4 4v14H7z"></path>
                         <path d="M14 3v5h5"></path>
@@ -561,7 +561,7 @@ onBeforeUnmount(() => {
                         <path d="M9 17h4"></path>
                     </svg>
                 </span>
-                Visas
+                <span class="mobile-bottom-nav__label">Visas</span>
             </Link>
         </nav>
 

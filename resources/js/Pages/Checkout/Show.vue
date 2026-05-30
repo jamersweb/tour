@@ -31,10 +31,6 @@ const supportsTourPreferences = computed(() => Boolean(props.checkout.supportsTo
 
 const preferenceOptions = computed(() => props.checkout.preferenceOptions || {});
 
-const timeOptions = computed(() => (
-    preferenceOptions.value.times?.length ? preferenceOptions.value.times : ['Morning', 'Afternoon', 'Evening']
-));
-
 const tourOptions = computed(() => preferenceOptions.value.tourOptions || []);
 
 const totalAmount = computed(() => {
@@ -133,10 +129,11 @@ const submit = () => {
 
                     <label v-if="supportsTourPreferences" class="field">
                         <span>Preferred tour time</span>
-                        <select v-model="form.preferred_time">
-                            <option value="">Flexible</option>
-                            <option v-for="option in timeOptions" :key="option" :value="option">{{ option }}</option>
-                        </select>
+                        <input
+                            v-model="form.preferred_time"
+                            type="text"
+                            placeholder="Flexible / preferred time"
+                        />
                         <small v-if="form.errors.preferred_time">{{ form.errors.preferred_time }}</small>
                     </label>
 
