@@ -10,10 +10,10 @@ class AdminUserSeeder extends Seeder
     public function run(): void
     {
         User::updateOrCreate(
-            ['email' => 'admin@acutetourism.org'],
+            ['email' => env('ADMIN_USER_EMAIL', 'admin@acutetourism.org')],
             [
                 'name' => 'Acute Admin',
-                'password' => 'password',
+                'password' => env('ADMIN_USER_PASSWORD', 'Admin@12345'),
                 'is_admin' => true,
             ],
         );
