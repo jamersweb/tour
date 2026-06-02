@@ -7,6 +7,7 @@ use App\Mail\CheckoutContinuePaymentMail;
 use App\Mail\StaffBookingPaidMail;
 use App\Mail\StaffNewPaymentTransactionMail;
 use App\Models\Experience;
+use App\Models\Package;
 use App\Models\PaymentTransaction;
 use App\Services\Messaging\WhatsappNotificationService;
 use App\Services\Payments\NetworkNgeniusGateway;
@@ -97,6 +98,20 @@ class CheckoutTest extends TestCase
             ->where('checkout.bookingOptions.1.key', 'private-tour-1')
             ->where('checkout.bookingOptions.1.amountValue', 950)
         );
+    }
+
+    public function test_package_checkout_page_includes_pickup_location_field(): void
+    {
+        $package = Package::query()->where('slug', 'dazzling-dubai-escape-8d7n')->firstOrFail();
+
+        $this->get("/checkout/packages/{$package->slug}")
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Checkout/Show')
+                ->where('checkout.slug', $package->slug)
+                ->where('checkout.type', 'package')
+                ->where('checkout.supportsPickupLocation', true)
+            );
     }
 
     public function test_checkout_start_creates_transaction_and_redirects_to_gateway(): void

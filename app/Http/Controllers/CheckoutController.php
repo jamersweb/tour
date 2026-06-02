@@ -87,6 +87,7 @@ class CheckoutController extends Controller
                 currency: $package->currency,
                 image: $package->hero_image_url,
                 defaults: $this->checkoutDefaults($request),
+                supportsPickupLocation: true,
             ),
         ]);
     }
