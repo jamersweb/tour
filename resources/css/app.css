@@ -6956,6 +6956,63 @@ textarea {
     }
 }
 
+@media (max-width: 720px) {
+    body:has(.checkout-page) .whatsapp-float {
+        display: none;
+    }
+
+    .checkout-page {
+        overflow-x: hidden;
+        padding: 1rem 0 calc(5rem + env(safe-area-inset-bottom, 0px));
+    }
+
+    .checkout-page .checkout-layout {
+        width: min(100% - 24px, 1180px);
+        gap: 1rem;
+    }
+
+    .checkout-form-card,
+    .checkout-summary-card {
+        border-radius: 22px;
+        box-shadow: 0 10px 28px rgba(38, 26, 18, 0.045);
+    }
+
+    .checkout-form-card {
+        padding: 18px;
+    }
+
+    .checkout-title {
+        font-size: 26px;
+        line-height: 1.08;
+    }
+
+    .checkout-lead-form {
+        gap: 14px;
+    }
+
+    .checkout-lead-form .field {
+        gap: 8px;
+    }
+
+    .checkout-lead-form .field input,
+    .checkout-lead-form .field select,
+    .checkout-lead-form .field textarea {
+        min-height: 52px;
+        border-radius: 16px;
+        padding: 13px 16px;
+    }
+
+    .checkout-lead-form .field textarea {
+        min-height: 132px;
+    }
+
+    .checkout-lead-form > .button-primary {
+        min-height: 54px;
+        margin-top: 4px;
+        border-radius: 999px;
+    }
+}
+
 /* Floating WhatsApp (SiteLayout) */
 .whatsapp-float {
     position: fixed;
