@@ -50,6 +50,7 @@ class StartCheckoutRequest extends FormRequest
             'phone' => ['required', 'string', 'max:40'],
             'travel_date' => ['nullable', 'date', 'after_or_equal:today'],
             'guest_count' => ['required', 'integer', 'min:1', 'max:100'],
+            'booking_option' => ['nullable', 'string', 'max:160'],
             'tour_option' => ['nullable', 'string', 'max:120'],
             'preferred_time' => ['nullable', 'string', 'max:80'],
             'preferred_language' => ['nullable', 'string', 'max:80'],

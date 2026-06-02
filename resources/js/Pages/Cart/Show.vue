@@ -93,6 +93,7 @@ function clearCart() {
                                 <p>{{ item.summary }}</p>
 
                                 <div class="cart-item__meta">
+                                    <span v-if="item.bookingOption">{{ item.bookingOption.label }}</span>
                                     <span v-if="item.duration">{{ item.duration }}</span>
                                     <span v-if="item.location">{{ item.location }}</span>
                                     <span>{{ item.unitAmount }} per guest</span>

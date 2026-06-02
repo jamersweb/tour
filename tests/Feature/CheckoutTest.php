@@ -78,6 +78,10 @@ class CheckoutTest extends TestCase
         $experience->update([
             'preferred_time_options' => ['09:00 AM', 'Sunset'],
             'tour_options' => ['English', 'Arabic'],
+            'booking_options' => [
+                ['label' => 'Shared tour', 'price' => 650, 'description' => 'Shared vehicle and group pacing.'],
+                ['label' => 'Private tour', 'price' => 950, 'description' => 'Private pickup and private pacing.'],
+            ],
         ]);
 
         $response = $this->get("/checkout/experiences/{$experience->slug}");
@@ -90,6 +94,8 @@ class CheckoutTest extends TestCase
             ->where('checkout.supportsTourPreferences', true)
             ->where('checkout.preferenceOptions.times.0', '09:00 AM')
             ->where('checkout.preferenceOptions.tourOptions.1', 'Arabic')
+            ->where('checkout.bookingOptions.1.key', 'private-tour-1')
+            ->where('checkout.bookingOptions.1.amountValue', 950)
         );
     }
 
@@ -98,6 +104,12 @@ class CheckoutTest extends TestCase
         Mail::fake();
 
         $experience = Experience::query()->where('slug', 'private-heritage-desert-safari')->firstOrFail();
+        $experience->update([
+            'booking_options' => [
+                ['label' => 'Shared tour', 'price' => 650, 'description' => 'Shared vehicle and group pacing.'],
+                ['label' => 'Private tour', 'price' => 950, 'description' => 'Private pickup and private pacing.'],
+            ],
+        ]);
 
         $this->mock(NetworkNgeniusGateway::class, function (MockInterface $mock): void {
             $mock->shouldReceive('createHostedOrder')
@@ -115,6 +127,7 @@ class CheckoutTest extends TestCase
             'phone' => '+971500000001',
             'travel_date' => now()->addWeek()->toDateString(),
             'guest_count' => 2,
+            'booking_option' => 'private-tour-1',
             'tour_option' => 'Arabic',
             'preferred_time' => 'Sunset',
             'hotel_pickup_location' => 'Atlantis The Palm',
@@ -141,8 +154,8 @@ class CheckoutTest extends TestCase
             'gateway_order_ref' => 'order-ref-123',
             'status' => 'pending',
             'guest_count' => 2,
-            'amount' => (string) ($experience->price_from * 2),
-            'notes' => "Tour language: Arabic\nPreferred time: Sunset\nHotel pickup location: Atlantis The Palm\nSpecial request: Window-side pickup if possible.",
+            'amount' => '1900',
+            'notes' => "Booking option: Private tour\nTour language: Arabic\nPreferred time: Sunset\nHotel pickup location: Atlantis The Palm\nSpecial request: Window-side pickup if possible.",
         ]);
 
         $this->assertDatabaseHas('payment_transaction_travelers', [

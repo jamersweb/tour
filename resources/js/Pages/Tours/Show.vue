@@ -58,6 +58,11 @@ const mosaicRef = useMobileAutoCarousel();
 const activeMediaItem = computed(() => (
     activeMediaIndex.value === null ? null : mediaItems.value[activeMediaIndex.value] ?? null
 ));
+const bookingOptions = computed(() => props.tour.bookingOptions || []);
+const selectedBookingOptionKey = ref(bookingOptions.value[0]?.key || '');
+const selectedBookingOption = computed(() => (
+    bookingOptions.value.find((option) => option.key === selectedBookingOptionKey.value) || bookingOptions.value[0] || null
+));
 
 const form = useForm({
     travel_date: '',
@@ -69,12 +74,13 @@ const cartForm = useForm({
     slug: props.tour.slug,
     travel_date: '',
     guest_count: 1,
+    booking_option: selectedBookingOptionKey.value,
 });
 
 const totalAmount = computed(() => {
     const guestCount = Math.max(1, Number.parseInt(form.guest_count, 10) || 1);
     const rawAmount = String(props.tour.priceFrom || '0').replace(/[^0-9.]/g, '');
-    const unitAmount = Number.parseFloat(rawAmount || '0');
+    const unitAmount = Number.parseFloat(selectedBookingOption.value?.amountValue ?? rawAmount ?? '0');
 
     return `AED ${new Intl.NumberFormat('en-US', {
         minimumFractionDigits: 2,
@@ -108,6 +114,7 @@ const addToCart = () => {
 
     cartForm.travel_date = form.travel_date;
     cartForm.guest_count = guestCount;
+    cartForm.booking_option = selectedBookingOption.value?.key || '';
     cartForm.post('/cart', { preserveScroll: true });
 };
 
@@ -128,6 +135,9 @@ const bookNow = () => {
         travel_date: form.travel_date,
         guest_count: String(guestCount),
     });
+    if (selectedBookingOption.value?.key) {
+        params.set('booking_option', selectedBookingOption.value.key);
+    }
 
     window.location.assign(`/checkout/tours/${props.tour.slug}?${params.toString()}`);
 };
@@ -353,6 +363,16 @@ const closeMedia = () => {
                             </div>
 
                             <div class="experience-operator-cart-fields">
+                                <label v-if="bookingOptions.length" class="field field-full">
+                                    <span>Tour option</span>
+                                    <select v-model="selectedBookingOptionKey">
+                                        <option v-for="option in bookingOptions" :key="option.key" :value="option.key">
+                                            {{ option.label }} - {{ option.amount }}
+                                        </option>
+                                    </select>
+                                    <small v-if="selectedBookingOption?.description">{{ selectedBookingOption.description }}</small>
+                                </label>
+
                                 <label class="field">
                                     <span>Travel Date</span>
                                     <input v-model="form.travel_date" type="date" />

@@ -11,6 +11,7 @@ use App\Models\Package;
 use App\Models\SiteSetting;
 use App\Models\Tour;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -553,6 +554,7 @@ class PageController extends Controller
                 'experienceType' => $experience->experience_type,
                 'transferOption' => $experience->transfer_option,
                 'bookingType' => $experience->booking_type,
+                'bookingOptions' => $this->pricedBookingOptions($experience->booking_options, $experience->currency),
                 'priceFrom' => $this->formatMoney($experience->price_from, $experience->currency),
                 'isPrivate' => $experience->is_private,
                 'highlights' => $experience->highlights ?? [],
@@ -785,6 +787,7 @@ class PageController extends Controller
                 'experienceType' => $tour->experience_type,
                 'transferOption' => $tour->transfer_option,
                 'bookingType' => $tour->booking_type,
+                'bookingOptions' => $this->pricedBookingOptions($tour->booking_options, $tour->currency),
                 'priceFrom' => $this->formatMoney($tour->price_from, $tour->currency),
                 'isPrivate' => $tour->is_private,
                 'highlights' => $tour->highlights ?? [],
@@ -1952,6 +1955,27 @@ class PageController extends Controller
         return collect($items)
             ->unique(fn (array $item) => $item['type'].'|'.$item['url'])
             ->values()
+            ->all();
+    }
+
+    protected function pricedBookingOptions(?array $options, string $currency = 'AED'): array
+    {
+        return collect($options ?? [])
+            ->filter(fn ($option) => is_array($option) && filled($option['label'] ?? null) && is_numeric($option['price'] ?? null))
+            ->values()
+            ->map(function (array $option, int $index) use ($currency) {
+                $label = trim((string) $option['label']);
+                $amount = (float) $option['price'];
+                $key = Str::slug($label) ?: "option-{$index}";
+
+                return [
+                    'key' => "{$key}-{$index}",
+                    'label' => $label,
+                    'description' => filled($option['description'] ?? null) ? trim((string) $option['description']) : null,
+                    'amountValue' => $amount,
+                    'amount' => $this->formatMoney($amount, $currency),
+                ];
+            })
             ->all();
     }
 

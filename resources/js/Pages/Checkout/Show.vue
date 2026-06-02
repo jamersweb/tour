@@ -19,6 +19,7 @@ const form = useForm({
     phone: '',
     travel_date: props.checkout.defaults?.travel_date || '',
     guest_count: props.checkout.defaults?.guest_count || 1,
+    booking_option: props.checkout.defaults?.booking_option || '',
     tour_option: '',
     preferred_time: '',
     hotel_pickup_location: '',
@@ -33,6 +34,7 @@ const supportsPickupLocation = computed(() => Boolean(props.checkout.supportsPic
 
 const preferenceOptions = computed(() => props.checkout.preferenceOptions || {});
 const productDetails = computed(() => props.checkout.productDetails || {});
+const selectedBookingOption = computed(() => props.checkout.selectedBookingOption || null);
 
 const tourOptions = computed(() => preferenceOptions.value.tourOptions || []);
 
@@ -61,6 +63,7 @@ const selectedRows = computed(() => {
         { label: 'Experience type', value: productDetails.value.experienceType },
         { label: 'Transfer option', value: productDetails.value.transferOption },
         { label: 'Booking type', value: productDetails.value.bookingType },
+        { label: 'Booking option', value: selectedBookingOption.value?.label },
         { label: 'Date', value: form.travel_date || 'Selected during booking' },
         { label: 'Travelers', value: form.guest_count },
     ].filter((row) => row.value);
@@ -196,6 +199,7 @@ const submit = () => {
                             <img v-if="item.image" :src="item.image" :alt="item.title" />
                             <div>
                                 <strong>{{ item.title }}</strong>
+                                <span v-if="item.bookingOption">{{ item.bookingOption.label }}</span>
                                 <span>{{ item.guestCount }} guests<span v-if="item.travelDate"> | {{ item.travelDate }}</span></span>
                             </div>
                             <b>{{ item.lineTotalFormatted }}</b>

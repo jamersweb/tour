@@ -35,6 +35,7 @@ class TourInfolist
             TextEntry::make('cancellation_policy')->placeholder('-')->columnSpanFull(),
             TextEntry::make('preferred_time_options')->placeholder('-')->columnSpanFull(),
             TextEntry::make('tour_options')->label('Tour language choices')->placeholder('-')->columnSpanFull(),
+            TextEntry::make('booking_options')->label('Priced booking options')->placeholder('-')->columnSpanFull(),
             TextEntry::make('gallery_videos')->placeholder('-')->columnSpanFull(),
             IconEntry::make('is_featured')->boolean(),
             IconEntry::make('is_private')->boolean(),

@@ -36,6 +36,8 @@ class CheckoutController extends Controller
 
         abort_if(! $experience->price_from, 404);
 
+        $selectedBookingOption = $this->selectedBookingOption($experience, $request->query('booking_option'));
+
         return Inertia::render('Checkout/Show', [
             'seo' => [
                 'title' => 'Checkout',
@@ -47,14 +49,16 @@ class CheckoutController extends Controller
                 slug: $experience->slug,
                 title: $experience->title,
                 summary: $experience->short_description,
-                amount: $experience->price_from,
+                amount: $selectedBookingOption['amountValue'] ?? $experience->price_from,
                 currency: $experience->currency,
                 image: $experience->hero_image_url,
-                defaults: $this->checkoutDefaults($request, 2),
+                defaults: $this->checkoutDefaults($request, 2) + ['booking_option' => $selectedBookingOption['key'] ?? null],
                 supportsTourPreferences: true,
                 supportsPickupLocation: true,
                 preferenceOptions: $this->bookingPreferenceOptions($experience),
                 productDetails: $this->bookingMetadata($experience),
+                bookingOptions: $this->pricedBookingOptions($experience),
+                selectedBookingOption: $selectedBookingOption,
             ),
         ]);
     }
@@ -96,6 +100,8 @@ class CheckoutController extends Controller
 
         abort_if(! $tour->price_from, 404);
 
+        $selectedBookingOption = $this->selectedBookingOption($tour, $request->query('booking_option'));
+
         return Inertia::render('Checkout/Show', [
             'seo' => [
                 'title' => 'Checkout',
@@ -107,14 +113,16 @@ class CheckoutController extends Controller
                 slug: $tour->slug,
                 title: $tour->title,
                 summary: $tour->short_description,
-                amount: $tour->price_from,
+                amount: $selectedBookingOption['amountValue'] ?? $tour->price_from,
                 currency: $tour->currency,
                 image: $tour->hero_image_url,
-                defaults: $this->checkoutDefaults($request),
+                defaults: $this->checkoutDefaults($request) + ['booking_option' => $selectedBookingOption['key'] ?? null],
                 supportsTourPreferences: true,
                 supportsPickupLocation: true,
                 preferenceOptions: $this->bookingPreferenceOptions($tour),
                 productDetails: $this->bookingMetadata($tour),
+                bookingOptions: $this->pricedBookingOptions($tour),
+                selectedBookingOption: $selectedBookingOption,
             ),
         ]);
     }
@@ -325,10 +333,12 @@ class CheckoutController extends Controller
         $validated = $request->validated();
         $guestCount = (int) ($overrides['guest_count'] ?? ($validated['guest_count'] ?? 1));
         $guestCount = $payable instanceof Package ? max(2, $guestCount) : max(1, $guestCount);
-        $unitAmount = (float) $payable->price_from;
+        $selectedBookingOption = $this->selectedBookingOption($payable, $validated['booking_option'] ?? null);
+        $unitAmount = (float) ($selectedBookingOption['amountValue'] ?? $payable->price_from);
         $totalAmount = round((float) ($overrides['amount'] ?? ($unitAmount * max(1, $guestCount))), 2);
         $currency = (string) ($overrides['currency'] ?? $payable->currency);
         $preferenceNotes = collect([
+            'Booking option' => $selectedBookingOption['label'] ?? null,
             'Tour language' => $validated['tour_option'] ?? null,
             'Preferred time' => $validated['preferred_time'] ?? null,
             'Hotel pickup location' => $validated['hotel_pickup_location'] ?? null,
@@ -467,7 +477,7 @@ class CheckoutController extends Controller
         string $slug,
         string $title,
         ?string $summary,
-        string $amount,
+        string|float $amount,
         string $currency,
         ?string $image,
         array $defaults = [],
@@ -475,6 +485,8 @@ class CheckoutController extends Controller
         bool $supportsPickupLocation = false,
         array $preferenceOptions = [],
         array $productDetails = [],
+        array $bookingOptions = [],
+        ?array $selectedBookingOption = null,
     ): array
     {
         $unitAmount = (float) $amount;
@@ -494,6 +506,8 @@ class CheckoutController extends Controller
             'supportsPickupLocation' => $supportsPickupLocation,
             'preferenceOptions' => $preferenceOptions,
             'productDetails' => $productDetails,
+            'bookingOptions' => $bookingOptions,
+            'selectedBookingOption' => $selectedBookingOption,
         ];
     }
 
@@ -516,6 +530,46 @@ class CheckoutController extends Controller
             'times' => $this->cleanPreferenceOptions($payable->preferred_time_options ?? []),
             'tourOptions' => $this->cleanPreferenceOptions($payable->tour_options ?? []),
         ];
+    }
+
+    protected function selectedBookingOption(Model $payable, ?string $key): ?array
+    {
+        $options = $this->pricedBookingOptions($payable);
+
+        if ($options === []) {
+            return null;
+        }
+
+        if (filled($key)) {
+            $selected = collect($options)->firstWhere('key', $key);
+
+            if ($selected) {
+                return $selected;
+            }
+        }
+
+        return $options[0];
+    }
+
+    protected function pricedBookingOptions(Model $payable): array
+    {
+        return collect($payable->booking_options ?? [])
+            ->filter(fn ($option) => is_array($option) && filled($option['label'] ?? null) && is_numeric($option['price'] ?? null))
+            ->values()
+            ->map(function (array $option, int $index) use ($payable) {
+                $label = trim((string) $option['label']);
+                $amount = (float) $option['price'];
+                $key = Str::slug($label) ?: "option-{$index}";
+
+                return [
+                    'key' => "{$key}-{$index}",
+                    'label' => $label,
+                    'description' => filled($option['description'] ?? null) ? trim((string) $option['description']) : null,
+                    'amountValue' => $amount,
+                    'amount' => $this->formatMoney($amount, $payable->currency ?: 'AED'),
+                ];
+            })
+            ->all();
     }
 
     protected function cleanPreferenceOptions(?array $options): array
@@ -561,7 +615,8 @@ class CheckoutController extends Controller
             $lineGuestCount = $payable instanceof Package
                 ? max(2, (int) ($item['guest_count'] ?? 2))
                 : max(1, (int) ($item['guest_count'] ?? 1));
-            $unitAmount = (float) $payable->price_from;
+            $selectedBookingOption = $this->selectedBookingOption($payable, $item['booking_option'] ?? null);
+            $unitAmount = (float) ($selectedBookingOption['amountValue'] ?? $payable->price_from);
             $lineTotal = round($unitAmount * $lineGuestCount, 2);
             $total += $lineTotal;
             $guestCount += $lineGuestCount;
@@ -574,6 +629,7 @@ class CheckoutController extends Controller
                 'image' => $this->imageForPayable($payable),
                 'duration' => $payable->duration,
                 'location' => $payable->location,
+                'bookingOption' => $selectedBookingOption,
                 'travelDate' => $item['travel_date'] ?? null,
                 'guestCount' => $lineGuestCount,
                 'unitAmount' => $unitAmount,

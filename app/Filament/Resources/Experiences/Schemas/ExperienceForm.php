@@ -150,6 +150,27 @@ class ExperienceForm
                         TagsInput::make('tour_options')
                             ->label('Tour language choices')
                             ->placeholder('English, Arabic, Russian...'),
+                        Repeater::make('booking_options')
+                            ->label('Priced booking options')
+                            ->helperText('Optional. Use for choices such as Shared, Private, VIP, or ticket variants that need different prices.')
+                            ->schema([
+                                TextInput::make('label')
+                                    ->required()
+                                    ->maxLength(120)
+                                    ->placeholder('Private tour'),
+                                TextInput::make('price')
+                                    ->required()
+                                    ->numeric()
+                                    ->prefix('AED')
+                                    ->placeholder('950'),
+                                Textarea::make('description')
+                                    ->rows(2)
+                                    ->maxLength(240)
+                                    ->placeholder('Short note shown under the option.'),
+                            ])
+                            ->columns(2)
+                            ->defaultItems(0)
+                            ->columnSpanFull(),
                     ])
                     ->columns(1),
                 Section::make('Collections and Pricing')

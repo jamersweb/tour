@@ -79,6 +79,10 @@ class ExperienceInfolist
                     ->label('Tour language choices')
                     ->placeholder('-')
                     ->columnSpanFull(),
+                TextEntry::make('booking_options')
+                    ->label('Priced booking options')
+                    ->placeholder('-')
+                    ->columnSpanFull(),
                 TextEntry::make('pickup_note')
                     ->placeholder('-'),
                 TextEntry::make('experience_type')

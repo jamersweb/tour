@@ -8,6 +8,7 @@ use App\Models\Tour;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -36,13 +37,15 @@ class CartController extends Controller
             'slug' => ['required', 'string', 'max:180'],
             'guest_count' => ['nullable', 'integer', 'min:1', 'max:100'],
             'travel_date' => ['nullable', 'date', 'after_or_equal:today'],
+            'booking_option' => ['nullable', 'string', 'max:160'],
         ]);
 
         $payable = $this->resolvePayable($validated['type'], $validated['slug']);
         abort_if(! $payable || ! $payable->price_from, 404);
 
         $cart = $this->cart($request);
-        $key = $this->cartKey($validated['type'], $validated['slug']);
+        $selectedBookingOption = $this->selectedBookingOption($payable, $validated['booking_option'] ?? null);
+        $key = $this->cartKey($validated['type'], $validated['slug'], $selectedBookingOption['key'] ?? null);
         $guestCount = max($this->minimumGuestsForType($validated['type']), (int) ($validated['guest_count'] ?? ($cart[$key]['guest_count'] ?? 1)));
 
         $cart[$key] = [
@@ -50,6 +53,7 @@ class CartController extends Controller
             'slug' => $validated['slug'],
             'guest_count' => $guestCount,
             'travel_date' => $validated['travel_date'] ?? ($cart[$key]['travel_date'] ?? null),
+            'booking_option' => $selectedBookingOption['key'] ?? null,
         ];
 
         $request->session()->put('cart.items', $cart);
@@ -103,7 +107,8 @@ class CartController extends Controller
                 }
 
                 $guestCount = max($this->minimumGuestsForType($item['type']), (int) ($item['guest_count'] ?? 1));
-                $unitAmount = (float) $payable->price_from;
+                $selectedBookingOption = $this->selectedBookingOption($payable, $item['booking_option'] ?? null);
+                $unitAmount = (float) ($selectedBookingOption['amountValue'] ?? $payable->price_from);
                 $total = $unitAmount * $guestCount;
 
                 return [
@@ -116,6 +121,7 @@ class CartController extends Controller
                     'image' => $this->imageFor($payable),
                     'duration' => $payable->duration,
                     'location' => $payable->location,
+                    'bookingOption' => $selectedBookingOption,
                     'guestCount' => $guestCount,
                     'travelDate' => $item['travel_date'] ?? null,
                     'unitAmount' => $this->formatMoney($unitAmount, $payable->currency),
@@ -138,7 +144,10 @@ class CartController extends Controller
                     return 0;
                 }
 
-                return (float) $payable->price_from * max($this->minimumGuestsForType($item['type']), (int) ($item['guest_count'] ?? 1));
+                $selectedBookingOption = $this->selectedBookingOption($payable, $item['booking_option'] ?? null);
+                $unitAmount = (float) ($selectedBookingOption['amountValue'] ?? $payable->price_from);
+
+                return $unitAmount * max($this->minimumGuestsForType($item['type']), (int) ($item['guest_count'] ?? 1));
             });
     }
 
@@ -161,9 +170,9 @@ class CartController extends Controller
             ->first();
     }
 
-    protected function cartKey(string $type, string $slug): string
+    protected function cartKey(string $type, string $slug, ?string $bookingOption = null): string
     {
-        return "{$type}:{$slug}";
+        return $bookingOption ? "{$type}:{$slug}:{$bookingOption}" : "{$type}:{$slug}";
     }
 
     protected function minimumGuestsForType(string $type): int
@@ -187,6 +196,46 @@ class CartController extends Controller
             'package' => route('packages.show', $slug),
             'tour' => route('tours.show', $slug),
         };
+    }
+
+    protected function selectedBookingOption(Model $payable, ?string $key): ?array
+    {
+        $options = $this->pricedBookingOptions($payable);
+
+        if ($options === []) {
+            return null;
+        }
+
+        if (filled($key)) {
+            $selected = collect($options)->firstWhere('key', $key);
+
+            if ($selected) {
+                return $selected;
+            }
+        }
+
+        return $options[0];
+    }
+
+    protected function pricedBookingOptions(Model $payable): array
+    {
+        return collect($payable->booking_options ?? [])
+            ->filter(fn ($option) => is_array($option) && filled($option['label'] ?? null) && is_numeric($option['price'] ?? null))
+            ->values()
+            ->map(function (array $option, int $index) use ($payable) {
+                $label = trim((string) $option['label']);
+                $amount = (float) $option['price'];
+                $key = Str::slug($label) ?: "option-{$index}";
+
+                return [
+                    'key' => "{$key}-{$index}",
+                    'label' => $label,
+                    'description' => filled($option['description'] ?? null) ? trim((string) $option['description']) : null,
+                    'amountValue' => $amount,
+                    'amount' => $this->formatMoney($amount, $payable->currency ?: 'AED'),
+                ];
+            })
+            ->all();
     }
 
     protected function formatMoney(float $amount, string $currency = 'AED'): string
