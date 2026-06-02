@@ -120,12 +120,9 @@ class TourForm
                     TagsInput::make('preferred_time_options')
                         ->label('Preferred tour time choices')
                         ->placeholder('Morning, 09:00 AM, Sunset, Flexible...'),
-                    TagsInput::make('preferred_language_options')
-                        ->label('Preferred language choices')
-                        ->placeholder('English, Arabic, Russian...'),
                     TagsInput::make('tour_options')
-                        ->label('Tour option choices')
-                        ->placeholder('Standard, Private transfer, Without food tasting...'),
+                        ->label('Tour language choices')
+                        ->placeholder('English, Arabic, Russian...'),
                 ])
                 ->columns(1),
             Section::make('Pricing')

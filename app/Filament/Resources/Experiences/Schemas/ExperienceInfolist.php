@@ -75,10 +75,8 @@ class ExperienceInfolist
                 TextEntry::make('preferred_time_options')
                     ->placeholder('-')
                     ->columnSpanFull(),
-                TextEntry::make('preferred_language_options')
-                    ->placeholder('-')
-                    ->columnSpanFull(),
                 TextEntry::make('tour_options')
+                    ->label('Tour language choices')
                     ->placeholder('-')
                     ->columnSpanFull(),
                 TextEntry::make('pickup_note')

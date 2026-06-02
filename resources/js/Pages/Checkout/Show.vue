@@ -67,7 +67,7 @@ const selectedRows = computed(() => {
 
     if (supportsTourPreferences.value) {
         if (tourOptions.value.length) {
-            rows.push({ label: 'Tour option', value: form.tour_option || 'Selected later' });
+            rows.push({ label: 'Tour language', value: form.tour_option || 'Selected later' });
         }
 
         rows.push(
@@ -126,9 +126,9 @@ const submit = () => {
                     </label>
 
                     <label v-if="supportsTourPreferences && tourOptions.length" class="field">
-                        <span>Tour option</span>
+                        <span>Tour language</span>
                         <select v-model="form.tour_option">
-                            <option value="">Select option later</option>
+                            <option value="">Select language later</option>
                             <option v-for="option in tourOptions" :key="option" :value="option">{{ option }}</option>
                         </select>
                         <small v-if="form.errors.tour_option">{{ form.errors.tour_option }}</small>

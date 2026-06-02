@@ -77,8 +77,7 @@ class CheckoutTest extends TestCase
         $experience = Experience::query()->where('slug', 'private-heritage-desert-safari')->firstOrFail();
         $experience->update([
             'preferred_time_options' => ['09:00 AM', 'Sunset'],
-            'preferred_language_options' => ['English', 'Arabic'],
-            'tour_options' => ['Standard', 'Private transfer'],
+            'tour_options' => ['English', 'Arabic'],
         ]);
 
         $response = $this->get("/checkout/experiences/{$experience->slug}");
@@ -90,8 +89,7 @@ class CheckoutTest extends TestCase
             ->where('checkout.type', 'experience')
             ->where('checkout.supportsTourPreferences', true)
             ->where('checkout.preferenceOptions.times.0', '09:00 AM')
-            ->where('checkout.preferenceOptions.languages.1', 'Arabic')
-            ->where('checkout.preferenceOptions.tourOptions.1', 'Private transfer')
+            ->where('checkout.preferenceOptions.tourOptions.1', 'Arabic')
         );
     }
 
@@ -117,9 +115,9 @@ class CheckoutTest extends TestCase
             'phone' => '+971500000001',
             'travel_date' => now()->addWeek()->toDateString(),
             'guest_count' => 2,
-            'tour_option' => 'Private transfer',
+            'tour_option' => 'Arabic',
             'preferred_time' => 'Sunset',
-            'preferred_language' => 'Arabic',
+            'hotel_pickup_location' => 'Atlantis The Palm',
             'special_request' => 'Window-side pickup if possible.',
             'traveler_contacts' => [
                 [
@@ -144,7 +142,7 @@ class CheckoutTest extends TestCase
             'status' => 'pending',
             'guest_count' => 2,
             'amount' => (string) ($experience->price_from * 2),
-            'notes' => "Tour option: Private transfer\nPreferred time: Sunset\nPreferred language: Arabic\nSpecial request: Window-side pickup if possible.",
+            'notes' => "Tour language: Arabic\nPreferred time: Sunset\nHotel pickup location: Atlantis The Palm\nSpecial request: Window-side pickup if possible.",
         ]);
 
         $this->assertDatabaseHas('payment_transaction_travelers', [

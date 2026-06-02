@@ -329,9 +329,8 @@ class CheckoutController extends Controller
         $totalAmount = round((float) ($overrides['amount'] ?? ($unitAmount * max(1, $guestCount))), 2);
         $currency = (string) ($overrides['currency'] ?? $payable->currency);
         $preferenceNotes = collect([
-            'Tour option' => $validated['tour_option'] ?? null,
+            'Tour language' => $validated['tour_option'] ?? null,
             'Preferred time' => $validated['preferred_time'] ?? null,
-            'Preferred language' => $validated['preferred_language'] ?? null,
             'Hotel pickup location' => $validated['hotel_pickup_location'] ?? null,
             'Special request' => $validated['special_request'] ?? null,
         ])
@@ -515,7 +514,6 @@ class CheckoutController extends Controller
     {
         return [
             'times' => $this->cleanPreferenceOptions($payable->preferred_time_options ?? []),
-            'languages' => $this->cleanPreferenceOptions($payable->preferred_language_options ?? []),
             'tourOptions' => $this->cleanPreferenceOptions($payable->tour_options ?? []),
         ];
     }
