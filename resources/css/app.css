@@ -1223,42 +1223,6 @@ textarea {
     transform: translateY(-1px);
 }
 
-.language-select {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-}
-
-.language-select select,
-.footer-language-select select {
-    min-height: 2.45rem;
-    border: 1px solid rgba(202, 164, 106, 0.38);
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.75);
-    color: #6f542e;
-    font: inherit;
-    font-size: 0.78rem;
-    font-weight: 900;
-    padding: 0 1.85rem 0 0.8rem;
-    outline: 0;
-}
-
-.footer-language-select {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    margin-top: 1rem;
-    color: rgba(255, 255, 255, 0.72);
-    font-size: 0.78rem;
-    font-weight: 800;
-}
-
-.footer-language-select select {
-    min-height: 2.15rem;
-    background: rgba(255, 255, 255, 0.08);
-    color: #fff;
-}
-
 .mobile-nav-toggle {
     display: none;
     align-items: center;
