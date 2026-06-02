@@ -293,7 +293,7 @@ const closeMedia = () => {
 
                                 <div class="experience-operator-cart-fields package-detail-booking__fields">
                                     <label v-if="bookingOptions.length" class="field field-full">
-                                        <span>Tour option</span>
+                                        <span>Booking option</span>
                                         <select v-model="selectedBookingOptionKey">
                                             <option v-for="option in bookingOptions" :key="option.key" :value="option.key">
                                                 {{ option.label }} - {{ option.amount }}
