@@ -15448,8 +15448,34 @@ textarea {
     }
 
     .experience-tour-page .experience-operator-layout--package .detail-fact-grid {
-        grid-template-columns: 1fr;
-        gap: 10px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        margin-bottom: 30px;
+    }
+
+    .experience-tour-page .experience-operator-layout--package .detail-fact {
+        min-height: 106px;
+        align-content: center;
+        gap: 14px;
+        padding: 16px 18px;
+        border-color: rgba(21, 17, 13, 0.09);
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.72);
+        box-shadow: none;
+    }
+
+    .experience-tour-page .experience-operator-layout--package .detail-fact span {
+        color: #7f7468;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.16em;
+    }
+
+    .experience-tour-page .experience-operator-layout--package .detail-fact strong {
+        color: #151515;
+        font-size: 16px;
+        font-weight: 800;
+        line-height: 1.25;
     }
 
     .experience-tour-page .experience-operator-mosaic__tile,
