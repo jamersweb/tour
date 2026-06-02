@@ -52,7 +52,9 @@ class CheckoutController extends Controller
                 image: $experience->hero_image_url,
                 defaults: $this->checkoutDefaults($request, 2),
                 supportsTourPreferences: true,
+                supportsPickupLocation: true,
                 preferenceOptions: $this->bookingPreferenceOptions($experience),
+                productDetails: $this->bookingMetadata($experience),
             ),
         ]);
     }
@@ -110,7 +112,9 @@ class CheckoutController extends Controller
                 image: $tour->hero_image_url,
                 defaults: $this->checkoutDefaults($request),
                 supportsTourPreferences: true,
+                supportsPickupLocation: true,
                 preferenceOptions: $this->bookingPreferenceOptions($tour),
+                productDetails: $this->bookingMetadata($tour),
             ),
         ]);
     }
@@ -328,6 +332,7 @@ class CheckoutController extends Controller
             'Tour option' => $validated['tour_option'] ?? null,
             'Preferred time' => $validated['preferred_time'] ?? null,
             'Preferred language' => $validated['preferred_language'] ?? null,
+            'Hotel pickup location' => $validated['hotel_pickup_location'] ?? null,
             'Special request' => $validated['special_request'] ?? null,
         ])
             ->filter(fn (?string $value) => filled($value))
@@ -468,7 +473,9 @@ class CheckoutController extends Controller
         ?string $image,
         array $defaults = [],
         bool $supportsTourPreferences = false,
+        bool $supportsPickupLocation = false,
         array $preferenceOptions = [],
+        array $productDetails = [],
     ): array
     {
         $unitAmount = (float) $amount;
@@ -485,7 +492,22 @@ class CheckoutController extends Controller
             'image' => $image,
             'defaults' => $defaults,
             'supportsTourPreferences' => $supportsTourPreferences,
+            'supportsPickupLocation' => $supportsPickupLocation,
             'preferenceOptions' => $preferenceOptions,
+            'productDetails' => $productDetails,
+        ];
+    }
+
+    protected function bookingMetadata(Model $payable): array
+    {
+        $category = $payable->category ?? null;
+        $isPrivate = (bool) ($payable->is_private ?? false);
+
+        return [
+            'duration' => $payable->duration ?: 'Flexible Duration',
+            'experienceType' => $payable->experience_type ?: ($category ?: ($isPrivate ? 'Private Tour' : 'Experience')),
+            'transferOption' => $payable->transfer_option ?: ($payable->pickup_note ?: 'Transfer availability confirmed after booking'),
+            'bookingType' => $payable->booking_type ?: 'Subject to Availability',
         ];
     }
 

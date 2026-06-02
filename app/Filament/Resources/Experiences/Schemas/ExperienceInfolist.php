@@ -83,6 +83,12 @@ class ExperienceInfolist
                     ->columnSpanFull(),
                 TextEntry::make('pickup_note')
                     ->placeholder('-'),
+                TextEntry::make('experience_type')
+                    ->placeholder('-'),
+                TextEntry::make('transfer_option')
+                    ->placeholder('-'),
+                TextEntry::make('booking_type')
+                    ->placeholder('-'),
                 TextEntry::make('sort_order')
                     ->numeric(),
                 TextEntry::make('seo_title')

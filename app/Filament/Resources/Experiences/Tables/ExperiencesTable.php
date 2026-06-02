@@ -63,6 +63,15 @@ class ExperiencesTable
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('pickup_note')
                     ->searchable(),
+                TextColumn::make('experience_type')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('transfer_option')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('booking_type')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('sort_order')
                     ->numeric()
                     ->sortable(),

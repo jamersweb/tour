@@ -45,6 +45,18 @@ class ExperienceForm
                             ->maxLength(120),
                         TextInput::make('pickup_note')
                             ->maxLength(180),
+                        TextInput::make('experience_type')
+                            ->label('Experience type')
+                            ->placeholder('Private Tour, Entry Ticket, Yacht Experience...')
+                            ->maxLength(120),
+                        TextInput::make('transfer_option')
+                            ->label('Transfer option')
+                            ->placeholder('Hotel Pickup Included, No Transfer, Meet at Location...')
+                            ->maxLength(120),
+                        TextInput::make('booking_type')
+                            ->label('Booking type')
+                            ->placeholder('Instant Confirmation, Subject to Availability...')
+                            ->maxLength(120),
                         TextInput::make('short_description')
                             ->maxLength(240)
                             ->columnSpanFull(),

@@ -21,6 +21,7 @@ const form = useForm({
     guest_count: props.checkout.defaults?.guest_count || 1,
     tour_option: '',
     preferred_time: '',
+    hotel_pickup_location: '',
     special_request: '',
     traveler_contacts: [
         { name: '', email: '', phone: '' },
@@ -28,8 +29,10 @@ const form = useForm({
 });
 
 const supportsTourPreferences = computed(() => Boolean(props.checkout.supportsTourPreferences));
+const supportsPickupLocation = computed(() => Boolean(props.checkout.supportsPickupLocation));
 
 const preferenceOptions = computed(() => props.checkout.preferenceOptions || {});
+const productDetails = computed(() => props.checkout.productDetails || {});
 
 const tourOptions = computed(() => preferenceOptions.value.tourOptions || []);
 
@@ -54,9 +57,13 @@ const selectedRows = computed(() => {
 
     const rows = [
         { label: 'Selected item', value: props.checkout.title },
+        { label: 'Duration', value: productDetails.value.duration },
+        { label: 'Experience type', value: productDetails.value.experienceType },
+        { label: 'Transfer option', value: productDetails.value.transferOption },
+        { label: 'Booking type', value: productDetails.value.bookingType },
         { label: 'Date', value: form.travel_date || 'Selected during booking' },
         { label: 'Travelers', value: form.guest_count },
-    ];
+    ].filter((row) => row.value);
 
     if (supportsTourPreferences.value) {
         if (tourOptions.value.length) {
@@ -135,6 +142,17 @@ const submit = () => {
                             placeholder="Flexible / preferred time"
                         />
                         <small v-if="form.errors.preferred_time">{{ form.errors.preferred_time }}</small>
+                    </label>
+
+                    <label v-if="supportsPickupLocation" class="field">
+                        <span>Hotel Pick up location (if applicable)</span>
+                        <input
+                            v-model="form.hotel_pickup_location"
+                            type="text"
+                            placeholder="Hotel name / address / meet-up location"
+                            autocomplete="street-address"
+                        />
+                        <small v-if="form.errors.hotel_pickup_location">{{ form.errors.hotel_pickup_location }}</small>
                     </label>
 
                     <label class="field field-full">

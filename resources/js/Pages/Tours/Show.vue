@@ -46,6 +46,12 @@ const bookingHighlights = computed(() => [
     props.tour.location,
     'Instant payment confirmation',
 ].filter(Boolean));
+const quickFacts = computed(() => [
+    { label: 'Duration', value: props.tour.duration || 'Flexible' },
+    { label: 'Experience Type', value: props.tour.experienceType || props.tour.category || 'Tour' },
+    { label: 'Transfer Option', value: props.tour.transferOption || props.tour.pickupNote || 'Transfer availability confirmed after booking' },
+    { label: 'Booking Type', value: props.tour.bookingType || 'Subject to Availability' },
+]);
 const reviewStars = computed(() => '★★★★★');
 const activeMediaIndex = ref(null);
 const mosaicRef = useMobileAutoCarousel();
@@ -192,6 +198,13 @@ const closeMedia = () => {
                                     +{{ mediaItems.length - 4 }}
                                 </span>
                             </button>
+                        </section>
+
+                        <section class="detail-fact-grid detail-fact-grid--tour-product" aria-label="Tour quick facts">
+                            <article v-for="fact in quickFacts" :key="fact.label" class="detail-fact">
+                                <span>{{ fact.label }}</span>
+                                <strong>{{ fact.value }}</strong>
+                            </article>
                         </section>
 
                         <article class="experience-operator-section experience-operator-section--overview">

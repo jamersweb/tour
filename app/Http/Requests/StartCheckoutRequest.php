@@ -53,6 +53,7 @@ class StartCheckoutRequest extends FormRequest
             'tour_option' => ['nullable', 'string', 'max:120'],
             'preferred_time' => ['nullable', 'string', 'max:80'],
             'preferred_language' => ['nullable', 'string', 'max:80'],
+            'hotel_pickup_location' => ['nullable', 'string', 'max:180'],
             'special_request' => ['nullable', 'string', 'max:1000'],
             'traveler_contacts' => ['required', 'array', 'min:1', 'max:100'],
             'traveler_contacts.*.name' => ['required', 'string', 'max:120'],

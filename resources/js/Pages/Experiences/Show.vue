@@ -37,9 +37,9 @@ const importantNotices = computed(() => (
 
 const quickFacts = computed(() => [
     { label: 'Duration', value: props.experience.duration || 'Flexible' },
-    { label: 'Location', value: props.experience.location || 'Dubai' },
-    { label: 'Category', value: props.experience.category || 'Experience' },
-    { label: 'Price From', value: props.experience.priceFrom || 'On request' },
+    { label: 'Experience Type', value: props.experience.experienceType || props.experience.category || 'Experience' },
+    { label: 'Transfer Option', value: props.experience.transferOption || props.experience.pickupNote || 'Transfer availability confirmed after booking' },
+    { label: 'Booking Type', value: props.experience.bookingType || 'Subject to Availability' },
 ]);
 const defaultExpectationSteps = [
     {
