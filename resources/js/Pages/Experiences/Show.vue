@@ -316,7 +316,7 @@ const closeMedia = () => {
                             </article>
                         </div>
 
-                        <section class="detail-fact-grid" aria-label="Experience quick facts">
+                        <section class="detail-fact-grid detail-fact-grid--tour-product" aria-label="Experience quick facts">
                             <article v-for="fact in quickFacts" :key="fact.label" class="detail-fact">
                                 <span>{{ fact.label }}</span>
                                 <strong>{{ fact.value }}</strong>
