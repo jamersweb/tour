@@ -16165,3 +16165,17 @@ textarea {
         min-height: 8rem;
     }
 }
+
+/* Keep package quick-fact tabs in two columns on phone screens. */
+@media (max-width: 640px) {
+    .experience-tour-page .experience-operator-layout--package .detail-fact-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 12px !important;
+    }
+
+    .experience-tour-page .experience-operator-layout--package .detail-fact {
+        min-width: 0;
+        border-bottom: 1px solid rgba(21, 17, 13, 0.09);
+    }
+}
