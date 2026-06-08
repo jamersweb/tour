@@ -298,6 +298,13 @@ class PageController extends Controller
                     'cta' => 'Check visas',
                     'tag' => 'Visa guidance',
                 ],
+                [
+                    'title' => 'Bus tours',
+                    'copy' => 'Premium panoramic UAE day experiences.',
+                    'href' => route('bus-tour'),
+                    'cta' => 'View bus tours',
+                    'tag' => 'Luxury group tours',
+                ],
             ],
             'testimonials' => [
                 [
@@ -448,6 +455,26 @@ class PageController extends Controller
                     'question' => 'Can this page send visitors to the full website?',
                     'answer' => 'Yes. Each major section can still route the user into the relevant service pages when more detail is needed.',
                 ],
+            ],
+        ]);
+    }
+
+    public function busTour(): Response
+    {
+        return Inertia::render('BusTour', [
+            'seo' => [
+                'title' => 'Luxury Bus Tour Dubai | Premium Panoramic UAE Experiences',
+                'description' => 'Book a luxury bus tour in Dubai with Acute Tourism. Premium panoramic UAE day experiences with hotel pick-up, professional guide, lunch, selected attractions, refreshments and private group options.',
+            ],
+        ]);
+    }
+
+    public function partnerWithUs(): Response
+    {
+        return Inertia::render('TourgratPartner', [
+            'seo' => [
+                'title' => 'Partner With Us | Tour Grat by Acute Tourism',
+                'description' => 'Tour Grat by Acute Tourism is a referral platform where approved referrers can connect travelers to Acute Tourism and track eligible confirmed booking rewards.',
             ],
         ]);
     }

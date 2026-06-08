@@ -36,6 +36,8 @@ class CartController extends Controller
             'type' => ['required', Rule::in(['experience', 'package', 'tour'])],
             'slug' => ['required', 'string', 'max:180'],
             'guest_count' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'adult_count' => ['nullable', 'integer', 'min:0', 'max:100'],
+            'child_count' => ['nullable', 'integer', 'min:0', 'max:100'],
             'travel_date' => ['nullable', 'date', 'after_or_equal:today'],
             'booking_option' => ['nullable', 'string', 'max:160'],
         ]);
@@ -46,12 +48,27 @@ class CartController extends Controller
         $cart = $this->cart($request);
         $selectedBookingOption = $this->selectedBookingOption($payable, $validated['booking_option'] ?? null);
         $key = $this->cartKey($validated['type'], $validated['slug'], $selectedBookingOption['key'] ?? null);
-        $guestCount = max($this->minimumGuestsForType($validated['type']), (int) ($validated['guest_count'] ?? ($cart[$key]['guest_count'] ?? 1)));
+        $adultCount = max(0, (int) ($validated['adult_count'] ?? ($cart[$key]['adult_count'] ?? 0)));
+        $childCount = max(0, (int) ($validated['child_count'] ?? ($cart[$key]['child_count'] ?? 0)));
+        $guestCount = $adultCount + $childCount;
+
+        if ($guestCount < 1) {
+            $guestCount = max($this->minimumGuestsForType($validated['type']), (int) ($validated['guest_count'] ?? ($cart[$key]['guest_count'] ?? 1)));
+            $adultCount = $guestCount;
+            $childCount = 0;
+        }
+
+        $guestCount = max($this->minimumGuestsForType($validated['type']), $guestCount);
+        if ($adultCount + $childCount < $guestCount) {
+            $adultCount = $guestCount - $childCount;
+        }
 
         $cart[$key] = [
             'type' => $validated['type'],
             'slug' => $validated['slug'],
             'guest_count' => $guestCount,
+            'adult_count' => $adultCount,
+            'child_count' => $childCount,
             'travel_date' => $validated['travel_date'] ?? ($cart[$key]['travel_date'] ?? null),
             'booking_option' => $selectedBookingOption['key'] ?? null,
         ];
@@ -123,6 +140,8 @@ class CartController extends Controller
                     'location' => $payable->location,
                     'bookingOption' => $selectedBookingOption,
                     'guestCount' => $guestCount,
+                    'adultCount' => max(0, (int) ($item['adult_count'] ?? $guestCount)),
+                    'childCount' => max(0, (int) ($item['child_count'] ?? 0)),
                     'travelDate' => $item['travel_date'] ?? null,
                     'unitAmount' => $this->formatMoney($unitAmount, $payable->currency),
                     'lineTotal' => $this->formatMoney($total, $payable->currency),

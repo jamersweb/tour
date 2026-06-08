@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 import SiteMeta from '../Components/SiteMeta.vue';
 import SiteLayout from '../Layouts/SiteLayout.vue';
@@ -90,6 +90,30 @@ const travelPurpose = ref('Tourism');
 const applicantType = ref('Employee');
 const travelTiming = ref('Within 1 month');
 const previousApplication = ref('No');
+const showStickyCta = ref(false);
+let stickyCtaTimer = null;
+
+const updateStickyCta = () => {
+    const hero = document.querySelector('.visa-product-hero');
+    const heroBottom = hero?.getBoundingClientRect().bottom ?? 0;
+
+    showStickyCta.value = heroBottom < 0;
+};
+
+onMounted(() => {
+    updateStickyCta();
+    window.addEventListener('scroll', updateStickyCta, { passive: true });
+    window.addEventListener('resize', updateStickyCta);
+    stickyCtaTimer = window.setInterval(updateStickyCta, 250);
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener('scroll', updateStickyCta);
+    window.removeEventListener('resize', updateStickyCta);
+    if (stickyCtaTimer) {
+        window.clearInterval(stickyCtaTimer);
+    }
+});
 
 const resetLeadForm = () => {
     form.reset('name', 'email', 'phone', 'travel_date', 'guest_count');
@@ -428,7 +452,7 @@ const faqItems = computed(() => props.visa?.faqItems ?? defaultFaqItems);
             </section>
         </main>
 
-        <div class="visa-product-sticky-cta">
+        <div v-if="showStickyCta" class="visa-product-sticky-cta">
             <a class="visa-product-sticky-cta__gold" href="#consultant">Request Visa Review</a>
             <a class="visa-product-sticky-cta__outline" :href="phoneHref">Call Consultant</a>
         </div>

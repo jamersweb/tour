@@ -13,7 +13,7 @@ const showMobileBottomNav = computed(() => {
 
     return currentPath === '/';
 });
-const partnerUrl = 'http://tourgratbat.acutetourism.org/';
+const partnerUrl = computed(() => page.props.site?.footerNavigation?.find((item) => item.label === 'Partner With Us')?.href || '/partner-with-us');
 const paymentIcons = [
     { label: 'Cards', image: '/images/payment-card.svg' },
     { label: 'Wallet', image: '/images/payment-wallet.svg' },
@@ -313,15 +313,13 @@ onBeforeUnmount(() => {
                     </nav>
 
                     <div class="header-actions">
-                        <a
+                        <Link
                             class="header-partner-link"
                             :href="partnerUrl"
-                            target="_blank"
-                            rel="noreferrer"
                             @click="closeMobileNav"
                         >
                             Partner with us
-                        </a>
+                        </Link>
                         <Link class="header-cart-link" :href="page.props.cart.url" aria-label="Cart" @click="closeMobileNav">
                             <svg viewBox="0 0 24 24" aria-hidden="true">
                                 <path d="M5 6h2l1.1 8.2a2 2 0 0 0 2 1.8h6.5a2 2 0 0 0 1.9-1.4L20 9H8"></path>

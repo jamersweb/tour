@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 import SiteMeta from '../../Components/SiteMeta.vue';
 import SiteLayout from '../../Layouts/SiteLayout.vue';
@@ -116,6 +116,8 @@ const mosaicRef = useMobileAutoCarousel();
 const activeMediaItem = computed(() => (
     activeMediaIndex.value === null ? null : mediaItems.value[activeMediaIndex.value] ?? null
 ));
+const showStickyCta = ref(false);
+let stickyCtaTimer = null;
 const bookingOptions = computed(() => props.experience.bookingOptions || []);
 const selectedBookingOptionKey = ref(bookingOptions.value[0]?.key || '');
 const selectedBookingOption = computed(() => (
@@ -124,6 +126,8 @@ const selectedBookingOption = computed(() => (
 
 const form = useForm({
     travel_date: '',
+    adult_count: 1,
+    child_count: 0,
     guest_count: 1,
 });
 
@@ -131,19 +135,27 @@ const cartForm = useForm({
     type: 'experience',
     slug: props.experience.slug,
     travel_date: '',
+    adult_count: 1,
+    child_count: 0,
     guest_count: 1,
     booking_option: selectedBookingOptionKey.value,
 });
 
+const bookingGuestCount = computed(() => {
+    const adults = Math.max(0, Number.parseInt(form.adult_count, 10) || 0);
+    const kids = Math.max(0, Number.parseInt(form.child_count, 10) || 0);
+
+    return Math.max(1, adults + kids);
+});
+
 const totalAmount = computed(() => {
-    const guestCount = Math.max(1, Number.parseInt(form.guest_count, 10) || 1);
     const rawAmount = String(props.experience.priceFrom || '0').replace(/[^0-9.]/g, '');
     const unitAmount = Number.parseFloat(selectedBookingOption.value?.amountValue ?? rawAmount ?? '0');
 
     return `AED ${new Intl.NumberFormat('en-US', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-    }).format(unitAmount * guestCount)}`;
+    }).format(unitAmount * bookingGuestCount.value)}`;
 });
 
 const focusBookingForm = (field = 'date') => {
@@ -158,7 +170,7 @@ const focusBookingForm = (field = 'date') => {
 };
 
 const addToCart = () => {
-    const guestCount = Math.max(1, Number.parseInt(form.guest_count, 10) || 1);
+    const guestCount = bookingGuestCount.value;
 
     if (!form.travel_date) {
         focusBookingForm('date');
@@ -171,13 +183,15 @@ const addToCart = () => {
     }
 
     cartForm.travel_date = form.travel_date;
+    cartForm.adult_count = Math.max(0, Number.parseInt(form.adult_count, 10) || 0) || guestCount;
+    cartForm.child_count = Math.max(0, Number.parseInt(form.child_count, 10) || 0);
     cartForm.guest_count = guestCount;
     cartForm.booking_option = selectedBookingOption.value?.key || '';
     cartForm.post('/cart', { preserveScroll: true });
 };
 
 const bookNow = () => {
-    const guestCount = Math.max(1, Number.parseInt(form.guest_count, 10) || 1);
+    const guestCount = bookingGuestCount.value;
 
     if (!form.travel_date) {
         focusBookingForm('date');
@@ -192,6 +206,8 @@ const bookNow = () => {
     const params = new URLSearchParams({
         travel_date: form.travel_date,
         guest_count: String(guestCount),
+        adult_count: String(Math.max(0, Number.parseInt(form.adult_count, 10) || 0) || guestCount),
+        child_count: String(Math.max(0, Number.parseInt(form.child_count, 10) || 0)),
     });
     if (selectedBookingOption.value?.key) {
         params.set('booking_option', selectedBookingOption.value.key);
@@ -207,6 +223,28 @@ const openMedia = (index) => {
 const closeMedia = () => {
     activeMediaIndex.value = null;
 };
+
+const updateStickyCta = () => {
+    const hero = document.querySelector('.package-detail-top-grid') || document.querySelector('.experience-operator-head');
+    const heroBottom = hero?.getBoundingClientRect().bottom ?? 0;
+
+    showStickyCta.value = heroBottom < 0;
+};
+
+onMounted(() => {
+    updateStickyCta();
+    window.addEventListener('scroll', updateStickyCta, { passive: true });
+    window.addEventListener('resize', updateStickyCta);
+    stickyCtaTimer = window.setInterval(updateStickyCta, 250);
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener('scroll', updateStickyCta);
+    window.removeEventListener('resize', updateStickyCta);
+    if (stickyCtaTimer) {
+        window.clearInterval(stickyCtaTimer);
+    }
+});
 </script>
 
 <template>
@@ -309,8 +347,20 @@ const closeMedia = () => {
                                     </label>
 
                                     <label class="field">
-                                        <span>Participants</span>
-                                        <input v-model="form.guest_count" type="number" min="1" max="100" />
+                                        <span>Adults (12+)</span>
+                                        <input v-model="form.adult_count" type="number" min="1" max="100" />
+                                        <small v-if="cartForm.errors.adult_count">{{ cartForm.errors.adult_count }}</small>
+                                    </label>
+
+                                    <label class="field">
+                                        <span>Kids (3 to 11)</span>
+                                        <input v-model="form.child_count" type="number" min="0" max="100" />
+                                        <small v-if="cartForm.errors.child_count">{{ cartForm.errors.child_count }}</small>
+                                    </label>
+
+                                    <label class="field field-full">
+                                        <span>Total participants</span>
+                                        <input :value="bookingGuestCount" type="number" readonly />
                                         <small v-if="cartForm.errors.guest_count">{{ cartForm.errors.guest_count }}</small>
                                     </label>
 
@@ -521,7 +571,7 @@ const closeMedia = () => {
             </div>
         </div>
 
-        <div class="detail-mobile-cta">
+        <div v-if="showStickyCta" class="detail-mobile-cta">
             <div class="detail-mobile-cta__copy">
                 <strong>{{ experience.title }}</strong>
                 <span>{{ experience.priceFrom || 'Current price on request' }} · {{ experience.duration || 'Flexible duration' }}</span>

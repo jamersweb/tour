@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 import SiteMeta from '../../Components/SiteMeta.vue';
 import SiteLayout from '../../Layouts/SiteLayout.vue';
@@ -39,11 +39,16 @@ const importantNotices = computed(() => [
 
 const contactPhone = '(+971) 58 516 1554';
 const contactEmail = 'info@acutetourism.org';
+const bestFor = computed(() => [
+    'First-time visitors who want Dubai highlights arranged in one plan.',
+    'Families and groups who need hotels, transfers, and attractions coordinated together.',
+    'Travelers who prefer a final quote based on dates, room type, guest count, and add-ons.',
+]);
 const quickFacts = computed(() => [
     { label: 'Duration', value: props.packageItem.duration || 'Flexible' },
     { label: 'Destinations', value: props.packageItem.location || 'Dubai & UAE' },
     { label: 'Hotel', value: 'With daily breakfast' },
-    { label: 'Starting From', value: props.packageItem.priceFrom ? `${props.packageItem.priceFrom} per person` : 'On request' },
+    { label: 'Best For', value: bestFor.value[0] || 'Custom holiday planning' },
 ]);
 const packageOptions = computed(() => [
     {
@@ -64,11 +69,6 @@ const packageFlexibility = computed(() => [
     'Private transfers can be upgraded to premium vehicle options.',
     'Attraction sequence may change based on operating days and availability.',
     'Visa assistance, flights, travel insurance, and extra nights can be added on request.',
-]);
-const bestFor = computed(() => [
-    'First-time visitors who want Dubai highlights arranged in one plan.',
-    'Families and groups who need hotels, transfers, and attractions coordinated together.',
-    'Travelers who prefer a final quote based on dates, room type, guest count, and add-ons.',
 ]);
 const reviewStars = computed(() => '★★★★★');
 const packageFaqs = computed(() => [
@@ -99,6 +99,8 @@ const mosaicRef = useMobileAutoCarousel();
 const activeMediaItem = computed(() => (
     activeMediaIndex.value === null ? null : mediaItems.value[activeMediaIndex.value] ?? null
 ));
+const showStickyCta = ref(false);
+let stickyCtaTimer = null;
 
 const form = useForm({
     travel_date: '',
@@ -233,6 +235,28 @@ const openMedia = (index) => {
 const closeMedia = () => {
     activeMediaIndex.value = null;
 };
+
+const updateStickyCta = () => {
+    const hero = document.querySelector('.package-detail-top-grid') || document.querySelector('.experience-operator-head');
+    const heroBottom = hero?.getBoundingClientRect().bottom ?? 0;
+
+    showStickyCta.value = heroBottom < 0;
+};
+
+onMounted(() => {
+    updateStickyCta();
+    window.addEventListener('scroll', updateStickyCta, { passive: true });
+    window.addEventListener('resize', updateStickyCta);
+    stickyCtaTimer = window.setInterval(updateStickyCta, 250);
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener('scroll', updateStickyCta);
+    window.removeEventListener('resize', updateStickyCta);
+    if (stickyCtaTimer) {
+        window.clearInterval(stickyCtaTimer);
+    }
+});
 </script>
 
 <template>
@@ -662,7 +686,7 @@ const closeMedia = () => {
             </div>
         </div>
 
-        <div class="detail-mobile-cta">
+        <div v-if="showStickyCta" class="detail-mobile-cta">
             <div class="detail-mobile-cta__copy">
                 <strong>{{ packageItem.title }}</strong>
                 <span>{{ packageItem.priceFrom || 'Current price on request' }} · {{ packageItem.duration || 'Flexible duration' }}</span>

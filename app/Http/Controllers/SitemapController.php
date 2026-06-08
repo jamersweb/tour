@@ -3,98 +3,300 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
-use App\Models\BlogCategory;
 use App\Models\Collection;
 use App\Models\Experience;
 use App\Models\Package;
+use App\Models\Tour;
+use Carbon\Carbon;
 use Illuminate\Http\Response;
 
 class SitemapController extends Controller
 {
-    /**
-     * XML sitemap for indexable public URLs, including bookable experiences and packages.
-     */
+    private const SITEMAPS = [
+        'pages' => 'pages-sitemap.xml',
+        'experiences' => 'experiences-sitemap.xml',
+        'packages' => 'packages-sitemap.xml',
+        'visa' => 'visa-sitemap.xml',
+        'blog' => 'blog-sitemap.xml',
+        'collections' => 'collections-sitemap.xml',
+    ];
+
     public function __invoke(): Response
     {
-        $urls = [];
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>'.PHP_EOL;
+        $xml .= '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'.PHP_EOL;
 
-        $push = function (string $loc, ?string $changefreq = 'weekly', ?string $priority = '0.8') use (&$urls): void {
-            $urls[] = [
-                'loc' => $loc,
-                'changefreq' => $changefreq,
-                'priority' => $priority,
-            ];
+        foreach (self::SITEMAPS as $section => $path) {
+            $xml .= '  <sitemap>'.PHP_EOL;
+            $xml .= '    <loc>'.e(url($path)).'</loc>'.PHP_EOL;
+            $xml .= '    <lastmod>'.$this->sectionLastModified($section)->toAtomString().'</lastmod>'.PHP_EOL;
+            $xml .= '  </sitemap>'.PHP_EOL;
+        }
+
+        $xml .= '</sitemapindex>';
+
+        return $this->xml($xml);
+    }
+
+    public function section(string $section): Response
+    {
+        abort_unless(array_key_exists($section, self::SITEMAPS), 404);
+
+        return $this->xml($this->urlset($this->urlsForSection($section)));
+    }
+
+    protected function urlsForSection(string $section): array
+    {
+        return match ($section) {
+            'pages' => $this->pageUrls(),
+            'experiences' => $this->experienceUrls(),
+            'packages' => $this->packageUrls(),
+            'visa' => $this->visaUrls(),
+            'blog' => $this->blogUrls(),
+            'collections' => $this->collectionUrls(),
+            default => [],
         };
+    }
 
-        $push(url('/'), 'daily', '1.0');
-        $push(url('/experiences'), 'daily', '0.9');
-        $push(url('/packages'), 'daily', '0.9');
-        $push(url('/visa-services'), 'weekly', '0.85');
-        $push(url('/schengen-visa'), 'weekly', '0.85');
-        $push(url('/uk-visa'), 'weekly', '0.85');
-        $push(url('/usa-visa'), 'weekly', '0.85');
-        $push(url('/canada-visa'), 'weekly', '0.85');
-        $push(url('/japan-visa'), 'weekly', '0.85');
-        $push(url('/australia-visa'), 'weekly', '0.85');
-        $push(url('/turkey-visa'), 'weekly', '0.85');
-        $push(url('/malaysia-visa'), 'weekly', '0.85');
-        $push(url('/vietnam-visa'), 'weekly', '0.85');
-        $push(url('/brazil-visa'), 'weekly', '0.85');
-        $push(url('/south-africa-visa'), 'weekly', '0.85');
-        $push(url('/evisa-assistance'), 'weekly', '0.85');
-        $push(url('/tourist-visa-assistance'), 'weekly', '0.85');
-        $push(url('/about'), 'monthly', '0.6');
-        $push(url('/corporate-events'), 'monthly', '0.6');
-        $push(url('/contact'), 'monthly', '0.7');
-        $push(url('/blog'), 'weekly', '0.7');
-        $push(url('/faq'), 'monthly', '0.6');
+    protected function pageUrls(): array
+    {
+        $lastmod = $this->staticLastModified([
+            app_path('Http/Controllers/PageController.php'),
+            resource_path('js/Pages/Home.vue'),
+            resource_path('js/Pages/About.vue'),
+            resource_path('js/Pages/BusTour.vue'),
+            resource_path('js/Pages/TourgratPartner.vue'),
+        ]);
+
+        return [
+            $this->row('/', $lastmod, 'daily', '1.0'),
+            $this->row('/about', $lastmod, 'monthly', '0.7'),
+            $this->row('/partner-with-us', $lastmod, 'monthly', '0.65'),
+            $this->row('/bus-tour', $lastmod, 'weekly', '0.75'),
+            $this->row('/corporate-events', $lastmod, 'monthly', '0.55'),
+            $this->row('/contact', $lastmod, 'monthly', '0.7'),
+            $this->row('/faq', $lastmod, 'monthly', '0.55'),
+            $this->row('/cancellation-policy', $lastmod, 'yearly', '0.35'),
+            $this->row('/terms-and-conditions', $lastmod, 'yearly', '0.35'),
+            $this->row('/privacy-policy', $lastmod, 'yearly', '0.35'),
+        ];
+    }
+
+    protected function experienceUrls(): array
+    {
+        $urls = [
+            $this->row('/experiences', $this->sectionLastModified('experiences'), 'daily', '0.9'),
+        ];
 
         Experience::query()
             ->where('is_active', true)
+            ->whereNotNull('slug')
             ->orderBy('slug')
-            ->pluck('slug')
-            ->each(fn (string $slug) => $push(url("/experiences/{$slug}"), 'weekly', '0.85'));
+            ->get(['slug', 'updated_at'])
+            ->each(fn (Experience $experience) => $urls[] = $this->row(
+                "/experiences/{$experience->slug}",
+                $experience->updated_at,
+                'weekly',
+                '0.85',
+            ));
 
-        Collection::query()
+        Tour::query()
+            ->where('is_active', true)
+            ->whereNotNull('slug')
             ->orderBy('slug')
-            ->pluck('slug')
-            ->each(fn (string $slug) => $push(url("/collections/{$slug}"), 'weekly', '0.75'));
+            ->get(['slug', 'updated_at'])
+            ->each(fn (Tour $tour) => $urls[] = $this->row(
+                "/tours/{$tour->slug}",
+                $tour->updated_at,
+                'weekly',
+                '0.8',
+            ));
+
+        return $urls;
+    }
+
+    protected function packageUrls(): array
+    {
+        $urls = [
+            $this->row('/packages', $this->sectionLastModified('packages'), 'daily', '0.9'),
+        ];
 
         Package::query()
             ->where('is_active', true)
+            ->whereNotNull('slug')
             ->orderBy('slug')
-            ->pluck('slug')
-            ->each(fn (string $slug) => $push(url("/packages/{$slug}"), 'weekly', '0.85'));
+            ->get(['slug', 'updated_at'])
+            ->each(fn (Package $package) => $urls[] = $this->row(
+                "/packages/{$package->slug}",
+                $package->updated_at,
+                'weekly',
+                '0.85',
+            ));
+
+        return $urls;
+    }
+
+    protected function visaUrls(): array
+    {
+        $lastmod = $this->staticLastModified([
+            app_path('Http/Controllers/PageController.php'),
+            resource_path('js/Pages/VisaServices.vue'),
+            resource_path('js/Pages/VisaLanding.vue'),
+            resource_path('js/Pages/VisaProduct.vue'),
+        ]);
+
+        return collect([
+            '/visa-services',
+            '/schengen-visa',
+            '/uk-visa',
+            '/usa-visa',
+            '/canada-visa',
+            '/japan-visa',
+            '/australia-visa',
+            '/turkey-visa',
+            '/malaysia-visa',
+            '/vietnam-visa',
+            '/brazil-visa',
+            '/south-africa-visa',
+            '/evisa-assistance',
+            '/tourist-visa-assistance',
+        ])
+            ->map(fn (string $path) => $this->row($path, $lastmod, 'weekly', $path === '/visa-services' ? '0.85' : '0.75'))
+            ->all();
+    }
+
+    protected function blogUrls(): array
+    {
+        $urls = [
+            $this->row('/blog', $this->sectionLastModified('blog'), 'weekly', '0.7'),
+        ];
 
         Article::query()
             ->published()
+            ->whereNotNull('slug')
             ->orderBy('slug')
-            ->pluck('slug')
-            ->each(fn (string $slug) => $push(url("/blog/{$slug}"), 'monthly', '0.65'));
+            ->get(['slug', 'published_at', 'updated_at'])
+            ->each(fn (Article $article) => $urls[] = $this->row(
+                "/blog/{$article->slug}",
+                $article->updated_at ?: $article->published_at,
+                'monthly',
+                '0.65',
+            ));
 
-        BlogCategory::query()
-            ->active()
+        return $urls;
+    }
+
+    protected function collectionUrls(): array
+    {
+        $urls = [];
+
+        Collection::query()
+            ->whereNotNull('slug')
+            ->whereHas('experiences', fn ($query) => $query->where('is_active', true))
             ->orderBy('slug')
-            ->pluck('slug')
-            ->each(fn (string $slug) => $push(url("/blog?category={$slug}"), 'monthly', '0.55'));
+            ->get(['slug', 'updated_at'])
+            ->each(fn (Collection $collection) => $urls[] = $this->row(
+                "/collections/{$collection->slug}",
+                $collection->updated_at,
+                'weekly',
+                '0.65',
+            ));
 
+        return $urls;
+    }
+
+    protected function sectionLastModified(string $section): Carbon
+    {
+        return match ($section) {
+            'pages' => $this->staticLastModified([
+                app_path('Http/Controllers/PageController.php'),
+                resource_path('js/Pages/Home.vue'),
+                resource_path('js/Pages/About.vue'),
+                resource_path('js/Pages/BusTour.vue'),
+                resource_path('js/Pages/TourgratPartner.vue'),
+            ]),
+            'experiences' => $this->latestTimestampFromQueries([
+                Experience::query()->where('is_active', true),
+                Tour::query()->where('is_active', true),
+            ])
+                ?? $this->staticLastModified([resource_path('js/Pages/Experiences/Index.vue')]),
+            'packages' => $this->latestTimestampFromQueries([
+                Package::query()->where('is_active', true),
+            ])
+                ?? $this->staticLastModified([resource_path('js/Pages/Packages/Index.vue')]),
+            'visa' => $this->staticLastModified([
+                app_path('Http/Controllers/PageController.php'),
+                resource_path('js/Pages/VisaServices.vue'),
+                resource_path('js/Pages/VisaLanding.vue'),
+                resource_path('js/Pages/VisaProduct.vue'),
+            ]),
+            'blog' => $this->latestTimestampFromQueries([
+                Article::query()->published(),
+            ])
+                ?? $this->staticLastModified([resource_path('js/Pages/Journal/Index.vue'), resource_path('js/Pages/Journal/Show.vue')]),
+            'collections' => $this->latestTimestampFromQueries([
+                Collection::query()->whereHas('experiences', fn ($query) => $query->where('is_active', true)),
+            ])
+                ?? $this->staticLastModified([resource_path('js/Pages/Collections/Show.vue')]),
+            default => now(),
+        };
+    }
+
+    protected function latestTimestampFromQueries(array $queries): ?Carbon
+    {
+        return collect($queries)
+            ->map(function ($query): ?Carbon {
+                $timestamp = $query->max('updated_at');
+
+                return $timestamp ? Carbon::parse($timestamp) : null;
+            })
+            ->filter()
+            ->sort()
+            ->last();
+    }
+
+    protected function staticLastModified(array $paths): Carbon
+    {
+        $timestamp = collect($paths)
+            ->filter(fn (string $path) => is_file($path))
+            ->map(fn (string $path) => filemtime($path))
+            ->filter()
+            ->max();
+
+        return $timestamp ? Carbon::createFromTimestamp($timestamp) : now();
+    }
+
+    protected function row(string $path, Carbon|string|null $lastmod, string $changefreq, string $priority): array
+    {
+        return [
+            'loc' => url($path),
+            'lastmod' => $lastmod ? Carbon::parse($lastmod)->toAtomString() : now()->toAtomString(),
+            'changefreq' => $changefreq,
+            'priority' => $priority,
+        ];
+    }
+
+    protected function urlset(array $urls): string
+    {
         $xml = '<?xml version="1.0" encoding="UTF-8"?>'.PHP_EOL;
         $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'.PHP_EOL;
 
-        foreach ($urls as $row) {
+        foreach (collect($urls)->unique('loc')->values() as $row) {
             $xml .= '  <url>'.PHP_EOL;
             $xml .= '    <loc>'.e($row['loc']).'</loc>'.PHP_EOL;
-            if ($row['changefreq'] !== null) {
-                $xml .= '    <changefreq>'.e($row['changefreq']).'</changefreq>'.PHP_EOL;
-            }
-            if ($row['priority'] !== null) {
-                $xml .= '    <priority>'.e($row['priority']).'</priority>'.PHP_EOL;
-            }
+            $xml .= '    <lastmod>'.e($row['lastmod']).'</lastmod>'.PHP_EOL;
+            $xml .= '    <changefreq>'.e($row['changefreq']).'</changefreq>'.PHP_EOL;
+            $xml .= '    <priority>'.e($row['priority']).'</priority>'.PHP_EOL;
             $xml .= '  </url>'.PHP_EOL;
         }
 
         $xml .= '</urlset>';
 
+        return $xml;
+    }
+
+    protected function xml(string $xml): Response
+    {
         return response($xml, 200)->header('Content-Type', 'application/xml; charset=UTF-8');
     }
 }

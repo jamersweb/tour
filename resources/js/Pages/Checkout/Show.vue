@@ -16,12 +16,15 @@ const page = usePage();
 const form = useForm({
     name: '',
     email: '',
+    phone_country_code: '+971',
     phone: '',
     travel_date: props.checkout.defaults?.travel_date || '',
     guest_count: props.checkout.defaults?.guest_count || 1,
+    adult_count: props.checkout.defaults?.adult_count || props.checkout.defaults?.guest_count || 1,
+    child_count: props.checkout.defaults?.child_count || 0,
     booking_option: props.checkout.defaults?.booking_option || '',
     tour_option: '',
-    preferred_time: '',
+    preferred_time: props.checkout.preferenceOptions?.times?.[0] || 'Flexible',
     hotel_pickup_location: '',
     special_request: '',
     traveler_contacts: [
@@ -37,13 +40,47 @@ const productDetails = computed(() => props.checkout.productDetails || {});
 const selectedBookingOption = computed(() => props.checkout.selectedBookingOption || null);
 
 const tourOptions = computed(() => preferenceOptions.value.tourOptions || []);
+const timeOptions = computed(() => {
+    const options = preferenceOptions.value.times || [];
+
+    return options.length ? options : ['Flexible', 'Morning', 'Afternoon', 'Evening'];
+});
+
+const phoneCountryOptions = [
+    { code: '+971', flag: 'AE', label: 'United Arab Emirates' },
+    { code: '+966', flag: 'SA', label: 'Saudi Arabia' },
+    { code: '+974', flag: 'QA', label: 'Qatar' },
+    { code: '+965', flag: 'KW', label: 'Kuwait' },
+    { code: '+973', flag: 'BH', label: 'Bahrain' },
+    { code: '+968', flag: 'OM', label: 'Oman' },
+    { code: '+44', flag: 'GB', label: 'United Kingdom' },
+    { code: '+1', flag: 'US', label: 'United States / Canada' },
+    { code: '+91', flag: 'IN', label: 'India' },
+    { code: '+92', flag: 'PK', label: 'Pakistan' },
+    { code: '+20', flag: 'EG', label: 'Egypt' },
+];
+
+const formattedTravelers = computed(() => {
+    const adults = Math.max(0, Number.parseInt(form.adult_count, 10) || 0);
+    const kids = Math.max(0, Number.parseInt(form.child_count, 10) || 0);
+    const total = Math.max(1, adults + kids || Number.parseInt(form.guest_count, 10) || 1);
+    const parts = [`${adults || total} adult${(adults || total) === 1 ? '' : 's'}`];
+
+    if (kids) {
+        parts.push(`${kids} kid${kids === 1 ? '' : 's'}`);
+    }
+
+    return `${total} (${parts.join(', ')})`;
+});
 
 const totalAmount = computed(() => {
     if (props.checkout.isCart) {
         return props.checkout.amount;
     }
 
-    const guestCount = Math.max(1, Number.parseInt(form.guest_count, 10) || 1);
+    const adults = Math.max(0, Number.parseInt(form.adult_count, 10) || 0);
+    const kids = Math.max(0, Number.parseInt(form.child_count, 10) || 0);
+    const guestCount = Math.max(1, adults + kids || Number.parseInt(form.guest_count, 10) || 1);
     const unitAmount = Number.parseFloat(props.checkout.unitAmountValue || 0);
 
     return `${props.checkout.currency} ${new Intl.NumberFormat('en-US', {
@@ -65,7 +102,7 @@ const selectedRows = computed(() => {
         { label: 'Booking type', value: productDetails.value.bookingType },
         { label: 'Booking option', value: selectedBookingOption.value?.label },
         { label: 'Date', value: form.travel_date || 'Selected during booking' },
-        { label: 'Travelers', value: form.guest_count },
+        { label: 'Travelers', value: formattedTravelers.value },
     ].filter((row) => row.value);
 
     if (supportsTourPreferences.value) {
@@ -82,16 +119,25 @@ const selectedRows = computed(() => {
 });
 
 const submit = () => {
-    const guestCount = Math.max(1, Number.parseInt(form.guest_count, 10) || 1);
+    const adultCount = Math.max(0, Number.parseInt(form.adult_count, 10) || 0);
+    const childCount = Math.max(0, Number.parseInt(form.child_count, 10) || 0);
+    const guestCount = Math.max(1, adultCount + childCount || Number.parseInt(form.guest_count, 10) || 1);
 
     form.guest_count = props.checkout.isCart ? props.checkout.defaults?.guest_count || guestCount : guestCount;
+    form.adult_count = props.checkout.isCart ? props.checkout.defaults?.adult_count || adultCount || guestCount : adultCount || guestCount;
+    form.child_count = props.checkout.isCart ? props.checkout.defaults?.child_count || childCount : childCount;
     form.traveler_contacts = Array.from({ length: guestCount }, () => ({
         name: form.name,
         email: form.email,
-        phone: form.phone,
+        phone: `${form.phone_country_code} ${form.phone}`.trim(),
     }));
 
-    form.post(props.checkout.isCart ? '/checkout/cart' : `/checkout/${props.checkout.type}s/${props.checkout.slug}`);
+    form
+        .transform((data) => ({
+            ...data,
+            phone: `${data.phone_country_code} ${data.phone}`.trim(),
+        }))
+        .post(props.checkout.isCart ? '/checkout/cart' : `/checkout/${props.checkout.type}s/${props.checkout.slug}`);
 };
 </script>
 
@@ -118,7 +164,14 @@ const submit = () => {
 
                     <label class="field">
                         <span>Contact number</span>
-                        <input v-model="form.phone" type="text" autocomplete="tel" placeholder="Mobile number *" />
+                        <div class="phone-input-group">
+                            <select v-model="form.phone_country_code" aria-label="Country code">
+                                <option v-for="country in phoneCountryOptions" :key="country.code" :value="country.code">
+                                    {{ country.flag }} {{ country.code }}
+                                </option>
+                            </select>
+                            <input v-model="form.phone" type="text" autocomplete="tel" placeholder="Mobile number *" />
+                        </div>
                         <small v-if="form.errors.phone">{{ form.errors.phone }}</small>
                     </label>
 
@@ -139,11 +192,9 @@ const submit = () => {
 
                     <label v-if="supportsTourPreferences" class="field">
                         <span>Preferred tour time</span>
-                        <input
-                            v-model="form.preferred_time"
-                            type="text"
-                            placeholder="Flexible / preferred time"
-                        />
+                        <select v-model="form.preferred_time">
+                            <option v-for="option in timeOptions" :key="option" :value="option">{{ option }}</option>
+                        </select>
                         <small v-if="form.errors.preferred_time">{{ form.errors.preferred_time }}</small>
                     </label>
 
@@ -200,7 +251,13 @@ const submit = () => {
                             <div>
                                 <strong>{{ item.title }}</strong>
                                 <span v-if="item.bookingOption">{{ item.bookingOption.label }}</span>
-                                <span>{{ item.guestCount }} guests<span v-if="item.travelDate"> | {{ item.travelDate }}</span></span>
+                                <span>
+                                    {{ item.guestCount }} guests
+                                    <template v-if="item.adultCount || item.childCount">
+                                        ({{ item.adultCount || item.guestCount }} adults<span v-if="item.childCount">, {{ item.childCount }} kids</span>)
+                                    </template>
+                                    <span v-if="item.travelDate"> | {{ item.travelDate }}</span>
+                                </span>
                             </div>
                             <b>{{ item.lineTotalFormatted }}</b>
                         </article>

@@ -8,7 +8,16 @@ class StartCheckoutRequest extends FormRequest
 {
     protected function prepareForValidation(): void
     {
-        $guestCount = (int) ($this->input('guest_count') ?: 1);
+        $adultCount = max(0, (int) ($this->input('adult_count') ?: 0));
+        $childCount = max(0, (int) ($this->input('child_count') ?: 0));
+        $guestCount = $adultCount + $childCount;
+
+        if ($guestCount < 1) {
+            $guestCount = (int) ($this->input('guest_count') ?: 1);
+            $adultCount = $guestCount;
+            $childCount = 0;
+        }
+
         $travelerContacts = $this->input('traveler_contacts');
 
         if (! is_array($travelerContacts) || $travelerContacts === []) {
@@ -16,6 +25,8 @@ class StartCheckoutRequest extends FormRequest
 
             $this->merge([
                 'guest_count' => $guestCount,
+                'adult_count' => $adultCount ?: $guestCount,
+                'child_count' => $childCount,
                 'traveler_contacts' => collect(range(1, $guestCount))
                     ->map(fn () => [
                         'name' => (string) $this->input('name', ''),
@@ -34,6 +45,8 @@ class StartCheckoutRequest extends FormRequest
 
         $this->merge([
             'guest_count' => max(1, $guestCount),
+            'adult_count' => $adultCount ?: max(1, $guestCount - $childCount),
+            'child_count' => $childCount,
         ]);
     }
 
@@ -50,6 +63,8 @@ class StartCheckoutRequest extends FormRequest
             'phone' => ['required', 'string', 'max:40'],
             'travel_date' => ['nullable', 'date', 'after_or_equal:today'],
             'guest_count' => ['required', 'integer', 'min:1', 'max:100'],
+            'adult_count' => ['nullable', 'integer', 'min:0', 'max:100'],
+            'child_count' => ['nullable', 'integer', 'min:0', 'max:100'],
             'booking_option' => ['nullable', 'string', 'max:160'],
             'tour_option' => ['nullable', 'string', 'max:120'],
             'preferred_time' => ['nullable', 'string', 'max:80'],

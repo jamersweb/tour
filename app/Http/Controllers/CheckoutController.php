@@ -52,7 +52,7 @@ class CheckoutController extends Controller
                 amount: $selectedBookingOption['amountValue'] ?? $experience->price_from,
                 currency: $experience->currency,
                 image: $experience->hero_image_url,
-                defaults: $this->checkoutDefaults($request, 2) + ['booking_option' => $selectedBookingOption['key'] ?? null],
+                defaults: $this->checkoutDefaults($request) + ['booking_option' => $selectedBookingOption['key'] ?? null],
                 supportsTourPreferences: true,
                 supportsPickupLocation: true,
                 preferenceOptions: $this->bookingPreferenceOptions($experience),
@@ -86,7 +86,7 @@ class CheckoutController extends Controller
                 amount: $package->price_from,
                 currency: $package->currency,
                 image: $package->hero_image_url,
-                defaults: $this->checkoutDefaults($request),
+                defaults: $this->checkoutDefaults($request, 2),
                 supportsPickupLocation: true,
             ),
         ]);
@@ -153,6 +153,8 @@ class CheckoutController extends Controller
                 'image' => $cart['items'][0]['image'] ?? null,
                 'defaults' => [
                     'guest_count' => $cart['guest_count'],
+                    'adult_count' => $cart['adult_count'],
+                    'child_count' => $cart['child_count'],
                     'travel_date' => null,
                 ],
                 'isCart' => true,
@@ -207,6 +209,8 @@ class CheckoutController extends Controller
                 'amount' => $cart['total'],
                 'currency' => $cart['currency'],
                 'guest_count' => $cart['guest_count'],
+                'adult_count' => $cart['adult_count'],
+                'child_count' => $cart['child_count'],
                 'travel_date' => null,
                 'cart_items' => $cart['items'],
                 'cancel_url' => route('cart.index'),
@@ -334,18 +338,25 @@ class CheckoutController extends Controller
         $validated = $request->validated();
         $guestCount = (int) ($overrides['guest_count'] ?? ($validated['guest_count'] ?? 1));
         $guestCount = $payable instanceof Package ? max(2, $guestCount) : max(1, $guestCount);
+        $adultCount = (int) ($overrides['adult_count'] ?? ($validated['adult_count'] ?? $guestCount));
+        $childCount = (int) ($overrides['child_count'] ?? ($validated['child_count'] ?? 0));
+        if ($adultCount + $childCount < $guestCount) {
+            $adultCount = $guestCount - $childCount;
+        }
         $selectedBookingOption = $this->selectedBookingOption($payable, $validated['booking_option'] ?? null);
         $unitAmount = (float) ($selectedBookingOption['amountValue'] ?? $payable->price_from);
         $totalAmount = round((float) ($overrides['amount'] ?? ($unitAmount * max(1, $guestCount))), 2);
         $currency = (string) ($overrides['currency'] ?? $payable->currency);
         $preferenceNotes = collect([
             'Booking option' => $selectedBookingOption['label'] ?? null,
+            'Adults 12+' => $adultCount > 0 ? (string) $adultCount : null,
+            'Kids 3-11' => $childCount > 0 ? (string) $childCount : null,
             'Tour language' => $validated['tour_option'] ?? null,
             'Preferred time' => $validated['preferred_time'] ?? null,
             'Hotel pickup location' => $validated['hotel_pickup_location'] ?? null,
             'Special request' => $validated['special_request'] ?? null,
         ])
-            ->filter(fn (?string $value) => filled($value))
+            ->filter(fn ($value) => filled($value))
             ->map(fn (string $value, string $label) => "{$label}: {$value}")
             ->implode("\n");
 
@@ -585,8 +596,20 @@ class CheckoutController extends Controller
 
     protected function checkoutDefaults(Request $request, int $minimumGuests = 1): array
     {
+        $adultCount = max(0, $request->integer('adult_count') ?: 0);
+        $childCount = max(0, $request->integer('child_count') ?: 0);
+        $guestCount = $adultCount + $childCount;
+
+        if ($guestCount < 1) {
+            $guestCount = max($minimumGuests, min(100, $request->integer('guest_count') ?: $minimumGuests));
+            $adultCount = $guestCount;
+            $childCount = 0;
+        }
+
         return [
-            'guest_count' => max($minimumGuests, min(100, $request->integer('guest_count') ?: $minimumGuests)),
+            'guest_count' => max($minimumGuests, min(100, $guestCount)),
+            'adult_count' => max($minimumGuests === 2 ? 2 : 1, $adultCount ?: $guestCount),
+            'child_count' => $childCount,
             'travel_date' => $request->query('travel_date'),
         ];
     }
@@ -596,6 +619,8 @@ class CheckoutController extends Controller
         $items = [];
         $total = 0.0;
         $guestCount = 0;
+        $adultCount = 0;
+        $childCount = 0;
         $currency = null;
         $firstPayable = null;
 
@@ -616,11 +641,22 @@ class CheckoutController extends Controller
             $lineGuestCount = $payable instanceof Package
                 ? max(2, (int) ($item['guest_count'] ?? 2))
                 : max(1, (int) ($item['guest_count'] ?? 1));
+            $lineAdultCount = max(0, (int) ($item['adult_count'] ?? $lineGuestCount));
+            $lineChildCount = max(0, (int) ($item['child_count'] ?? 0));
+            if ($lineAdultCount + $lineChildCount < 1) {
+                $lineAdultCount = $lineGuestCount;
+                $lineChildCount = 0;
+            }
+            if ($lineAdultCount + $lineChildCount < $lineGuestCount) {
+                $lineAdultCount = $lineGuestCount - $lineChildCount;
+            }
             $selectedBookingOption = $this->selectedBookingOption($payable, $item['booking_option'] ?? null);
             $unitAmount = (float) ($selectedBookingOption['amountValue'] ?? $payable->price_from);
             $lineTotal = round($unitAmount * $lineGuestCount, 2);
             $total += $lineTotal;
             $guestCount += $lineGuestCount;
+            $adultCount += $lineAdultCount;
+            $childCount += $lineChildCount;
 
             $items[] = [
                 'type' => $item['type'],
@@ -633,6 +669,8 @@ class CheckoutController extends Controller
                 'bookingOption' => $selectedBookingOption,
                 'travelDate' => $item['travel_date'] ?? null,
                 'guestCount' => $lineGuestCount,
+                'adultCount' => $lineAdultCount,
+                'childCount' => $lineChildCount,
                 'unitAmount' => $unitAmount,
                 'unitAmountFormatted' => $this->formatMoney($unitAmount, $itemCurrency),
                 'lineTotal' => $lineTotal,
@@ -645,6 +683,8 @@ class CheckoutController extends Controller
             'total' => round($total, 2),
             'currency' => $currency ?: 'AED',
             'guest_count' => max(1, $guestCount),
+            'adult_count' => max(1, $adultCount ?: $guestCount),
+            'child_count' => $childCount,
             'payable' => $firstPayable,
         ];
     }

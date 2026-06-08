@@ -41,7 +41,7 @@ const topRatedCards = computed(() => (
         ? props.topRatedExperiences
         : props.mustDoExperiences
 ).slice(0, 10));
-const serviceCards = computed(() => props.serviceFocus.slice(0, 3).map((item, index) => ({
+const serviceCards = computed(() => props.serviceFocus.slice(0, 4).map((item, index) => ({
     ...item,
     imageUrl: [
         props.featuredExperiences?.[0]?.heroImageUrl
@@ -49,6 +49,7 @@ const serviceCards = computed(() => props.serviceFocus.slice(0, 3).map((item, in
         props.packages?.[0]?.heroImageUrl
             || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
         'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=1200&q=80',
     ][index],
 })));
 const visaCards = computed(() => props.recommendations);

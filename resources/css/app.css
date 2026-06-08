@@ -9237,6 +9237,22 @@ textarea {
     margin-top: 1rem;
 }
 
+.phone-input-group {
+    display: grid;
+    grid-template-columns: minmax(98px, 0.28fr) minmax(0, 1fr);
+    gap: 8px;
+}
+
+.phone-input-group select,
+.phone-input-group input {
+    width: 100%;
+}
+
+.phone-input-group select {
+    text-align: center;
+    font-weight: 800;
+}
+
 .checkout-summary-card {
     position: sticky;
     top: 6.5rem;
@@ -9404,6 +9420,17 @@ textarea {
 }
 
 @media (max-width: 640px) {
+    .phone-input-group {
+        grid-template-columns: minmax(86px, 0.32fr) minmax(0, 1fr);
+        gap: 6px;
+    }
+
+    .phone-input-group select {
+        padding-left: 10px;
+        padding-right: 10px;
+        font-size: 0.86rem;
+    }
+
     .client-trust-strip__grid,
     .guide-grid,
     .detail-fact-grid,
@@ -13462,6 +13489,54 @@ textarea {
     gap: 18px;
 }
 
+.activities-category-reference .activity-subcategory-list {
+    display: grid;
+    gap: 34px;
+}
+
+.activities-category-reference .activity-subcategory-section {
+    display: grid;
+    gap: 16px;
+}
+
+.activities-category-reference .activity-subcategory-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.activities-category-reference .activity-subcategory-heading .eyebrow {
+    margin-bottom: 6px;
+}
+
+.activities-category-reference .activity-subcategory-heading p:not(.eyebrow) {
+    max-width: 620px;
+    margin: 0;
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.55;
+}
+
+.activities-category-reference .activity-subcategory-heading > span {
+    flex: 0 0 auto;
+    padding: 8px 13px;
+    border: 1px solid rgba(202, 164, 106, 0.26);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.72);
+    color: #6f542e;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.activities-category-reference .activity-subcategory-empty {
+    margin: 0;
+    padding: 14px 16px;
+    border-style: dashed;
+    box-shadow: none;
+}
+
 .activities-category-reference .card-grid-four {
     grid-template-columns: repeat(4, minmax(0, 1fr));
 }
@@ -13878,6 +13953,25 @@ textarea {
     .activities-category-reference .select-field {
         height: 42px;
         font-size: 13px;
+    }
+
+    .activities-category-reference .activity-subcategory-list {
+        gap: 26px;
+    }
+
+    .activities-category-reference .activity-subcategory-heading {
+        display: block;
+    }
+
+    .activities-category-reference .activity-subcategory-heading p:not(.eyebrow) {
+        font-size: 12px;
+    }
+
+    .activities-category-reference .activity-subcategory-heading > span {
+        display: inline-flex;
+        margin-top: 10px;
+        padding: 7px 10px;
+        font-size: 10px;
     }
 
     .activities-category-reference .card-grid-four {
@@ -15086,7 +15180,8 @@ textarea {
     display: block;
 }
 
-.experience-tour-page .experience-operator-cart-fields .field input {
+.experience-tour-page .experience-operator-cart-fields .field input,
+.experience-tour-page .experience-operator-cart-fields .field select {
     width: 100%;
     height: 48px;
     min-height: 48px;
@@ -16264,5 +16359,828 @@ textarea {
 
     .experience-tour-page .detail-fact-grid--tour-product .detail-fact strong {
         font-size: 16px;
+    }
+}
+
+/* Bus Tour and Tour Grat reference pages */
+.bus-tour-page,
+.tourgrat-page {
+    --bt-blue: #061a63;
+    --bt-blue-2: #0b2c8f;
+    --bt-gold: #d7a84f;
+    --bt-gold-soft: #f6df9c;
+    --bt-cream: #f7f4ed;
+    --bt-ink: #13203a;
+    --bt-muted: #667185;
+    --bt-line: rgba(19, 32, 58, 0.12);
+    --bt-shadow: 0 24px 70px rgba(6, 26, 99, 0.16);
+    overflow: hidden;
+    background: #fff;
+    color: var(--bt-ink);
+}
+
+.bus-tour-page .container,
+.tourgrat-page .container {
+    width: min(1180px, calc(100% - 32px));
+}
+
+.bus-tour-hero {
+    display: grid;
+    min-height: calc(92vh - 86px);
+    place-items: center;
+    background:
+        linear-gradient(180deg, rgba(6, 26, 99, 0.42), rgba(6, 26, 99, 0.86)),
+        url('https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=2200&q=85') center/cover no-repeat;
+    color: #fff;
+    text-align: center;
+}
+
+.bus-tour-hero__inner,
+.tourgrat-hero__grid {
+    padding: 5rem 0 3rem;
+}
+
+.bus-tour-eyebrow,
+.tourgrat-eyebrow,
+.tourgrat-kicker {
+    margin: 0 0 0.85rem;
+    color: var(--bt-gold);
+    font-size: 0.75rem;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+.bus-tour-hero .bus-tour-eyebrow,
+.tourgrat-hero .tourgrat-kicker {
+    color: var(--bt-gold-soft);
+}
+
+.bus-tour-hero h1,
+.tourgrat-hero h1 {
+    max-width: 1040px;
+    margin: 0 auto 1.3rem;
+    color: #fff;
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 7.4vw, 6.75rem);
+    font-weight: 500;
+    letter-spacing: -0.055em;
+    line-height: 0.94;
+}
+
+.bus-tour-hero p,
+.tourgrat-hero p {
+    max-width: 820px;
+    margin: 0 auto 1.5rem;
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 1.05rem;
+}
+
+.bus-tour-actions,
+.tourgrat-actions,
+.bus-tour-card__body div,
+.tourgrat-store-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.bus-tour-actions,
+.tourgrat-actions {
+    justify-content: center;
+    margin-bottom: 1.45rem;
+}
+
+.bus-tour-btn,
+.tourgrat-btn,
+.tourgrat-store-buttons a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3rem;
+    padding: 0 1.25rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.bus-tour-btn--gold,
+.tourgrat-btn--gold {
+    background: linear-gradient(135deg, var(--bt-gold), var(--bt-gold-soft));
+    color: var(--bt-blue);
+}
+
+.bus-tour-btn--blue {
+    background: linear-gradient(135deg, var(--bt-blue), var(--bt-blue-2));
+    color: #fff;
+}
+
+.bus-tour-btn--light,
+.tourgrat-btn--light {
+    border-color: rgba(255, 255, 255, 0.38);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+
+.bus-tour-facts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    max-width: 920px;
+    margin: 0 auto;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.09);
+    backdrop-filter: blur(14px);
+}
+
+.bus-tour-facts article {
+    padding: 1rem;
+    border-right: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.bus-tour-facts article:last-child {
+    border-right: 0;
+}
+
+.bus-tour-facts strong {
+    display: block;
+    color: var(--bt-gold-soft);
+    font-size: 1.15rem;
+}
+
+.bus-tour-facts span {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.78rem;
+}
+
+.bus-tour-section,
+.tourgrat-section {
+    padding: 4.5rem 0;
+}
+
+.bus-tour-section--cream,
+.tourgrat-section--soft {
+    background: var(--bt-cream);
+}
+
+.bus-tour-section--blue {
+    background: linear-gradient(135deg, var(--bt-blue), var(--bt-blue-2));
+    color: #fff;
+}
+
+.bus-tour-split,
+.tourgrat-split,
+.bus-tour-lead__grid,
+.tourgrat-form-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    gap: 2rem;
+    align-items: center;
+}
+
+.bus-tour-split--reverse {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+}
+
+.bus-tour-panel,
+.tourgrat-panel,
+.bus-tour-form-card,
+.tourgrat-form-card,
+.tourgrat-clarity {
+    padding: 2rem;
+    border: 1px solid var(--bt-line);
+    background: #fff;
+    box-shadow: var(--bt-shadow);
+}
+
+.bus-tour-panel h2,
+.bus-tour-heading h2,
+.bus-tour-lead h2,
+.tourgrat-heading h2,
+.tourgrat-panel h2,
+.tourgrat-form-grid h2,
+.tourgrat-download h2,
+.tourgrat-clarity h2 {
+    margin: 0 0 0.85rem;
+    color: var(--bt-blue);
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3.4rem);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 1.02;
+}
+
+.bus-tour-section--blue .bus-tour-heading h2,
+.bus-tour-section--blue .bus-tour-heading p,
+.tourgrat-download h2,
+.tourgrat-download p {
+    color: #fff;
+}
+
+.bus-tour-panel p,
+.bus-tour-heading p,
+.bus-tour-lead p,
+.tourgrat-heading p,
+.tourgrat-panel p,
+.tourgrat-form-grid p,
+.tourgrat-clarity p {
+    margin: 0;
+    color: var(--bt-muted);
+    font-size: 1rem;
+}
+
+.bus-tour-section--blue .bus-tour-eyebrow {
+    color: var(--bt-gold-soft);
+}
+
+.bus-tour-mini-grid,
+.tourgrat-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+}
+
+.bus-tour-mini-grid span,
+.tourgrat-pills span {
+    border: 1px solid var(--bt-line);
+    border-radius: 999px;
+    background: var(--bt-cream);
+    color: var(--bt-blue);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 900;
+}
+
+.bus-tour-image {
+    min-height: 31rem;
+    background-position: center;
+    background-size: cover;
+    box-shadow: var(--bt-shadow);
+}
+
+.bus-tour-image--coach {
+    background-image: linear-gradient(to top, rgba(6, 26, 99, 0.45), transparent 50%), url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1400&q=85');
+}
+
+.bus-tour-image--private {
+    background-image: linear-gradient(to top, rgba(6, 26, 99, 0.46), transparent 50%), url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=85');
+}
+
+.bus-tour-heading,
+.tourgrat-heading {
+    max-width: 850px;
+    margin: 0 auto 2rem;
+    text-align: center;
+}
+
+.bus-tour-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.bus-tour-card {
+    position: relative;
+    min-height: 31rem;
+    overflow: hidden;
+    background-image: var(--bus-card-image);
+    background-position: center;
+    background-size: cover;
+    color: #fff;
+    box-shadow: 0 20px 56px rgba(6, 26, 99, 0.14);
+}
+
+.bus-tour-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(6, 26, 99, 0.96), rgba(6, 26, 99, 0.24) 62%, rgba(6, 26, 99, 0.1));
+}
+
+.bus-tour-card__body {
+    position: absolute;
+    inset: auto 0 0;
+    padding: 1.35rem;
+}
+
+.bus-tour-card__body span,
+.bus-tour-card__body strong {
+    display: block;
+    color: var(--bt-gold-soft);
+    font-weight: 900;
+}
+
+.bus-tour-card__body span {
+    margin-bottom: 0.6rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+}
+
+.bus-tour-card h3 {
+    margin: 0 0 0.6rem;
+    color: #fff;
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 500;
+    line-height: 1.05;
+}
+
+.bus-tour-card p {
+    margin: 0.65rem 0 1rem;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 0.88rem;
+}
+
+.bus-tour-card em {
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    padding: 0.4rem 0.55rem;
+    font-size: 0.7rem;
+    font-style: normal;
+    font-weight: 800;
+}
+
+.bus-tour-inclusions,
+.tourgrat-benefits,
+.tourgrat-audience,
+.tourgrat-commission,
+.tourgrat-steps,
+.tourgrat-clarity > div {
+    display: grid;
+    gap: 1rem;
+}
+
+.bus-tour-inclusions {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.bus-tour-inclusions article,
+.tourgrat-benefits article,
+.tourgrat-audience article,
+.tourgrat-commission article,
+.tourgrat-steps article,
+.tourgrat-clarity article,
+.bus-tour-audience article {
+    border: 1px solid var(--bt-line);
+    background: #fff;
+    padding: 1.35rem;
+    box-shadow: 0 14px 34px rgba(21, 17, 13, 0.055);
+}
+
+.bus-tour-section--blue .bus-tour-inclusions article {
+    border-color: rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.bus-tour-inclusions h3,
+.tourgrat-benefits h3,
+.tourgrat-audience strong,
+.tourgrat-steps h3,
+.tourgrat-clarity strong,
+.bus-tour-audience strong {
+    display: block;
+    margin: 0 0 0.5rem;
+    color: var(--bt-blue);
+    font-size: 1.05rem;
+}
+
+.bus-tour-section--blue .bus-tour-inclusions h3 {
+    color: #fff;
+}
+
+.bus-tour-inclusions p,
+.tourgrat-benefits p,
+.tourgrat-audience span,
+.tourgrat-steps p,
+.tourgrat-clarity span,
+.tourgrat-commission p,
+.bus-tour-audience span {
+    color: var(--bt-muted);
+    font-size: 0.88rem;
+}
+
+.bus-tour-section--blue .bus-tour-inclusions p {
+    color: rgba(255, 255, 255, 0.74);
+}
+
+.bus-tour-audience {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.bus-tour-form,
+.tourgrat-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.bus-tour-form label,
+.tourgrat-form label {
+    display: grid;
+    gap: 0.45rem;
+    color: var(--bt-blue);
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.bus-tour-form input,
+.bus-tour-form select,
+.bus-tour-form textarea,
+.tourgrat-form input,
+.tourgrat-form select,
+.tourgrat-form textarea {
+    width: 100%;
+    min-height: 3rem;
+    border: 1px solid var(--bt-line);
+    background: #fff;
+    color: var(--bt-ink);
+    padding: 0.8rem;
+    outline: 0;
+}
+
+.bus-tour-form__full,
+.tourgrat-form__full {
+    grid-column: 1 / -1;
+}
+
+.bus-tour-faq,
+.tourgrat-faq {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.bus-tour-faq details,
+.tourgrat-faq details {
+    border: 1px solid var(--bt-line);
+    background: #fff;
+    padding: 1rem;
+}
+
+.bus-tour-faq summary,
+.tourgrat-faq summary {
+    cursor: pointer;
+    font-weight: 900;
+}
+
+.bus-tour-faq p,
+.tourgrat-faq p {
+    margin: 0.75rem 0 0;
+    color: var(--bt-muted);
+}
+
+.tourgrat-hero {
+    background:
+        radial-gradient(circle at 12% 10%, rgba(255, 122, 26, 0.22), transparent 26%),
+        linear-gradient(135deg, #07142f 0%, #101b48 52%, #2b1641 100%);
+    color: #fff;
+}
+
+.tourgrat-hero__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 2.25rem;
+    align-items: center;
+    min-height: 34rem;
+}
+
+.tourgrat-hero h1,
+.tourgrat-hero p {
+    margin-right: 0;
+    margin-left: 0;
+}
+
+.tourgrat-points {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem;
+    max-width: 620px;
+    margin: 0 0 1.35rem;
+    padding: 0;
+    list-style: none;
+}
+
+.tourgrat-points li {
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.75rem;
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 0.78rem;
+    font-weight: 900;
+}
+
+.tourgrat-actions {
+    justify-content: flex-start;
+}
+
+.tourgrat-app {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 2rem;
+    background: rgba(5, 14, 30, 0.88);
+    padding: 0.85rem;
+    box-shadow: 0 28px 70px rgba(0, 0, 0, 0.28);
+}
+
+.tourgrat-app__screen {
+    min-height: 420px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 1.5rem;
+    background: #07142f;
+}
+
+.tourgrat-app__top,
+.tourgrat-app__body,
+.tourgrat-referrals,
+.tourgrat-app__action {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.tourgrat-app__top {
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    padding: 0.9rem;
+    background: #050e1e;
+}
+
+.tourgrat-app__top > div {
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    place-items: center;
+    border-radius: 0.65rem;
+    background: var(--bt-gold);
+    color: #111;
+    font-weight: 900;
+}
+
+.tourgrat-app__top strong,
+.tourgrat-app__top small,
+.tourgrat-app__title small {
+    display: block;
+}
+
+.tourgrat-app__top small,
+.tourgrat-app__title small {
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.tourgrat-app__body {
+    padding: 0.9rem;
+}
+
+.tourgrat-app__title strong {
+    color: #fff;
+    font-size: 1.3rem;
+}
+
+.tourgrat-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.55rem;
+}
+
+.tourgrat-stats span,
+.tourgrat-app__action,
+.tourgrat-referrals span {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 0.75rem;
+}
+
+.tourgrat-stats small,
+.tourgrat-referrals em {
+    display: block;
+    color: rgba(255, 255, 255, 0.48);
+    font-style: normal;
+    font-size: 0.68rem;
+}
+
+.tourgrat-stats strong,
+.tourgrat-app__action strong,
+.tourgrat-referrals strong,
+.tourgrat-referrals b {
+    color: var(--bt-gold);
+}
+
+.tourgrat-referrals span {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.tourgrat-steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.tourgrat-steps span {
+    display: grid;
+    width: 2.6rem;
+    height: 2.6rem;
+    place-items: center;
+    border-radius: 0.9rem;
+    background: #f4ead8;
+    color: #8a6429;
+    font-weight: 900;
+    margin-bottom: 0.85rem;
+}
+
+.tourgrat-audience {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.tourgrat-commission {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-bottom: 1rem;
+}
+
+.tourgrat-commission span {
+    display: inline-flex;
+    margin-bottom: 0.75rem;
+    border-radius: 999px;
+    background: #f4ead8;
+    color: #8a6429;
+    padding: 0.45rem 0.65rem;
+    font-size: 0.75rem;
+    font-weight: 900;
+}
+
+.tourgrat-commission strong {
+    display: block;
+    color: var(--bt-blue);
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 500;
+}
+
+.tourgrat-benefits {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.tourgrat-download {
+    background: #fff;
+}
+
+.tourgrat-download__box {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1.5rem;
+    align-items: center;
+    border-radius: 2rem;
+    background: linear-gradient(135deg, #ff7a1a, #ffb347 48%, #2f1741);
+    color: #fff;
+    padding: 1.65rem;
+}
+
+.tourgrat-store-buttons a {
+    background: #111;
+    color: #fff;
+}
+
+.tourgrat-checks {
+    display: grid;
+    gap: 0.7rem;
+    margin: 1rem 0 0;
+    padding: 0;
+    color: var(--bt-muted);
+    list-style: none;
+}
+
+.tourgrat-checks li::before {
+    content: "+";
+    margin-right: 0.5rem;
+    color: #28c76f;
+    font-weight: 900;
+}
+
+.tourgrat-clarity > div {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-top: 1rem;
+}
+
+@media (min-width: 1021px) {
+    .home-routing-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 1050px) {
+    .bus-tour-split,
+    .bus-tour-split--reverse,
+    .bus-tour-lead__grid,
+    .tourgrat-hero__grid,
+    .tourgrat-split,
+    .tourgrat-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .bus-tour-grid,
+    .bus-tour-inclusions,
+    .bus-tour-audience,
+    .tourgrat-benefits {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .tourgrat-app {
+        max-width: 380px;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 720px) {
+    .bus-tour-page .container,
+    .tourgrat-page .container {
+        width: min(100% - 28px, 1180px);
+    }
+
+    .bus-tour-hero {
+        min-height: auto;
+        text-align: left;
+    }
+
+    .bus-tour-hero__inner,
+    .tourgrat-hero__grid {
+        padding: 3rem 0 2rem;
+    }
+
+    .bus-tour-hero h1,
+    .tourgrat-hero h1 {
+        font-size: 2.35rem;
+        line-height: 1.02;
+        letter-spacing: -0.035em;
+    }
+
+    .bus-tour-hero p,
+    .tourgrat-hero p {
+        font-size: 0.9rem;
+    }
+
+    .bus-tour-actions,
+    .tourgrat-actions {
+        display: grid;
+        justify-content: stretch;
+    }
+
+    .bus-tour-facts,
+    .bus-tour-grid,
+    .bus-tour-inclusions,
+    .bus-tour-audience,
+    .tourgrat-steps,
+    .tourgrat-audience,
+    .tourgrat-commission,
+    .tourgrat-benefits,
+    .tourgrat-clarity > div,
+    .bus-tour-faq,
+    .tourgrat-faq,
+    .bus-tour-form,
+    .tourgrat-form,
+    .tourgrat-download__box {
+        grid-template-columns: 1fr;
+    }
+
+    .bus-tour-section,
+    .tourgrat-section {
+        padding: 3rem 0;
+    }
+
+    .bus-tour-panel,
+    .tourgrat-panel,
+    .bus-tour-form-card,
+    .tourgrat-form-card,
+    .tourgrat-clarity {
+        padding: 1.25rem;
+    }
+
+    .bus-tour-image,
+    .bus-tour-card {
+        min-height: 24rem;
+    }
+
+    .bus-tour-heading,
+    .tourgrat-heading {
+        text-align: left;
+    }
+
+    .tourgrat-points {
+        grid-template-columns: 1fr;
+    }
+
+    .tourgrat-store-buttons {
+        display: grid;
     }
 }

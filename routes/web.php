@@ -21,6 +21,7 @@ Route::get('/experiences', [PageController::class, 'experiences'])->name('experi
 Route::get('/experiences/{slug}', [PageController::class, 'experience'])->name('experiences.show');
 Route::get('/tours', [PageController::class, 'tours'])->name('tours.index');
 Route::get('/tours/{slug}', [PageController::class, 'tour'])->name('tours.show');
+Route::get('/bus-tour', [PageController::class, 'busTour'])->name('bus-tour');
 Route::get('/packages', [PageController::class, 'packages'])->name('packages.index');
 Route::get('/packages/{slug}', [PageController::class, 'package'])->name('packages.show');
 Route::get('/visa-services', [PageController::class, 'visaServices'])->name('visa.index');
@@ -39,6 +40,7 @@ Route::get('/evisa-assistance', [PageController::class, 'visaProduct'])->default
 Route::get('/tourist-visa-assistance', [PageController::class, 'visaProduct'])->defaults('slug', 'tourist-visa-assistance')->name('visa.tourist');
 Route::get('/collections/{slug}', [PageController::class, 'collection'])->name('collections.show');
 Route::get('/about', [PageController::class, 'about'])->name('about');
+Route::get('/partner-with-us', [PageController::class, 'partnerWithUs'])->name('partner-with-us');
 Route::get('/cancellation-policy', [PageController::class, 'cancellationPolicy'])->name('cancellation-policy');
 Route::get('/terms-and-conditions', [PageController::class, 'termsAndConditions'])->name('terms-and-conditions');
 Route::get('/privacy-policy', [PageController::class, 'privacyPolicy'])->name('privacy-policy');
@@ -67,6 +69,9 @@ Route::get('/journal', [PageController::class, 'journal'])->name('journal');
 Route::get('/journal/{slug}', [PageController::class, 'article'])->name('journal.show');
 Route::get('/faq', [PageController::class, 'faq'])->name('faq');
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
+Route::get('/{section}-sitemap.xml', [SitemapController::class, 'section'])
+    ->where('section', 'pages|experiences|packages|visa|blog|collections')
+    ->name('sitemap.section');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
