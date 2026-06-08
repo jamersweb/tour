@@ -239,6 +239,7 @@ const subCategorySections = computed(() => subCategoryDefinitions
         ...section,
         items: visibleExperiences.value.filter((experience) => activitySubCategory(experience) === section.key),
     }))
+    .filter((section) => section.items.length > 0)
 );
 
 const loadMoreExperiences = () => {
@@ -341,7 +342,7 @@ watch([locationFilter, typeFilter, activeSort], () => {
                             <span>{{ section.items.length }} options</span>
                         </div>
 
-                        <div v-if="section.items.length" class="card-grid card-grid-four">
+                        <div class="card-grid card-grid-four">
                             <article v-for="(experience, index) in section.items" :key="experience.slug" class="activity-card">
                                 <div v-if="experience.heroImageUrl" class="card-media">
                                     <img :src="experience.heroImageUrl" :alt="experience.title" />
@@ -363,10 +364,6 @@ watch([locationFilter, typeFilter, activeSort], () => {
                                     <Link class="card-link" :href="`/experiences/${experience.slug}`">Book Now</Link>
                                 </div>
                             </article>
-                        </div>
-
-                        <div v-else class="pricing-note activity-subcategory-empty">
-                            No visible options in this section yet. Use Load More or choose another filter.
                         </div>
                     </section>
                 </div>

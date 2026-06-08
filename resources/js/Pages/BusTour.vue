@@ -13,58 +13,55 @@ const page = usePage();
 
 const routes = [
     {
+        key: 'dubai',
         title: 'Dubai Panoramic Bus Tour + Food Tasting',
         day: 'Dubai route',
-        price: 'Request availability',
-        image: 'https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=1200&q=85',
-        copy: 'Hotel pick-up, Museum of the Future photo stop, Al Seef, DIFC, food tasting, lunch, and a sundowner at The Palm.',
-        tags: ['Food tasting', 'Lunch', 'Hotel pickup'],
+        price: 'AED 499 per person',
+        copy: 'A city-focused luxury bus tour with hotel pick-up, Museum of the Future photo stop, Al Seef, DIFC, food tasting, lunch, and a sundowner at The Palm.',
+        tags: ['Food tasting', 'Lunch', 'Guide'],
     },
     {
+        key: 'alain',
         title: 'Al Ain Panoramic Bus Tour + Al Ain Zoo',
         day: 'Al Ain route',
-        price: 'Family friendly',
-        image: 'https://images.unsplash.com/photo-1551969014-7d2c4cddf0b6?auto=format&fit=crop&w=1200&q=85',
-        copy: 'A comfortable wildlife and heritage day with Al Ain Zoo admission, Jebel Hafeet, Al Jahili Fort, lunch, and guide.',
-        tags: ['Zoo entry', 'Guide', 'Lunch'],
+        price: 'AED 499 per person',
+        copy: 'A family-friendly journey with Al Ain Zoo admission, Jebel Hafeet, Al Jahili Fort, Hili Archaeological Park, lunch, and guide.',
+        tags: ['Zoo ticket', 'Family-friendly', 'Lunch'],
     },
     {
+        key: 'fujairah',
         title: 'Fujairah Panoramic Bus Tour',
-        day: 'Coastal route',
-        price: 'Subject to conditions',
-        image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=85',
-        copy: 'Friday Market, Al Hayl Castle, Khorfakkan scenery, oyster farm visit, beach access, and marine-focused experiences.',
-        tags: ['Beach access', 'Oyster farm', 'Heritage stops'],
+        day: 'Fujairah route',
+        price: 'AED 699 per person',
+        copy: 'A coastal route with Friday Market, Al Hayl Castle, Khorfakkan Waterfall, oyster farm visit, beach access, and marine activities.',
+        tags: ['Oyster farm', 'Beach access', 'Marine experience'],
     },
     {
+        key: 'abudhabi',
         title: 'Abu Dhabi Panoramic Bus Tour + Ferrari World',
         day: 'Abu Dhabi route',
-        price: 'Ferrari World included',
-        image: 'https://images.unsplash.com/photo-1512632578888-169bbbc64f33?auto=format&fit=crop&w=1200&q=85',
-        copy: 'A focused Abu Dhabi day combining Sheikh Zayed Grand Mosque, Ferrari World Theme Park admission, lunch, guide, and refreshments.',
-        tags: ['Ferrari World', 'Grand Mosque', 'Refreshments'],
+        price: 'AED 945 per person',
+        copy: 'A focused Abu Dhabi day including Sheikh Zayed Grand Mosque, Ferrari World Theme Park admission, lunch, guide, and refreshments.',
+        tags: ['Ferrari World', 'Mosque visit', 'Lunch'],
     },
-];
-
-const inclusions = [
-    ['Hotel pickup', 'Start and end from your hotel, making the day easier for visitors, families, and hosted guests.'],
-    ['Professional guide', 'Enjoy guided sightseeing, landmark context, and assistance throughout the journey.'],
-    ['Food and drinks', 'Each tour includes food, drinks, and route-specific value such as Al Ain Zoo or Ferrari World where applicable.'],
-    ['Private groups', 'Reserve the bus for family outings, birthdays, corporate groups, travel agencies, or special occasions.'],
 ];
 
 const audiences = [
-    ['Premium travellers', 'For tourists who want a comfortable UAE day tour with hotel pick-up, guide support, and route planning handled.'],
-    ['Residents hosting guests', 'For UAE residents who want to impress family or friends with a polished, easy-to-book day out.'],
-    ['Families and small groups', 'For guests who prefer a simpler alternative to arranging cars, tickets, lunch, and timings separately.'],
-    ['Private occasions', 'For birthdays, corporate outings, school groups, social clubs, and travel agencies.'],
+    ['Premium travellers', 'For tourists who want a comfortable UAE day tour with hotel pick-up, guide support and route planning already handled.'],
+    ['Residents hosting guests', 'For UAE residents who want to impress family or friends with a polished, easy-to-book experience.'],
+    ['Families and small groups', 'For guests who prefer a more comfortable alternative to arranging cars, tickets, lunch and timings separately.'],
+    ['Private occasions', 'For birthdays, corporate outings, school groups, social clubs and travel agencies that want a ready-made group journey.'],
 ];
 
 const faqs = [
-    ['Are seats limited?', 'Yes. Scheduled departures are intentionally limited to create a more comfortable hosted experience.'],
-    ['Is hotel pick-up included?', 'Hotel pick-up and drop-off are included. Exact timing is confirmed after availability is checked.'],
-    ['Can I request a private bus?', 'Yes. The bus can be requested for private groups, families, corporate teams, school groups, and travel agencies.'],
-    ['Are attractions included?', 'Al Ain Zoo and Ferrari World admission are included in their respective tours. Operating hours and entry rules may apply.'],
+    ['Are hotel pick-up and drop-off included?', 'Yes. Hotel pick-up and drop-off are included across the four panoramic bus tour options. Exact pick-up time and coverage will be confirmed by the Acute Tourism team after your enquiry.'],
+    ['Are lunch and drinks included?', 'Yes. Lunch, water and soft drinks are included across the routes. The Dubai route also includes food tasting and a sundowner at The Palm.'],
+    ['Can the bus be booked privately?', 'Yes. The panoramic bus can be requested for families, friends, corporate groups, school groups, travel agencies and special occasions. Private requests are recommended when you need more control over date, route and group arrangements.'],
+    ['Are marine activities on the Fujairah tour guaranteed?', 'Marine activities such as turtle swimming, shark sessions, beach access and oyster farm visits are reconfirmed before booking because they may depend on supplier operations, weather, sea conditions and safety requirements.'],
+    ['What should guests bring?', 'Comfortable clothing is recommended. For mosque visits, modest clothing is required. For Fujairah, guests may bring swimwear, a towel, sunscreen and sunglasses. A valid ID may be required for selected attractions.'],
+    ['Is photography or videography available?', 'Yes. Professional photography and videography are optional add-ons and can be requested during enquiry.'],
+    ['How do I confirm my booking?', 'Submit the enquiry form or contact the team on WhatsApp. Acute Tourism will confirm availability, hotel pick-up timing, final route flow, attraction access and payment details before your booking is confirmed.'],
+    ['How do I choose the right route?', 'Choose Dubai for food and city highlights, Al Ain for family and wildlife, Fujairah for coastal and marine experiences, and Abu Dhabi for Grand Mosque and Ferrari World.'],
 ];
 
 const form = useForm({
@@ -75,13 +72,14 @@ const form = useForm({
     travel_date: '',
     guest_count: 2,
     interest: 'Bus Tour',
-    route: routes[0].title,
+    route: '',
     message: '',
 });
 
 function submit() {
     const message = [
-        `Preferred route: ${form.route}`,
+        `Preferred route: ${form.route || 'Not selected'}`,
+        `Guests: ${form.guest_count || 'Not provided'}`,
         `Message: ${form.message || 'No extra request provided.'}`,
     ].join('\n');
 
@@ -101,166 +99,168 @@ function submit() {
             onSuccess: () => form.reset('name', 'email', 'phone', 'travel_date', 'guest_count', 'route', 'message'),
         });
 }
+
 </script>
 
 <template>
     <SiteMeta :title="seo.title" :description="seo.description" />
 
-    <div class="bus-tour-page">
-        <section class="bus-tour-hero">
-            <div class="container bus-tour-hero__inner">
-                <p class="bus-tour-eyebrow">Premium panoramic UAE experiences</p>
+    <main class="acute-bus-page">
+        <section id="top" class="acute-hero">
+            <div class="acute-hero-inner">
+                <div class="acute-eyebrow">Luxury Bus Tour Dubai</div>
                 <h1>Luxury Bus Tour Dubai for Premium UAE Day Experiences</h1>
                 <p>
-                    Travel through Dubai, Al Ain, Fujairah or Abu Dhabi in a more comfortable and curated way with hotel pick-up,
-                    professional guide support, selected attractions, lunch, refreshments, and private group options.
+                    Travel through Dubai, Al Ain, Fujairah or Abu Dhabi in a more comfortable and curated way. Acute Tourism's luxury bus tour Dubai experience is designed for premium guests who prefer hotel pick-up, guided sightseeing, included meals or tastings, selected attractions and a smoother day out without the feel of a crowded group tour.
                 </p>
-                <div class="bus-tour-actions">
-                    <a class="bus-tour-btn bus-tour-btn--gold" href="#bus-tour-request">Request availability</a>
-                    <a class="bus-tour-btn bus-tour-btn--light" href="#bus-tour-routes">View routes</a>
+                <div class="acute-hero-actions">
+                    <a class="acute-btn gold" href="#tours">View Packages</a>
+                    <a class="acute-btn light" href="#enquiry">Request Availability</a>
                 </div>
-                <div class="bus-tour-facts">
-                    <article><strong>12 guests</strong><span>Limited scheduled seats</span></article>
-                    <article><strong>4 routes</strong><span>Dubai, Al Ain, Fujairah, Abu Dhabi</span></article>
-                    <article><strong>Pickup</strong><span>Hotel pick-up and drop-off</span></article>
-                    <article><strong>Private</strong><span>Custom groups available</span></article>
+                <div class="acute-fomo-line"><span class="acute-fomo-dot"></span> Limited seats per scheduled tour - Early enquiry recommended</div>
+                <div class="acute-hero-facts">
+                    <div class="acute-hero-fact"><strong>12 Guests Only</strong><span>Intentionally limited per departure</span></div>
+                    <div class="acute-hero-fact"><strong>18 Seats</strong><span>More room on board</span></div>
+                    <div class="acute-hero-fact"><strong>Hotel Pick-up</strong><span>Included with every route</span></div>
+                    <div class="acute-hero-fact"><strong>High-demand Dates</strong><span>Availability confirmed on request</span></div>
                 </div>
             </div>
         </section>
 
-        <section class="bus-tour-section">
-            <div class="container bus-tour-split">
-                <div class="bus-tour-panel">
-                    <p class="bus-tour-eyebrow">Hosted day experience</p>
-                    <h2>A hosted UAE day experience with comfort, access and a premium pace</h2>
-                    <p>
-                        The experience is built for guests who want the day arranged properly: comfortable panoramic bus,
-                        professional guide, selected route highlights, food or tasting value, refreshments, and return drop-off.
-                    </p>
-                    <div class="bus-tour-mini-grid">
-                        <span>Limited seats</span>
-                        <span>Hotel pickup</span>
-                        <span>Guide support</span>
+        <section id="highlights" class="acute-section acute-highlights reference-inspired">
+            <div class="acute-container">
+                <div class="acute-refined-intro">
+                    <div class="acute-intro-mark">Come<br />on<br />board</div>
+                    <div>
+                        <div class="acute-eyebrow">Why guests choose it</div>
+                        <h2 class="acute-heading">A hosted UAE day experience with comfort, access and a premium pace</h2>
+                        <p class="acute-copy">The experience is built for guests who want the day arranged properly: hotel pick-up, a comfortable panoramic bus, a professional guide, selected route highlights, lunch or tasting value, refreshments and return drop-off.</p>
                     </div>
                 </div>
-                <div class="bus-tour-image bus-tour-image--coach" aria-hidden="true"></div>
+                <div class="acute-choice-stage">
+                    <div class="acute-choice-media acute-choice-media--image-only" role="img" aria-label="Luxury panoramic bus exterior and route image"></div>
+                    <div class="acute-choice-panel">
+                        <div class="acute-choice-line"><span>01</span><div><strong>Limited scheduled capacity</strong><p>Each scheduled tour is intentionally limited to 12 guests, creating a more exclusive, spacious and personal experience.</p></div></div>
+                        <div class="acute-choice-line"><span>02</span><div><strong>Hotel pick-up and return</strong><p>Start and end from your hotel, making the tour easier for tourists, families and visiting guests.</p></div></div>
+                        <div class="acute-choice-line"><span>03</span><div><strong>Professional guided route</strong><p>Enjoy guided sightseeing, landmark context and assistance throughout the journey.</p></div></div>
+                        <div class="acute-choice-line"><span>04</span><div><strong>Lunch, tastings or attraction value</strong><p>Each tour includes food, drinks and route-specific value such as Al Ain Zoo or Ferrari World where applicable.</p></div></div>
+                        <div class="acute-choice-line"><span>05</span><div><strong>Private group option</strong><p>Reserve the bus for family outings, birthdays, corporate groups, travel agencies or special occasions.</p></div></div>
+                        <div class="acute-choice-actions">
+                            <a class="acute-btn gold" href="#tours">Compare Tours</a>
+                            <a class="acute-btn outline" href="#private">Private Group Enquiry</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <section id="bus-tour-routes" class="bus-tour-section bus-tour-section--cream">
-            <div class="container">
-                <div class="bus-tour-heading">
-                    <p class="bus-tour-eyebrow">Choose your panoramic bus tour</p>
-                    <h2>Four curated routes from Dubai</h2>
-                    <p>
-                        Each route includes hotel pick-up and drop-off, guide support, lunch or tasting value,
-                        water and soft drinks, with route-specific attraction access where applicable.
-                    </p>
+        <section id="tours" class="acute-section">
+            <div class="acute-container">
+                <div class="acute-section-head">
+                    <div class="acute-eyebrow">Packages and prices</div>
+                    <h2 class="acute-heading">Choose your panoramic bus tour</h2>
+                    <p class="acute-copy">Four curated routes from Dubai, each with hotel pick-up and drop-off, a professional guide, lunch or tasting value, water and soft drinks.</p>
                 </div>
-                <div class="bus-tour-grid">
-                    <article v-for="route in routes" :key="route.title" class="bus-tour-card" :style="{ '--bus-card-image': `url(${route.image})` }">
-                        <div class="bus-tour-card__body">
-                            <span>{{ route.day }}</span>
+                <div class="acute-tours-grid">
+                    <article v-for="route in routes" :key="route.key" class="acute-tour-card" :class="route.key">
+                        <div class="acute-tour-body">
+                            <span class="acute-tour-day">{{ route.day }}</span>
                             <h3>{{ route.title }}</h3>
-                            <strong>{{ route.price }}</strong>
+                            <div class="acute-price">{{ route.price }}</div>
                             <p>{{ route.copy }}</p>
-                            <div>
-                                <em v-for="tag in route.tags" :key="tag">{{ tag }}</em>
-                            </div>
+                            <div class="acute-tags"><span v-for="tag in route.tags" :key="tag">{{ tag }}</span></div>
                         </div>
                     </article>
                 </div>
+                <div class="acute-availability-note"><strong>Availability note:</strong> Scheduled seats are limited and preferred dates may close once capacity is reached. For families, celebrations, corporate groups or travel agencies, private bus requests are recommended for better date control.</div>
             </div>
         </section>
 
-        <section class="bus-tour-section bus-tour-section--blue">
-            <div class="container">
-                <div class="bus-tour-heading">
-                    <p class="bus-tour-eyebrow">What each tour includes</p>
-                    <h2>Comfort, guidance, and route value in one plan</h2>
-                    <p>Each route is structured around a clear experience theme, arranged transport, guided sightseeing, and included food or attraction value.</p>
-                </div>
-                <div class="bus-tour-inclusions">
-                    <article v-for="[title, copy] in inclusions" :key="title">
-                        <span></span>
-                        <h3>{{ title }}</h3>
-                        <p>{{ copy }}</p>
-                    </article>
+        <section id="know-before" class="acute-section">
+            <div class="acute-container">
+                <div class="acute-section-head"><div class="acute-eyebrow">Before you book</div><h2 class="acute-heading">Clear answers for confident booking</h2><p class="acute-copy">Essential details to help you understand what is included, what may depend on availability and how your booking is confirmed.</p></div>
+                <div class="acute-safety-grid">
+                    <div class="acute-safety-card"><h3>Pick-up and timing</h3><p>Hotel pick-up and drop-off are included. Exact pick-up timing, route order and return timing are confirmed after availability is checked.</p></div>
+                    <div class="acute-safety-card"><h3>Fujairah marine activities</h3><p>Swimming with turtles, shark sessions, beach access and oyster farm visits are confirmed subject to supplier availability, weather, sea conditions and guest safety requirements.</p></div>
+                    <div class="acute-safety-card"><h3>Attraction access</h3><p>Al Ain Zoo and Ferrari World admission are included in their respective tours. Attraction operating hours, ride availability and entry rules may apply.</p></div>
                 </div>
             </div>
         </section>
 
-        <section class="bus-tour-section">
-            <div class="container bus-tour-split bus-tour-split--reverse">
-                <div class="bus-tour-image bus-tour-image--private" aria-hidden="true"></div>
-                <div class="bus-tour-panel">
-                    <p class="bus-tour-eyebrow">Private bus requests</p>
-                    <h2>Reserve the bus for your own group</h2>
-                    <p>
-                        The panoramic bus can be requested for private groups, families, friends, corporate teams,
-                        celebrations, school groups, travel agencies and custom UAE experiences.
-                    </p>
-                    <a class="bus-tour-btn bus-tour-btn--blue" href="#bus-tour-request">Request private options</a>
-                </div>
-            </div>
-        </section>
-
-        <section class="bus-tour-section bus-tour-section--cream">
-            <div class="container">
-                <div class="bus-tour-heading">
-                    <p class="bus-tour-eyebrow">Designed for ease</p>
-                    <h2>For guests who value ease and exclusivity</h2>
-                </div>
-                <div class="bus-tour-audience">
-                    <article v-for="[title, copy] in audiences" :key="title">
-                        <strong>{{ title }}</strong>
-                        <span>{{ copy }}</span>
-                    </article>
-                </div>
-            </div>
-        </section>
-
-        <section id="bus-tour-request" class="bus-tour-section bus-tour-lead">
-            <div class="container bus-tour-lead__grid">
+        <section id="private" class="acute-section acute-private">
+            <div class="acute-container acute-private-grid">
                 <div>
-                    <p class="bus-tour-eyebrow">Request your panoramic bus experience</p>
-                    <h2>Share your preferred route, date and group details.</h2>
-                    <p>
-                        The Acute Tourism team will confirm availability, hotel pick-up timing, route flow,
-                        attraction access and private bus options before payment.
-                    </p>
+                    <div class="acute-eyebrow">Private bus enquiry</div>
+                    <h2 class="acute-heading">Reserve the bus for your own group</h2>
+                    <p class="acute-copy">The panoramic bus can also be requested for private groups, families, friends, corporate teams, celebrations, school groups, travel agencies and custom UAE experiences.</p>
+                    <div class="acute-line-list"><div><span>Best for</span><strong>Families, companies, groups and occasions</strong></div><div><span>Route options</span><strong>Dubai, Al Ain, Fujairah, Abu Dhabi or custom</strong></div><div><span>Add-ons</span><strong>Shopping, photography and videography</strong></div></div>
+                    <a class="acute-btn gold" href="#enquiry">Request Private Bus</a>
                 </div>
-                <div class="bus-tour-form-card">
-                    <div v-if="page.props.flash.success" class="success-banner">{{ page.props.flash.success }}</div>
-                    <form class="bus-tour-form" @submit.prevent="submit">
-                        <label><span>Name</span><input v-model="form.name" type="text" autocomplete="name" /></label>
-                        <label><span>Email</span><input v-model="form.email" type="email" autocomplete="email" /></label>
-                        <label><span>Phone / WhatsApp</span><input v-model="form.phone" type="tel" autocomplete="tel" /></label>
-                        <label><span>Preferred route</span><select v-model="form.route"><option v-for="route in routes" :key="route.title" :value="route.title">{{ route.title }}</option></select></label>
-                        <label><span>Travel date</span><input v-model="form.travel_date" type="date" /></label>
-                        <label><span>Guests</span><input v-model="form.guest_count" type="number" min="1" max="100" /></label>
-                        <label class="bus-tour-form__full"><span>Request</span><textarea v-model="form.message" rows="5" placeholder="Tell us your route, group type, pickup area, or private bus request."></textarea></label>
-                        <button class="bus-tour-btn bus-tour-btn--gold bus-tour-form__full" type="submit" :disabled="form.processing">
-                            {{ form.processing ? 'Sending...' : 'Request availability' }}
-                        </button>
-                    </form>
+                <div class="acute-private-image"></div>
+            </div>
+        </section>
+
+        <section class="acute-section alt acute-audience">
+            <div class="acute-container">
+                <div class="acute-section-head">
+                    <div class="acute-eyebrow">Best for</div>
+                    <h2 class="acute-heading">Designed for guests who value ease and exclusivity</h2>
+                    <p class="acute-copy">The panoramic bus format is especially useful when you want a premium day out arranged for you.</p>
+                </div>
+                <div class="acute-audience-grid">
+                    <div v-for="[title, copy] in audiences" :key="title" class="acute-audience-card"><h3>{{ title }}</h3><p>{{ copy }}</p></div>
                 </div>
             </div>
         </section>
 
-        <section class="bus-tour-section bus-tour-section--faq">
-            <div class="container">
-                <div class="bus-tour-heading">
-                    <p class="bus-tour-eyebrow">Frequently asked questions</p>
-                    <h2>Clear answers for confident booking</h2>
+        <section id="media-gallery" class="acute-section acute-media-showcase">
+            <div class="acute-container">
+                <div class="acute-section-head">
+                    <div class="acute-eyebrow">Experience media</div>
+                    <h2 class="acute-heading">A closer look at the journey</h2>
+                    <p class="acute-copy">See the bus, onboard comfort, hosted moments and route highlights before you request availability.</p>
                 </div>
-                <div class="bus-tour-faq">
-                    <details v-for="[question, answer] in faqs" :key="question">
-                        <summary>{{ question }}</summary>
-                        <p>{{ answer }}</p>
-                    </details>
+                <div class="acute-gallery-wrap">
+                    <div class="acute-gallery-feature" role="img" aria-label="Luxury panoramic bus exterior and route image"><div class="acute-gallery-caption"><strong>Luxury panoramic bus</strong><span>Exterior and route visuals from the experience.</span></div></div>
+                    <div class="acute-gallery-grid">
+                        <div v-for="tile in ['Bus interior', 'Fujairah coastal route', 'Dubai city route', 'Al Ain family route', 'Abu Dhabi route', 'Guest moments']" :key="tile" class="acute-gallery-tile" :class="tile.toLowerCase().split(' ')[0]"><div class="acute-gallery-caption"><strong>{{ tile }}</strong><span>Hosted service, route highlights and guest moments.</span></div></div>
+                    </div>
+                </div>
+                <div class="acute-proof-note">Browse the bus setup, seating, destination highlights and onboard hospitality before requesting availability.</div>
+            </div>
+        </section>
+
+        <section id="enquiry" class="acute-section acute-lead">
+            <div class="acute-container acute-lead-grid">
+                <div class="acute-lead-copy"><div class="acute-eyebrow">Check availability</div><h2 class="acute-heading">Request your panoramic bus experience</h2><p class="acute-copy">Share your preferred route, date and group details. The Acute Tourism team will confirm availability, hotel pick-up timing, route flow, attraction access and private bus options before payment.</p></div>
+                <form class="acute-lead-form" @submit.prevent="submit">
+                    <div v-if="page.props.flash.success" class="success-banner acute-full-field">{{ page.props.flash.success }}</div>
+                    <div class="acute-form-grid">
+                        <label>Full Name<input v-model="form.name" placeholder="Enter your name" required type="text" autocomplete="name" /></label>
+                        <label>WhatsApp Number<input v-model="form.phone" placeholder="+971 5X XXX XXXX" required type="tel" autocomplete="tel" /></label>
+                        <label>Preferred Tour<select v-model="form.route" required><option value="">Select tour</option><option v-for="route in routes" :key="route.title" :value="route.title">{{ route.title }}</option><option value="Private Bus Enquiry">Private Bus Enquiry</option></select></label>
+                        <label>Preferred Date<input v-model="form.travel_date" type="date" /></label>
+                    </div>
+                    <label class="acute-full-field">Additional Request<textarea v-model="form.message" placeholder="Number of guests, hotel location, preferred route, private group request, or any special occasion." rows="4"></textarea></label>
+                    <button class="acute-btn gold acute-submit" type="submit" :disabled="form.processing">{{ form.processing ? 'Sending...' : 'Send Enquiry' }}</button>
+                    <a class="acute-quick-chat" href="https://wa.me/97145654898?text=Hello%20Acute%20Tourism%2C%20I%20want%20to%20check%20availability%20for%20the%20panoramic%20bus%20tour." rel="noopener" target="_blank">Prefer WhatsApp? Speak to our team directly</a>
+                    <div class="acute-note">Submitting this form does not confirm booking. The team will confirm seat availability, hotel pick-up details, final timing and any supplier-dependent activities before payment.</div>
+                </form>
+            </div>
+        </section>
+
+        <section class="acute-section cream">
+            <div class="acute-container">
+                <div class="acute-section-head"><div class="acute-eyebrow">Questions guests may ask</div><h2 class="acute-heading">Frequently asked questions</h2></div>
+                <div class="acute-faq-accordion">
+                    <details v-for="[question, answer] in faqs" :key="question" class="acute-faq-item"><summary>{{ question }}</summary><div class="acute-faq-answer">{{ answer }}</div></details>
                 </div>
             </div>
         </section>
-    </div>
+
+        <div class="acute-sticky-cta" aria-label="Request panoramic bus tour availability">
+            <span><strong>Limited seats</strong> on scheduled departures</span>
+            <a class="acute-btn gold" href="#enquiry">Request Availability</a>
+        </div>
+    </main>
 </template>
