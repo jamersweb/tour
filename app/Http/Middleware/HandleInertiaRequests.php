@@ -135,7 +135,11 @@ class HandleInertiaRequests extends Middleware
                     ['label' => 'Contact', 'href' => route('contact')],
                 ],
                 'primaryNavigation' => [
-                    ['label' => 'Tours & Tickets', 'href' => route('experiences.index')],
+                    [
+                        'label' => 'Tours & Tickets',
+                        'href' => route('experiences.index'),
+                        'children' => $this->toursAndTicketsNavigation(),
+                    ],
                     ['label' => 'Holiday Packages', 'href' => route('packages.index')],
                     ['label' => 'Visa Services', 'href' => route('visa.index')],
                     ['label' => 'Bus Tour', 'href' => route('bus-tour')],
@@ -143,6 +147,11 @@ class HandleInertiaRequests extends Middleware
                 ],
                 'mobileNavigation' => [
                     ['label' => 'Tours & Tickets', 'href' => route('experiences.index')],
+                    ['label' => 'Dubai Tours', 'href' => route('experiences.location', 'dubai')],
+                    ['label' => 'Abu Dhabi Tours', 'href' => route('experiences.location', 'abu-dhabi')],
+                    ['label' => 'Desert Safari', 'href' => route('experiences.category', 'desert-safari')],
+                    ['label' => 'Water Parks', 'href' => route('experiences.category', 'water-parks')],
+                    ['label' => 'Yacht & Cruises', 'href' => route('experiences.category', 'yacht-cruises')],
                     ['label' => 'Holiday Packages', 'href' => route('packages.index')],
                     ['label' => 'Visa Services', 'href' => route('visa.index')],
                     ['label' => 'Bus Tour', 'href' => route('bus-tour')],
@@ -174,6 +183,26 @@ class HandleInertiaRequests extends Middleware
         }
 
         return $urls->unique()->values()->all();
+    }
+
+    /**
+     * @return array<int, array{label: string, href: string}>
+     */
+    private function toursAndTicketsNavigation(): array
+    {
+        return [
+            ['label' => 'All Tours & Tickets', 'href' => route('experiences.index')],
+            ['label' => 'Dubai', 'href' => route('experiences.location', 'dubai')],
+            ['label' => 'Abu Dhabi', 'href' => route('experiences.location', 'abu-dhabi')],
+            ['label' => 'Other Emirates', 'href' => route('experiences.location', 'other-emirates')],
+            ['label' => 'Entry Tickets', 'href' => route('experiences.category', 'entry-tickets')],
+            ['label' => 'Desert Safari', 'href' => route('experiences.category', 'desert-safari')],
+            ['label' => 'City Tours', 'href' => route('experiences.category', 'city-tours')],
+            ['label' => 'Water Sports', 'href' => route('experiences.category', 'water-sports')],
+            ['label' => 'Water Parks', 'href' => route('experiences.category', 'water-parks')],
+            ['label' => 'Theme Parks', 'href' => route('experiences.category', 'theme-parks')],
+            ['label' => 'Yacht & Cruises', 'href' => route('experiences.category', 'yacht-cruises')],
+        ];
     }
 
     /**

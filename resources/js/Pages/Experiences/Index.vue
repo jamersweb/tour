@@ -9,12 +9,18 @@ defineOptions({ layout: SiteLayout });
 const props = defineProps({
     seo: Object,
     activeCategory: String,
+    activeLocation: String,
+    activeType: String,
     categories: Array,
     experiences: Array,
+    locationFilters: Array,
+    typeFilters: Array,
+    pageTitle: String,
+    pageDescription: String,
 });
 
-const locationFilter = ref('all');
-const typeFilter = ref('all');
+const locationFilter = ref(props.activeLocation || 'all');
+const typeFilter = ref(props.activeType || 'all');
 const activeSort = ref('recommended');
 const initialVisibleCount = 16;
 const visibleLimit = ref(initialVisibleCount);
@@ -26,14 +32,14 @@ const trustItems = [
     { icon: '🏷️', label: 'Best price guarantee' },
 ];
 
-const locationOptions = [
+const defaultLocationOptions = [
     { key: 'all', label: 'All Locations' },
     { key: 'dubai', label: 'Dubai' },
     { key: 'abu-dhabi', label: 'Abu Dhabi' },
     { key: 'other-emirates', label: 'Other Emirates' },
 ];
 
-const typeOptions = [
+const defaultTypeOptions = [
     { key: 'all', label: 'All Activities' },
     { key: 'entry-tickets', label: 'Entry Tickets' },
     { key: 'desert-safari', label: 'Desert Safari' },
@@ -43,6 +49,18 @@ const typeOptions = [
     { key: 'theme-parks', label: 'Theme Parks' },
     { key: 'yacht-cruises', label: 'Yacht & Cruises' },
 ];
+
+const locationOptions = computed(() => (props.locationFilters?.length ? props.locationFilters : defaultLocationOptions)
+    .map((option) => ({
+        ...option,
+        href: option.href || (option.key === 'all' ? '/experiences' : `/experiences/location/${option.key}`),
+    })));
+
+const typeOptions = computed(() => (props.typeFilters?.length ? props.typeFilters : defaultTypeOptions)
+    .map((option) => ({
+        ...option,
+        href: option.href || (option.key === 'all' ? '/experiences' : `/experiences/category/${option.key}`),
+    })));
 
 const guideCards = [
     {
@@ -115,13 +133,13 @@ const activityType = (item) => {
     const text = normalizedText(item);
 
     if (text.includes('helicopter') || text.includes('sky') || text.includes('balloon')) return 'helicopter-sky';
-    if (text.includes('ticket') || text.includes('entry') || text.includes('pass')) return 'entry-tickets';
     if (text.includes('desert') || text.includes('safari') || text.includes('quad') || text.includes('buggy')) return 'desert-safari';
     if (text.includes('city') || text.includes('landmark') || text.includes('chauffeur')) return 'city-tours';
     if (text.includes('jet ski') || text.includes('parasail') || text.includes('water sport')) return 'water-sports';
     if (text.includes('water park') || text.includes('aquaventure') || text.includes('wild wadi')) return 'water-parks';
     if (text.includes('theme park') || text.includes('ferrari') || text.includes('img world') || text.includes('warner')) return 'theme-parks';
     if (text.includes('yacht') || text.includes('cruise') || text.includes('marina')) return 'yacht-cruises';
+    if (text.includes('ticket') || text.includes('entry') || text.includes('pass')) return 'entry-tickets';
 
     return 'entry-tickets';
 };
@@ -242,12 +260,34 @@ const subCategorySections = computed(() => subCategoryDefinitions
     .filter((section) => section.items.length > 0)
 );
 
+const activeTypeLabel = computed(() => typeOptions.value.find((option) => option.key === typeFilter.value)?.label || '');
+const displaySections = computed(() => {
+    if (typeFilter.value === 'all') {
+        return subCategorySections.value;
+    }
+
+    return [{
+        key: typeFilter.value,
+        title: activeTypeLabel.value,
+        copy: `All available ${activeTypeLabel.value.toLowerCase()} options.`,
+        items: visibleExperiences.value,
+    }].filter((section) => section.items.length > 0);
+});
+
 const loadMoreExperiences = () => {
     visibleLimit.value += initialVisibleCount;
 };
 
 watch([locationFilter, typeFilter, activeSort], () => {
     visibleLimit.value = initialVisibleCount;
+});
+
+watch(() => props.activeLocation, (value) => {
+    locationFilter.value = value || 'all';
+});
+
+watch(() => props.activeType, (value) => {
+    typeFilter.value = value || 'all';
 });
 </script>
 
@@ -259,10 +299,9 @@ watch([locationFilter, typeFilter, activeSort], () => {
             <div class="container hero-grid">
                 <div>
                     <p class="kicker">Tours & Activities</p>
-                    <h1 class="hero-title">Book Dubai's Best Tours, Tickets & Activities</h1>
+                    <h1 class="hero-title">{{ pageTitle || "Book Dubai's Best Tours, Tickets & Activities" }}</h1>
                     <p class="hero-copy">
-                        Compare top-rated activities by location, attraction type, price, reviews, and duration, then book
-                        the experience that fits your day.
+                        {{ pageDescription || 'Compare top-rated activities by location, attraction type, price, reviews, and duration, then book the experience that fits your day.' }}
                     </p>
                 </div>
             </div>
@@ -290,32 +329,30 @@ watch([locationFilter, typeFilter, activeSort], () => {
                     <div class="filter-group">
                         <div class="filter-label">Location</div>
                         <div class="filter-row" aria-label="Location filters">
-                            <button
+                            <Link
                                 v-for="option in locationOptions"
                                 :key="option.key"
                                 class="filter-chip"
                                 :class="{ active: locationFilter === option.key }"
-                                type="button"
-                                @click="locationFilter = option.key"
+                                :href="option.href"
                             >
                                 {{ option.label }}
-                            </button>
+                            </Link>
                         </div>
                     </div>
 
                     <div class="filter-group">
                         <div class="filter-label">Activity Type</div>
                         <div class="filter-row" aria-label="Activity type filters">
-                            <button
+                            <Link
                                 v-for="option in typeOptions"
                                 :key="option.key"
                                 class="filter-chip"
                                 :class="{ active: typeFilter === option.key }"
-                                type="button"
-                                @click="typeFilter = option.key"
+                                :href="option.href"
                             >
                                 {{ option.label }}
-                            </button>
+                            </Link>
                         </div>
                     </div>
 
@@ -330,7 +367,7 @@ watch([locationFilter, typeFilter, activeSort], () => {
 
                 <div class="activity-subcategory-list">
                     <section
-                        v-for="section in subCategorySections"
+                        v-for="section in displaySections"
                         :key="section.key"
                         class="activity-subcategory-section"
                     >
@@ -343,7 +380,7 @@ watch([locationFilter, typeFilter, activeSort], () => {
                         </div>
 
                         <div class="card-grid card-grid-four">
-                            <article v-for="(experience, index) in section.items" :key="experience.slug" class="activity-card">
+                            <article v-for="(experience, index) in section.items" :key="`${experience.type || 'experience'}-${experience.slug}`" class="activity-card">
                                 <div v-if="experience.heroImageUrl" class="card-media">
                                     <img :src="experience.heroImageUrl" :alt="experience.title" />
                                     <span
@@ -361,7 +398,7 @@ watch([locationFilter, typeFilter, activeSort], () => {
                                         <span class="activity-review">{{ reviewText(experience) }}</span>
                                     </div>
                                     <p class="price-line"><span>From</span>{{ experience.priceFrom || 'Ask' }}</p>
-                                    <Link class="card-link" :href="`/experiences/${experience.slug}`">Book Now</Link>
+                                    <Link class="card-link" :href="experience.href || `/experiences/${experience.slug}`">Book Now</Link>
                                 </div>
                             </article>
                         </div>

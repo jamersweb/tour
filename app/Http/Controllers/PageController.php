@@ -481,41 +481,21 @@ class PageController extends Controller
 
     public function experiences(Request $request): Response
     {
-        $activeCategory = $request->string('category')->toString();
+        return $this->renderExperiencesIndex();
+    }
 
-        $query = Experience::query()->where('is_active', true);
+    public function experienceLocation(string $location): Response
+    {
+        abort_unless(array_key_exists($location, $this->experienceLocationFilters()), 404);
 
-        if ($activeCategory !== '') {
-            $query->where('category', $activeCategory);
-        }
+        return $this->renderExperiencesIndex(locationFilter: $location);
+    }
 
-        return Inertia::render('Experiences/Index', [
-            'seo' => [
-                'title' => 'Experiences',
-                'description' => 'Browse premium Dubai experiences across desert, yacht, city, and family categories.',
-            ],
-            'activeCategory' => $activeCategory,
-            'categories' => Experience::query()
-                ->where('is_active', true)
-                ->select('category')
-                ->distinct()
-                ->orderBy('category')
-                ->pluck('category'),
-            'experiences' => $query
-                ->orderByDesc('is_featured')
-                ->orderBy('price_from')
-                ->get()
-                ->map(fn (Experience $experience) => [
-                    'title' => $experience->title,
-                    'slug' => $experience->slug,
-                    'category' => $experience->category,
-                    'duration' => $experience->duration,
-                    'location' => $experience->location,
-                    'summary' => $experience->short_description,
-                    'priceFrom' => $this->formatMoney($experience->price_from, $experience->currency),
-                    'heroImageUrl' => $experience->hero_image_url,
-                ]),
-        ]);
+    public function experienceCategory(string $category): Response
+    {
+        abort_unless(array_key_exists($category, $this->experienceTypeFilters()), 404);
+
+        return $this->renderExperiencesIndex(typeFilter: $category);
     }
 
     public function experience(string $slug): Response
@@ -1876,6 +1856,184 @@ class PageController extends Controller
                 ])
                 ->values(),
         ]);
+    }
+
+    private function renderExperiencesIndex(?string $locationFilter = null, ?string $typeFilter = null): Response
+    {
+        $locationFilters = $this->experienceLocationFilters();
+        $typeFilters = $this->experienceTypeFilters();
+
+        $allExperiences = Experience::query()
+            ->where('is_active', true)
+            ->orderByDesc('is_featured')
+            ->orderBy('price_from')
+            ->get()
+            ->map(fn (Experience $experience) => [
+                'type' => 'experience',
+                'title' => $experience->title,
+                'slug' => $experience->slug,
+                'href' => route('experiences.show', $experience->slug),
+                'category' => $experience->category,
+                'duration' => $experience->duration,
+                'location' => $experience->location,
+                'summary' => $experience->short_description,
+                'priceFrom' => $this->formatMoney($experience->price_from, $experience->currency),
+                'heroImageUrl' => $experience->hero_image_url,
+            ])
+            ->merge(Tour::query()
+                ->where('is_active', true)
+                ->orderByDesc('is_featured')
+                ->orderBy('price_from')
+                ->get()
+                ->map(fn (Tour $tour) => [
+                    'type' => 'tour',
+                    'title' => $tour->title,
+                    'slug' => $tour->slug,
+                    'href' => route('tours.show', $tour->slug),
+                    'category' => $tour->category,
+                    'duration' => $tour->duration,
+                    'location' => $tour->location,
+                    'summary' => $tour->short_description,
+                    'priceFrom' => $this->formatMoney($tour->price_from, $tour->currency),
+                    'heroImageUrl' => $tour->hero_image_url,
+                ]))
+            ->filter(function (array $experience) use ($locationFilter, $typeFilter) {
+                if ($locationFilter && $this->experienceLocationKey($experience) !== $locationFilter) {
+                    return false;
+                }
+
+                if ($typeFilter && $this->experienceTypeKey($experience) !== $typeFilter) {
+                    return false;
+                }
+
+                return true;
+            })
+            ->values();
+
+        $pageLabel = $typeFilter
+            ? ($typeFilters[$typeFilter] ?? 'Tours & Tickets')
+            : ($locationFilter ? ($locationFilters[$locationFilter] ?? 'Tours & Tickets') : 'Tours & Tickets');
+
+        return Inertia::render('Experiences/Index', [
+            'seo' => [
+                'title' => $pageLabel === 'Tours & Tickets' ? 'Tours & Tickets' : "{$pageLabel} | Tours & Tickets",
+                'description' => "Browse {$pageLabel} with Acute Tourism. Compare trusted activities, tours, tickets, duration, and prices before booking.",
+            ],
+            'activeCategory' => $typeFilter ?? '',
+            'activeLocation' => $locationFilter ?? 'all',
+            'activeType' => $typeFilter ?? 'all',
+            'pageTitle' => $pageLabel === 'Tours & Tickets'
+                ? "Book Dubai's Best Tours, Tickets & Activities"
+                : $pageLabel,
+            'pageDescription' => $pageLabel === 'Tours & Tickets'
+                ? 'Compare top-rated activities by location, attraction type, price, reviews, and duration, then book the experience that fits your day.'
+                : "Browse all available {$pageLabel} options, compare timings and pricing, then open the tour or ticket that fits your plans.",
+            'categories' => Experience::query()
+                ->where('is_active', true)
+                ->select('category')
+                ->distinct()
+                ->orderBy('category')
+                ->pluck('category'),
+            'locationFilters' => collect($locationFilters)
+                ->map(fn (string $label, string $key) => [
+                    'key' => $key,
+                    'label' => $label,
+                    'href' => $key === 'all' ? route('experiences.index') : route('experiences.location', $key),
+                ])
+                ->values(),
+            'typeFilters' => collect($typeFilters)
+                ->map(fn (string $label, string $key) => [
+                    'key' => $key,
+                    'label' => $label,
+                    'href' => $key === 'all' ? route('experiences.index') : route('experiences.category', $key),
+                ])
+                ->values(),
+            'experiences' => $allExperiences,
+        ]);
+    }
+
+    private function experienceLocationFilters(): array
+    {
+        return [
+            'all' => 'All Locations',
+            'dubai' => 'Dubai',
+            'abu-dhabi' => 'Abu Dhabi',
+            'other-emirates' => 'Other Emirates',
+        ];
+    }
+
+    private function experienceTypeFilters(): array
+    {
+        return [
+            'all' => 'All Activities',
+            'entry-tickets' => 'Entry Tickets',
+            'desert-safari' => 'Desert Safari',
+            'city-tours' => 'City Tours',
+            'water-sports' => 'Water Sports',
+            'water-parks' => 'Water Parks',
+            'theme-parks' => 'Theme Parks',
+            'yacht-cruises' => 'Yacht & Cruises',
+        ];
+    }
+
+    private function normalizedExperienceText(array $experience): string
+    {
+        return Str::of(implode(' ', [
+            $experience['title'] ?? '',
+            $experience['category'] ?? '',
+            $experience['location'] ?? '',
+            $experience['summary'] ?? '',
+        ]))->lower()->toString();
+    }
+
+    private function experienceLocationKey(array $experience): string
+    {
+        $text = $this->normalizedExperienceText($experience);
+
+        if (str_contains($text, 'abu dhabi') || str_contains($text, 'ferrari world') || str_contains($text, 'yas island')) {
+            return 'abu-dhabi';
+        }
+
+        if (str_contains($text, 'sharjah') || str_contains($text, 'ras al khaimah') || str_contains($text, 'fujairah') || str_contains($text, 'ajman')) {
+            return 'other-emirates';
+        }
+
+        return 'dubai';
+    }
+
+    private function experienceTypeKey(array $experience): string
+    {
+        $text = $this->normalizedExperienceText($experience);
+
+        if (str_contains($text, 'desert') || str_contains($text, 'safari') || str_contains($text, 'quad') || str_contains($text, 'buggy')) {
+            return 'desert-safari';
+        }
+
+        if (str_contains($text, 'city') || str_contains($text, 'landmark') || str_contains($text, 'chauffeur')) {
+            return 'city-tours';
+        }
+
+        if (str_contains($text, 'jet ski') || str_contains($text, 'parasail') || str_contains($text, 'water sport')) {
+            return 'water-sports';
+        }
+
+        if (str_contains($text, 'water park') || str_contains($text, 'aquaventure') || str_contains($text, 'wild wadi')) {
+            return 'water-parks';
+        }
+
+        if (str_contains($text, 'theme park') || str_contains($text, 'ferrari') || str_contains($text, 'img world') || str_contains($text, 'warner')) {
+            return 'theme-parks';
+        }
+
+        if (str_contains($text, 'yacht') || str_contains($text, 'cruise') || str_contains($text, 'marina')) {
+            return 'yacht-cruises';
+        }
+
+        if (str_contains($text, 'ticket') || str_contains($text, 'entry') || str_contains($text, 'pass')) {
+            return 'entry-tickets';
+        }
+
+        return 'entry-tickets';
     }
 
     protected function interestForCategory(string $category): string

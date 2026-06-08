@@ -18,6 +18,8 @@ Route::get('/legacy-media/uploads/{path}', [LegacyMediaController::class, 'show'
     ->name('legacy-media.show');
 Route::get('/acute-landing', [PageController::class, 'acuteLanding'])->name('landing.acute');
 Route::get('/experiences', [PageController::class, 'experiences'])->name('experiences.index');
+Route::get('/experiences/location/{location}', [PageController::class, 'experienceLocation'])->name('experiences.location');
+Route::get('/experiences/category/{category}', [PageController::class, 'experienceCategory'])->name('experiences.category');
 Route::get('/experiences/{slug}', [PageController::class, 'experience'])->name('experiences.show');
 Route::get('/tours', [PageController::class, 'tours'])->name('tours.index');
 Route::get('/tours/{slug}', [PageController::class, 'tour'])->name('tours.show');
