@@ -36,8 +36,15 @@ class ExperiencesTable
                 TextColumn::make('location')
                     ->searchable(),
                 TextColumn::make('price_from')
+                    ->label('Adult price')
                     ->numeric()
                     ->money('AED')
+                    ->sortable(),
+                TextColumn::make('child_price_from')
+                    ->label('Kid price')
+                    ->numeric()
+                    ->money('AED')
+                    ->placeholder('-')
                     ->sortable(),
                 TextColumn::make('currency')
                     ->toggleable(isToggledHiddenByDefault: true),

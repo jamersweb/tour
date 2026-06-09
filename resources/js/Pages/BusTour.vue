@@ -17,33 +17,66 @@ const routes = [
         title: 'Dubai Panoramic Bus Tour + Food Tasting',
         day: 'Dubai route',
         price: 'AED 499 per person',
+        panelPrice: 'AED 499 / person',
+        label: 'City, food and sundowner',
         copy: 'A city-focused luxury bus tour with hotel pick-up, Museum of the Future photo stop, Al Seef, DIFC, food tasting, lunch, and a sundowner at The Palm.',
+        bestFor: 'Best for visitors, residents hosting guests, couples and small groups who want a relaxed city route with selected Dubai highlights and food-focused moments.',
         tags: ['Food tasting', 'Lunch', 'Guide'],
+        highlights: ['Hotel pick-up from selected Dubai areas', 'Museum of the Future photo stop', 'Al Seef photo stop', 'DIFC photo stop', 'Sundowner at The Palm'],
+        included: ['Hotel pick-up and drop-off', 'Professional guide', 'Food tasting', 'Lunch', 'Water and soft drinks'],
     },
     {
         key: 'alain',
         title: 'Al Ain Panoramic Bus Tour + Al Ain Zoo',
         day: 'Al Ain route',
         price: 'AED 499 per person',
+        panelPrice: 'AED 499 / person',
+        label: 'Wildlife and heritage',
         copy: 'A family-friendly journey with Al Ain Zoo admission, Jebel Hafeet, Al Jahili Fort, Hili Archaeological Park, lunch, and guide.',
+        bestFor: 'Best for families, residents and guests who want a comfortable wildlife and heritage day outside Dubai with attraction access already included.',
         tags: ['Zoo ticket', 'Family-friendly', 'Lunch'],
+        highlights: ['National Museum photo stop', 'Hili Archaeological Park photo stop', 'Jebel Hafeet', 'Al Jahili Fort', 'Al Ain Zoo visit'],
+        included: ['Hotel pick-up and drop-off', 'Al Ain Zoo admission ticket', 'Professional guide', 'Lunch', 'Water and soft drinks'],
     },
     {
         key: 'fujairah',
         title: 'Fujairah Panoramic Bus Tour',
         day: 'Fujairah route',
         price: 'AED 699 per person',
+        panelPrice: 'AED 699 / person',
+        label: 'Coastal and marine experience',
         copy: 'A coastal route with Friday Market, Al Hayl Castle, Khorfakkan Waterfall, oyster farm visit, beach access, and marine activities.',
+        bestFor: 'Best for guests looking for the most distinctive route: a coastal journey with heritage stops, Khorfakkan scenery, lunch by the beach and marine-focused experiences.',
         tags: ['Oyster farm', 'Beach access', 'Marine experience'],
+        highlights: ['Hotel pick-up from selected Dubai areas', 'Friday Market shopping and photo stop', 'Al Hayl Castle', 'Khorfakkan Waterfall', 'Return transfer to your hotel'],
+        included: ['Hotel pick-up and drop-off', 'Lunch at Heart Beach, Khorfakkan', 'Professional guide', 'Swimming with turtles', 'Oyster farm visit', 'Free beach access'],
     },
     {
         key: 'abudhabi',
         title: 'Abu Dhabi Panoramic Bus Tour + Ferrari World',
         day: 'Abu Dhabi route',
         price: 'AED 945 per person',
+        panelPrice: 'AED 945 / person',
+        label: 'Grand Mosque and Ferrari World',
         copy: 'A focused Abu Dhabi day including Sheikh Zayed Grand Mosque, Ferrari World Theme Park admission, lunch, guide, and refreshments.',
+        bestFor: 'Best for guests who want a focused Abu Dhabi day combining one major cultural landmark with Ferrari World Theme Park access.',
         tags: ['Ferrari World', 'Mosque visit', 'Lunch'],
+        highlights: ['Sheikh Zayed Grand Mosque', 'Ferrari World Theme Park'],
+        included: ['Hotel pick-up and drop-off', 'Professional guide', 'Lunch', 'Water and soft drinks', 'Admission ticket to Ferrari World Theme Park'],
     },
+];
+
+const galleryItems = [
+    ['bus', 'Bus exterior', 'Luxury coach exterior and arrival setup.'],
+    ['interior', 'Bus interior', 'Seating, comfort, space and onboard setup.'],
+    ['hosted', 'Hosted welcome', 'Guest welcome, guide briefing and departure flow.'],
+    ['dubai', 'Dubai city route', 'City views, photo stops and sundowner atmosphere.'],
+    ['fujairah', 'Fujairah coastal route', 'Coastal, beach and marine moments.'],
+    ['alain', 'Al Ain family route', 'Wildlife, heritage and mountain scenery.'],
+    ['abudhabi', 'Abu Dhabi route', 'Grand Mosque and Ferrari World highlights.'],
+    ['food', 'Lunch and tastings', 'Food tasting, lunch and refreshment moments.'],
+    ['group', 'Private groups', 'Family, corporate and group travel moments.'],
+    ['guest', 'Guest moments', 'Hosted service, route highlights and guest moments.'],
 ];
 
 const audiences = [
@@ -138,7 +171,13 @@ function submit() {
                     </div>
                 </div>
                 <div class="acute-choice-stage">
-                    <div class="acute-choice-media acute-choice-media--image-only" role="img" aria-label="Luxury panoramic bus exterior and route image"></div>
+                    <div class="acute-choice-media" role="img" aria-label="Luxury panoramic bus tour media area">
+                        <div class="acute-video-card">
+                            <div class="acute-play-icon" aria-hidden="true"></div>
+                            <strong>Watch the experience</strong>
+                            <span>Experience video area: bus interior, guest welcome, route moments and destination highlights.</span>
+                        </div>
+                    </div>
                     <div class="acute-choice-panel">
                         <div class="acute-choice-line"><span>01</span><div><strong>Limited scheduled capacity</strong><p>Each scheduled tour is intentionally limited to 12 guests, creating a more exclusive, spacious and personal experience.</p></div></div>
                         <div class="acute-choice-line"><span>02</span><div><strong>Hotel pick-up and return</strong><p>Start and end from your hotel, making the tour easier for tourists, families and visiting guests.</p></div></div>
@@ -173,6 +212,39 @@ function submit() {
                     </article>
                 </div>
                 <div class="acute-availability-note"><strong>Availability note:</strong> Scheduled seats are limited and preferred dates may close once capacity is reached. For families, celebrations, corporate groups or travel agencies, private bus requests are recommended for better date control.</div>
+            </div>
+        </section>
+
+        <section id="details" class="acute-section alt">
+            <div class="acute-container">
+                <div class="acute-section-head">
+                    <div class="acute-eyebrow">Tour details</div>
+                    <h2 class="acute-heading">What each tour includes</h2>
+                    <p class="acute-copy">Each route is structured around a clear experience theme, arranged transport, guided sightseeing, and included food or attraction value.</p>
+                </div>
+                <div class="acute-details-list">
+                    <article v-for="route in routes" :key="`${route.key}-details`" class="acute-tour-panel">
+                        <div class="acute-panel-image" :class="route.key"></div>
+                        <div class="acute-panel-content">
+                            <div class="acute-panel-top">
+                                <span class="acute-panel-label">{{ route.label }}</span>
+                                <span class="acute-panel-price">{{ route.panelPrice }}</span>
+                            </div>
+                            <h3>{{ route.title }}</h3>
+                            <p>{{ route.bestFor }}</p>
+                            <div class="acute-info-cols">
+                                <div class="acute-list">
+                                    <h4>Route highlights</h4>
+                                    <ul><li v-for="item in route.highlights" :key="item">{{ item }}</li></ul>
+                                </div>
+                                <div class="acute-list">
+                                    <h4>Included</h4>
+                                    <ul><li v-for="item in route.included" :key="item">{{ item }}</li></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
             </div>
         </section>
 
@@ -220,10 +292,10 @@ function submit() {
                     <h2 class="acute-heading">A closer look at the journey</h2>
                     <p class="acute-copy">See the bus, onboard comfort, hosted moments and route highlights before you request availability.</p>
                 </div>
-                <div class="acute-gallery-wrap">
+                <div class="acute-gallery-wrap acute-gallery-wrap--expanded">
                     <div class="acute-gallery-feature" role="img" aria-label="Luxury panoramic bus exterior and route image"><div class="acute-gallery-caption"><strong>Luxury panoramic bus</strong><span>Exterior and route visuals from the experience.</span></div></div>
                     <div class="acute-gallery-grid">
-                        <div v-for="tile in ['Bus interior', 'Fujairah coastal route', 'Dubai city route', 'Al Ain family route', 'Abu Dhabi route', 'Guest moments']" :key="tile" class="acute-gallery-tile" :class="tile.toLowerCase().split(' ')[0]"><div class="acute-gallery-caption"><strong>{{ tile }}</strong><span>Hosted service, route highlights and guest moments.</span></div></div>
+                        <div v-for="[key, title, copy] in galleryItems" :key="key" class="acute-gallery-tile" :class="key"><div class="acute-gallery-caption"><strong>{{ title }}</strong><span>{{ copy }}</span></div></div>
                     </div>
                 </div>
                 <div class="acute-proof-note">Browse the bus setup, seating, destination highlights and onboard hospitality before requesting availability.</div>

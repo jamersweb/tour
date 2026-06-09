@@ -40,6 +40,7 @@ class Experience extends Model
         'transfer_option',
         'booking_type',
         'price_from',
+        'child_price_from',
         'currency',
         'is_featured',
         'show_on_homepage',
@@ -56,6 +57,7 @@ class Experience extends Model
     {
         return [
             'price_from' => 'decimal:2',
+            'child_price_from' => 'decimal:2',
             'gallery_images' => 'array',
             'gallery_videos' => 'array',
             'highlights' => 'array',

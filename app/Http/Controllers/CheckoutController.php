@@ -344,12 +344,13 @@ class CheckoutController extends Controller
             $adultCount = $guestCount - $childCount;
         }
         $selectedBookingOption = $this->selectedBookingOption($payable, $validated['booking_option'] ?? null);
-        $unitAmount = (float) ($selectedBookingOption['amountValue'] ?? $payable->price_from);
-        $totalAmount = round((float) ($overrides['amount'] ?? ($unitAmount * max(1, $guestCount))), 2);
+        $adultAmount = (float) ($selectedBookingOption['amountValue'] ?? $payable->price_from);
+        $childAmount = $this->childUnitAmount($payable, $adultAmount);
+        $totalAmount = round((float) ($overrides['amount'] ?? (($adultAmount * max(0, $adultCount)) + ($childAmount * max(0, $childCount)))), 2);
         $currency = (string) ($overrides['currency'] ?? $payable->currency);
         $preferenceNotes = collect([
             'Booking option' => $selectedBookingOption['label'] ?? null,
-            'Adults 12+' => $adultCount > 0 ? (string) $adultCount : null,
+            'Adults 12+' => $childCount > 0 && $adultCount > 0 ? (string) $adultCount : null,
             'Kids 3-11' => $childCount > 0 ? (string) $childCount : null,
             'Tour language' => $validated['tour_option'] ?? null,
             'Preferred time' => $validated['preferred_time'] ?? null,
@@ -652,7 +653,8 @@ class CheckoutController extends Controller
             }
             $selectedBookingOption = $this->selectedBookingOption($payable, $item['booking_option'] ?? null);
             $unitAmount = (float) ($selectedBookingOption['amountValue'] ?? $payable->price_from);
-            $lineTotal = round($unitAmount * $lineGuestCount, 2);
+            $childUnitAmount = $this->childUnitAmount($payable, $unitAmount);
+            $lineTotal = round(($unitAmount * $lineAdultCount) + ($childUnitAmount * $lineChildCount), 2);
             $total += $lineTotal;
             $guestCount += $lineGuestCount;
             $adultCount += $lineAdultCount;
@@ -673,6 +675,8 @@ class CheckoutController extends Controller
                 'childCount' => $lineChildCount,
                 'unitAmount' => $unitAmount,
                 'unitAmountFormatted' => $this->formatMoney($unitAmount, $itemCurrency),
+                'childUnitAmount' => $childUnitAmount,
+                'childUnitAmountFormatted' => $this->formatMoney($childUnitAmount, $itemCurrency),
                 'lineTotal' => $lineTotal,
                 'lineTotalFormatted' => $this->formatMoney($lineTotal, $itemCurrency),
             ];
@@ -720,5 +724,12 @@ class CheckoutController extends Controller
     protected function formatMoney(float $amount, string $currency = 'AED'): string
     {
         return "{$currency} ".number_format($amount, 2);
+    }
+
+    protected function childUnitAmount(Model $payable, float $adultAmount): float
+    {
+        $childAmount = $payable->getAttribute('child_price_from');
+
+        return is_numeric($childAmount) ? (float) $childAmount : $adultAmount;
     }
 }

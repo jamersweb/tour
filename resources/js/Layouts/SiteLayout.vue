@@ -91,8 +91,15 @@ function closeNavDropdowns() {
     });
 }
 
+function closeMobileNavGroups() {
+    headerRef.value?.querySelectorAll('details.mobile-flat-nav__group[open]').forEach((el) => {
+        el.removeAttribute('open');
+    });
+}
+
 function closeMobileNav() {
     mobileNavOpen.value = false;
+    closeMobileNavGroups();
 }
 
 function toggleMobileNav() {
@@ -301,15 +308,33 @@ onBeforeUnmount(() => {
                     </nav>
 
                     <nav class="mobile-flat-nav" aria-label="Mobile main">
-                        <Link
-                            v-for="item in page.props.site.mobileNavigation"
-                            :key="item.href"
-                            class="mobile-flat-nav__link"
-                            :href="item.href"
-                            @click="closeMobileNav"
-                        >
-                            {{ item.label }}
-                        </Link>
+                        <template v-for="item in page.props.site.mobileNavigation" :key="item.label">
+                            <details v-if="item.children" class="mobile-flat-nav__group">
+                                <summary class="mobile-flat-nav__link mobile-flat-nav__summary">
+                                    {{ item.label }}
+                                    <span class="mobile-flat-nav__chevron" aria-hidden="true"></span>
+                                </summary>
+                                <div class="mobile-flat-nav__children">
+                                    <Link
+                                        v-for="child in item.children"
+                                        :key="child.href"
+                                        class="mobile-flat-nav__child"
+                                        :href="child.href"
+                                        @click="closeMobileNav"
+                                    >
+                                        {{ child.label }}
+                                    </Link>
+                                </div>
+                            </details>
+                            <Link
+                                v-else
+                                class="mobile-flat-nav__link"
+                                :href="item.href"
+                                @click="closeMobileNav"
+                            >
+                                {{ item.label }}
+                            </Link>
+                        </template>
                     </nav>
 
                     <div class="header-actions">

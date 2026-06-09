@@ -91,13 +91,16 @@ const bookingGuestCount = computed(() => {
 });
 
 const totalAmount = computed(() => {
-    const rawAmount = String(props.tour.priceFrom || '0').replace(/[^0-9.]/g, '');
-    const unitAmount = Number.parseFloat(selectedBookingOption.value?.amountValue ?? rawAmount ?? '0');
+    const adults = Math.max(0, Number.parseInt(form.adult_count, 10) || 0) || bookingGuestCount.value;
+    const kids = Math.max(0, Number.parseInt(form.child_count, 10) || 0);
+    const adultAmount = Number.parseFloat(selectedBookingOption.value?.amountValue ?? props.tour.priceFromValue ?? '0') || 0;
+    const childAmount = Number.parseFloat(props.tour.childPriceFromValue ?? adultAmount) || adultAmount;
+    const total = (adultAmount * adults) + (childAmount * kids);
 
     return `AED ${new Intl.NumberFormat('en-US', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-    }).format(unitAmount * bookingGuestCount.value)}`;
+    }).format(total)}`;
 });
 
 const focusBookingForm = (field = 'date') => {
@@ -382,6 +385,7 @@ onBeforeUnmount(() => {
                             <p class="experience-operator-booking__label">From</p>
                             <h2 v-if="tour.priceFrom" class="experience-operator-booking__price">
                                 {{ tour.priceFrom }} <span>per person</span>
+                                <span v-if="tour.childPriceFrom">Kids: {{ tour.childPriceFrom }}</span>
                             </h2>
                             <p v-else class="experience-operator-booking__price experience-operator-booking__price--muted">
                                 Current pricing is available at checkout.

@@ -146,12 +146,11 @@ class HandleInertiaRequests extends Middleware
                     ['label' => 'Contact', 'href' => route('contact')],
                 ],
                 'mobileNavigation' => [
-                    ['label' => 'Tours & Tickets', 'href' => route('experiences.index')],
-                    ['label' => 'Dubai Tours', 'href' => route('experiences.location', 'dubai')],
-                    ['label' => 'Abu Dhabi Tours', 'href' => route('experiences.location', 'abu-dhabi')],
-                    ['label' => 'Desert Safari', 'href' => route('experiences.category', 'desert-safari')],
-                    ['label' => 'Water Parks', 'href' => route('experiences.category', 'water-parks')],
-                    ['label' => 'Yacht & Cruises', 'href' => route('experiences.category', 'yacht-cruises')],
+                    [
+                        'label' => 'Tours & Tickets',
+                        'href' => route('experiences.index'),
+                        'children' => $this->toursAndTicketsNavigation(),
+                    ],
                     ['label' => 'Holiday Packages', 'href' => route('packages.index')],
                     ['label' => 'Visa Services', 'href' => route('visa.index')],
                     ['label' => 'Bus Tour', 'href' => route('bus-tour')],

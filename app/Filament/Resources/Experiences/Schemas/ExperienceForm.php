@@ -180,8 +180,14 @@ class ExperienceForm
                             ->multiple()
                             ->preload(),
                         TextInput::make('price_from')
+                            ->label('Adult price from')
                             ->numeric()
                             ->prefix('AED'),
+                        TextInput::make('child_price_from')
+                            ->label('Kid price from')
+                            ->numeric()
+                            ->prefix('AED')
+                            ->helperText('Optional. Used for kids aged 3 to 11. Leave blank to use the adult price.'),
                         TextInput::make('currency')
                             ->required()
                             ->default('AED')

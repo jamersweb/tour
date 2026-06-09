@@ -25,6 +25,11 @@ class ExperienceInfolist
                 TextEntry::make('location')
                     ->placeholder('-'),
                 TextEntry::make('price_from')
+                    ->label('Adult price from')
+                    ->numeric()
+                    ->placeholder('-'),
+                TextEntry::make('child_price_from')
+                    ->label('Kid price from')
                     ->numeric()
                     ->placeholder('-'),
                 TextEntry::make('currency'),

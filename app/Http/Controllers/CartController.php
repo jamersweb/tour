@@ -126,7 +126,13 @@ class CartController extends Controller
                 $guestCount = max($this->minimumGuestsForType($item['type']), (int) ($item['guest_count'] ?? 1));
                 $selectedBookingOption = $this->selectedBookingOption($payable, $item['booking_option'] ?? null);
                 $unitAmount = (float) ($selectedBookingOption['amountValue'] ?? $payable->price_from);
-                $total = $unitAmount * $guestCount;
+                $adultCount = max(0, (int) ($item['adult_count'] ?? $guestCount));
+                $childCount = max(0, (int) ($item['child_count'] ?? 0));
+                if ($adultCount + $childCount < $guestCount) {
+                    $adultCount = $guestCount - $childCount;
+                }
+                $childUnitAmount = $this->childUnitAmount($payable, $unitAmount);
+                $total = ($unitAmount * $adultCount) + ($childUnitAmount * $childCount);
 
                 return [
                     'key' => $key,
@@ -140,10 +146,11 @@ class CartController extends Controller
                     'location' => $payable->location,
                     'bookingOption' => $selectedBookingOption,
                     'guestCount' => $guestCount,
-                    'adultCount' => max(0, (int) ($item['adult_count'] ?? $guestCount)),
-                    'childCount' => max(0, (int) ($item['child_count'] ?? 0)),
+                    'adultCount' => $adultCount,
+                    'childCount' => $childCount,
                     'travelDate' => $item['travel_date'] ?? null,
                     'unitAmount' => $this->formatMoney($unitAmount, $payable->currency),
+                    'childUnitAmount' => $this->formatMoney($childUnitAmount, $payable->currency),
                     'lineTotal' => $this->formatMoney($total, $payable->currency),
                     'detailUrl' => $this->detailUrl($item['type'], $item['slug']),
                 ];
@@ -165,8 +172,15 @@ class CartController extends Controller
 
                 $selectedBookingOption = $this->selectedBookingOption($payable, $item['booking_option'] ?? null);
                 $unitAmount = (float) ($selectedBookingOption['amountValue'] ?? $payable->price_from);
+                $guestCount = max($this->minimumGuestsForType($item['type']), (int) ($item['guest_count'] ?? 1));
+                $adultCount = max(0, (int) ($item['adult_count'] ?? $guestCount));
+                $childCount = max(0, (int) ($item['child_count'] ?? 0));
+                if ($adultCount + $childCount < $guestCount) {
+                    $adultCount = $guestCount - $childCount;
+                }
+                $childUnitAmount = $this->childUnitAmount($payable, $unitAmount);
 
-                return $unitAmount * max($this->minimumGuestsForType($item['type']), (int) ($item['guest_count'] ?? 1));
+                return ($unitAmount * $adultCount) + ($childUnitAmount * $childCount);
             });
     }
 
@@ -260,5 +274,12 @@ class CartController extends Controller
     protected function formatMoney(float $amount, string $currency = 'AED'): string
     {
         return "{$currency} ".number_format($amount, 2);
+    }
+
+    protected function childUnitAmount(Model $payable, float $adultAmount): float
+    {
+        $childAmount = $payable->getAttribute('child_price_from');
+
+        return is_numeric($childAmount) ? (float) $childAmount : $adultAmount;
     }
 }
