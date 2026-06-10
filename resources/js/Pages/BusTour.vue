@@ -1,5 +1,6 @@
 <script setup>
 import { useForm, usePage } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
 import SiteMeta from '../Components/SiteMeta.vue';
 import SiteLayout from '../Layouts/SiteLayout.vue';
 
@@ -66,18 +67,161 @@ const routes = [
     },
 ];
 
-const galleryItems = [
-    ['bus', 'Bus exterior', 'Luxury coach exterior and arrival setup.'],
-    ['interior', 'Bus interior', 'Seating, comfort, space and onboard setup.'],
-    ['hosted', 'Hosted welcome', 'Guest welcome, guide briefing and departure flow.'],
-    ['dubai', 'Dubai city route', 'City views, photo stops and sundowner atmosphere.'],
-    ['fujairah', 'Fujairah coastal route', 'Coastal, beach and marine moments.'],
-    ['alain', 'Al Ain family route', 'Wildlife, heritage and mountain scenery.'],
-    ['abudhabi', 'Abu Dhabi route', 'Grand Mosque and Ferrari World highlights.'],
-    ['food', 'Lunch and tastings', 'Food tasting, lunch and refreshment moments.'],
-    ['group', 'Private groups', 'Family, corporate and group travel moments.'],
-    ['guest', 'Guest moments', 'Hosted service, route highlights and guest moments.'],
+const galleryFolders = [
+    {
+        key: 'panoramic',
+        title: 'Luxury panoramic bus',
+        copy: 'Exterior and route visuals from the experience.',
+        cover: 'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=1300&q=85',
+        images: [
+            'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=1300&q=85',
+            'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1300&q=85',
+            'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=900&q=85',
+        ],
+    },
+    {
+        key: 'bus',
+        title: 'Bus exterior',
+        copy: 'Luxury coach exterior and arrival setup.',
+        cover: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=900&q=85',
+        images: [
+            'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1300&q=85',
+            'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=1300&q=85',
+            'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1300&q=85',
+        ],
+    },
+    {
+        key: 'interior',
+        title: 'Bus interior',
+        copy: 'Seating, comfort, space and onboard setup.',
+        cover: 'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=900&q=85',
+        images: [
+            'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=1300&q=85',
+            'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1300&q=85',
+            'https://images.unsplash.com/photo-1527631746610-bca00a040d60?auto=format&fit=crop&w=1300&q=85',
+        ],
+    },
+    {
+        key: 'hosted',
+        title: 'Hosted welcome',
+        copy: 'Guest welcome, guide briefing and departure flow.',
+        cover: 'https://images.unsplash.com/photo-1527631746610-bca00a040d60?auto=format&fit=crop&w=900&q=85',
+        images: [
+            'https://images.unsplash.com/photo-1527631746610-bca00a040d60?auto=format&fit=crop&w=1300&q=85',
+            'https://images.unsplash.com/photo-1507537297725-24a1c029d3ca?auto=format&fit=crop&w=1300&q=85',
+            'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1300&q=85',
+        ],
+    },
+    {
+        key: 'dubai',
+        title: 'Dubai city route',
+        copy: 'City views, photo stops and sundowner atmosphere.',
+        cover: 'https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=1200&q=85',
+        images: [
+            'https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=1300&q=85',
+            'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1300&q=85',
+            'https://images.unsplash.com/photo-1582672060674-bc2bd808a8b5?auto=format&fit=crop&w=1300&q=85',
+        ],
+    },
+    {
+        key: 'fujairah',
+        title: 'Fujairah coastal route',
+        copy: 'Coastal, beach and marine moments.',
+        cover: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=85',
+        images: [
+            'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1300&q=85',
+            'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1300&q=85',
+            'https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=1300&q=85',
+        ],
+    },
+    {
+        key: 'alain',
+        title: 'Al Ain family route',
+        copy: 'Wildlife, heritage and mountain scenery.',
+        cover: 'https://images.unsplash.com/photo-1551969014-7d2c4cddf0b6?auto=format&fit=crop&w=1200&q=85',
+        images: [
+            'https://images.unsplash.com/photo-1551969014-7d2c4cddf0b6?auto=format&fit=crop&w=1300&q=85',
+            'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1300&q=85',
+            'https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=1300&q=85',
+        ],
+    },
+    {
+        key: 'abudhabi',
+        title: 'Abu Dhabi route',
+        copy: 'Grand Mosque and Ferrari World highlights.',
+        cover: 'https://images.unsplash.com/photo-1512632578888-169bbbc64f33?auto=format&fit=crop&w=1200&q=85',
+        images: [
+            'https://images.unsplash.com/photo-1512632578888-169bbbc64f33?auto=format&fit=crop&w=1300&q=85',
+            'https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=1300&q=85',
+            'https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?auto=format&fit=crop&w=1300&q=85',
+        ],
+    },
+    {
+        key: 'food',
+        title: 'Lunch and tastings',
+        copy: 'Food tasting, lunch and refreshment moments.',
+        cover: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=900&q=85',
+        images: [
+            'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1300&q=85',
+            'https://images.unsplash.com/photo-1543353071-873f17a7a088?auto=format&fit=crop&w=1300&q=85',
+            'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1300&q=85',
+        ],
+    },
+    {
+        key: 'group',
+        title: 'Private groups',
+        copy: 'Family, corporate and group travel moments.',
+        cover: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=900&q=85',
+        images: [
+            'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1300&q=85',
+            'https://images.unsplash.com/photo-1507537297725-24a1c029d3ca?auto=format&fit=crop&w=1300&q=85',
+            'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1300&q=85',
+        ],
+    },
+    {
+        key: 'guest',
+        title: 'Guest moments',
+        copy: 'Hosted service, route highlights and guest moments.',
+        cover: 'https://images.unsplash.com/photo-1507537297725-24a1c029d3ca?auto=format&fit=crop&w=900&q=85',
+        images: [
+            'https://images.unsplash.com/photo-1507537297725-24a1c029d3ca?auto=format&fit=crop&w=1300&q=85',
+            'https://images.unsplash.com/photo-1527631746610-bca00a040d60?auto=format&fit=crop&w=1300&q=85',
+            'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1300&q=85',
+        ],
+    },
 ];
+
+const activeGalleryIndex = ref(null);
+const activeGalleryImageIndex = ref(0);
+const activeGallery = computed(() => (
+    activeGalleryIndex.value === null ? null : galleryFolders[activeGalleryIndex.value] ?? null
+));
+const activeGalleryImage = computed(() => activeGallery.value?.images?.[activeGalleryImageIndex.value] ?? null);
+
+function galleryCoverStyle(url) {
+    return {
+        backgroundImage: `linear-gradient(to top, rgba(6, 26, 99, 0.82), transparent 58%), url('${url}')`,
+    };
+}
+
+function openGallery(index) {
+    activeGalleryIndex.value = index;
+    activeGalleryImageIndex.value = 0;
+}
+
+function closeGallery() {
+    activeGalleryIndex.value = null;
+    activeGalleryImageIndex.value = 0;
+}
+
+function showGalleryImage(index) {
+    if (! activeGallery.value?.images?.length) {
+        return;
+    }
+
+    const total = activeGallery.value.images.length;
+    activeGalleryImageIndex.value = ((index % total) + total) % total;
+}
 
 const audiences = [
     ['Premium travellers', 'For tourists who want a comfortable UAE day tour with hotel pick-up, guide support and route planning already handled.'],
@@ -293,9 +437,36 @@ function submit() {
                     <p class="acute-copy">See the bus, onboard comfort, hosted moments and route highlights before you request availability.</p>
                 </div>
                 <div class="acute-gallery-wrap acute-gallery-wrap--expanded">
-                    <div class="acute-gallery-feature" role="img" aria-label="Luxury panoramic bus exterior and route image"><div class="acute-gallery-caption"><strong>Luxury panoramic bus</strong><span>Exterior and route visuals from the experience.</span></div></div>
+                    <button
+                        type="button"
+                        class="acute-gallery-feature acute-gallery-folder"
+                        :style="galleryCoverStyle(galleryFolders[0].cover)"
+                        :aria-label="`Open ${galleryFolders[0].title} gallery`"
+                        @click="openGallery(0)"
+                    >
+                        <div class="acute-gallery-caption">
+                            <strong>{{ galleryFolders[0].title }}</strong>
+                            <span>{{ galleryFolders[0].copy }}</span>
+                            <em>{{ galleryFolders[0].images.length }} photos</em>
+                        </div>
+                    </button>
                     <div class="acute-gallery-grid">
-                        <div v-for="[key, title, copy] in galleryItems" :key="key" class="acute-gallery-tile" :class="key"><div class="acute-gallery-caption"><strong>{{ title }}</strong><span>{{ copy }}</span></div></div>
+                        <button
+                            v-for="(folder, index) in galleryFolders.slice(1)"
+                            :key="folder.key"
+                            type="button"
+                            class="acute-gallery-tile acute-gallery-folder"
+                            :class="folder.key"
+                            :style="galleryCoverStyle(folder.cover)"
+                            :aria-label="`Open ${folder.title} gallery`"
+                            @click="openGallery(index + 1)"
+                        >
+                            <div class="acute-gallery-caption">
+                                <strong>{{ folder.title }}</strong>
+                                <span>{{ folder.copy }}</span>
+                                <em>{{ folder.images.length }} photos</em>
+                            </div>
+                        </button>
                     </div>
                 </div>
                 <div class="acute-proof-note">Browse the bus setup, seating, destination highlights and onboard hospitality before requesting availability.</div>
@@ -333,6 +504,36 @@ function submit() {
         <div class="acute-sticky-cta" aria-label="Request panoramic bus tour availability">
             <span><strong>Limited seats</strong> on scheduled departures</span>
             <a class="acute-btn gold" href="#enquiry">Request Availability</a>
+        </div>
+
+        <div v-if="activeGallery" class="experience-lightbox acute-gallery-lightbox" @click.self="closeGallery">
+            <button type="button" class="experience-lightbox__close" @click="closeGallery">Close</button>
+            <div class="experience-lightbox__dialog acute-gallery-lightbox__dialog">
+                <div class="acute-gallery-lightbox__media-wrap">
+                    <button type="button" class="acute-gallery-lightbox__nav prev" aria-label="Previous photo" @click="showGalleryImage(activeGalleryImageIndex - 1)">‹</button>
+                    <img class="experience-lightbox__media" :src="activeGalleryImage" :alt="`${activeGallery.title} photo ${activeGalleryImageIndex + 1}`" />
+                    <button type="button" class="acute-gallery-lightbox__nav next" aria-label="Next photo" @click="showGalleryImage(activeGalleryImageIndex + 1)">›</button>
+                </div>
+                <div class="acute-gallery-lightbox__content">
+                    <div>
+                        <span>{{ activeGalleryImageIndex + 1 }} / {{ activeGallery.images.length }}</span>
+                        <h3>{{ activeGallery.title }}</h3>
+                        <p>{{ activeGallery.copy }}</p>
+                    </div>
+                    <div class="acute-gallery-lightbox__thumbs" aria-label="Gallery photos">
+                        <button
+                            v-for="(image, index) in activeGallery.images"
+                            :key="image"
+                            type="button"
+                            :class="{ active: index === activeGalleryImageIndex }"
+                            :aria-label="`Show photo ${index + 1}`"
+                            @click="showGalleryImage(index)"
+                        >
+                            <img :src="image" :alt="`${activeGallery.title} thumbnail ${index + 1}`" />
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 </template>
