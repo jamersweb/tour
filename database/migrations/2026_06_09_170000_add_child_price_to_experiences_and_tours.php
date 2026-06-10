@@ -9,22 +9,30 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('experiences', function (Blueprint $table) {
-            $table->decimal('child_price_from', 10, 2)->nullable()->after('price_from');
+            if (! Schema::hasColumn('experiences', 'child_price_from')) {
+                $table->decimal('child_price_from', 10, 2)->nullable()->after('price_from');
+            }
         });
 
         Schema::table('tours', function (Blueprint $table) {
-            $table->decimal('child_price_from', 10, 2)->nullable()->after('price_from');
+            if (! Schema::hasColumn('tours', 'child_price_from')) {
+                $table->decimal('child_price_from', 10, 2)->nullable()->after('price_from');
+            }
         });
     }
 
     public function down(): void
     {
         Schema::table('tours', function (Blueprint $table) {
-            $table->dropColumn('child_price_from');
+            if (Schema::hasColumn('tours', 'child_price_from')) {
+                $table->dropColumn('child_price_from');
+            }
         });
 
         Schema::table('experiences', function (Blueprint $table) {
-            $table->dropColumn('child_price_from');
+            if (Schema::hasColumn('experiences', 'child_price_from')) {
+                $table->dropColumn('child_price_from');
+            }
         });
     }
 };
