@@ -157,6 +157,14 @@ class TourForm
                     TextInput::make('currency')->required()->default('AED')->maxLength(3),
                 ])
                 ->columns(2),
+            Section::make('Collections')
+                ->schema([
+                    Select::make('collections')
+                        ->relationship('collections', 'name')
+                        ->multiple()
+                        ->preload()
+                        ->searchable(),
+                ]),
             Section::make('Publishing')
                 ->schema([
                     Toggle::make('is_featured')->required()->inline(false),

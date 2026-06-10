@@ -54,7 +54,7 @@ defineProps({
                         <span>{{ experience.duration }}</span>
                         <strong>{{ experience.priceFrom }}</strong>
                     </div>
-                    <Link class="button-primary card-button" :href="`/experiences/${experience.slug}`">View experience</Link>
+                    <Link class="button-primary card-button" :href="experience.href">{{ experience.label || 'View experience' }}</Link>
                 </article>
             </div>
         </div>

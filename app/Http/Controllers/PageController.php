@@ -595,8 +595,33 @@ class PageController extends Controller
     {
         $collection = Collection::query()
             ->where('slug', $slug)
-            ->with(['experiences' => fn ($query) => $query->where('is_active', true)->orderBy('collection_experience.sort_order')])
+            ->with([
+                'experiences' => fn ($query) => $query->where('is_active', true)->orderBy('collection_experience.sort_order'),
+                'tours' => fn ($query) => $query->where('is_active', true)->orderBy('collection_tour.sort_order'),
+            ])
             ->firstOrFail();
+
+        $experiences = $collection->experiences->map(fn (Experience $experience) => [
+            'title' => $experience->title,
+            'slug' => $experience->slug,
+            'category' => $experience->category,
+            'priceFrom' => $this->formatMoney($experience->price_from, $experience->currency),
+            'duration' => $experience->duration,
+            'heroImageUrl' => $experience->hero_image_url,
+            'href' => route('experiences.show', $experience->slug),
+            'label' => 'View experience',
+        ]);
+
+        $tours = $collection->tours->map(fn (Tour $tour) => [
+            'title' => $tour->title,
+            'slug' => $tour->slug,
+            'category' => $tour->category,
+            'priceFrom' => $this->formatMoney($tour->price_from, $tour->currency),
+            'duration' => $tour->duration,
+            'heroImageUrl' => $tour->hero_image_url,
+            'href' => route('tours.show', $tour->slug),
+            'label' => 'View tour',
+        ]);
 
         return Inertia::render('Collections/Show', [
             'seo' => [
@@ -610,14 +635,7 @@ class PageController extends Controller
                 'description' => $collection->description,
                 'summary' => $collection->summary,
                 'heroImageUrl' => $collection->hero_image_url,
-                'experiences' => $collection->experiences->map(fn (Experience $experience) => [
-                    'title' => $experience->title,
-                    'slug' => $experience->slug,
-                    'category' => $experience->category,
-                    'priceFrom' => $this->formatMoney($experience->price_from, $experience->currency),
-                    'duration' => $experience->duration,
-                    'heroImageUrl' => $experience->hero_image_url,
-                ]),
+                'experiences' => $experiences->concat($tours)->values(),
             ],
         ]);
     }

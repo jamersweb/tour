@@ -47,4 +47,11 @@ class Collection extends Model
             ->withTimestamps()
             ->orderByPivot('sort_order');
     }
+
+    public function tours(): BelongsToMany
+    {
+        return $this->belongsToMany(Tour::class)
+            ->withTimestamps()
+            ->orderByPivot('sort_order');
+    }
 }

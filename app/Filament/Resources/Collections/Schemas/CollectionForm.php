@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Collections\Schemas;
 
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -40,6 +41,23 @@ class CollectionForm
                             ->directory('collections')
                             ->imageEditor(),
                     ]),
+                Section::make('Tours and Tickets in this Collection')
+                    ->description('Choose which tours and ticket experiences appear under this category/collection.')
+                    ->schema([
+                        Select::make('experiences')
+                            ->label('Tours & tickets')
+                            ->relationship('experiences', 'title')
+                            ->multiple()
+                            ->preload()
+                            ->searchable(),
+                        Select::make('tours')
+                            ->label('Guided tours')
+                            ->relationship('tours', 'title')
+                            ->multiple()
+                            ->preload()
+                            ->searchable(),
+                    ])
+                    ->columns(2),
                 Section::make('Publishing')
                     ->schema([
                         TextInput::make('sort_order')

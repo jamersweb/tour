@@ -26,22 +26,45 @@ class TourInfolist
             TextEntry::make('price_from')->label('Adult price from')->money('AED')->placeholder('-'),
             TextEntry::make('child_price_from')->label('Kid price from')->money('AED')->placeholder('-'),
             TextEntry::make('currency')->placeholder('-'),
-            TextEntry::make('highlights')->placeholder('-')->columnSpanFull(),
-            TextEntry::make('inclusions')->placeholder('-')->columnSpanFull(),
-            TextEntry::make('exclusions')->placeholder('-')->columnSpanFull(),
-            TextEntry::make('important_notices')->placeholder('-')->columnSpanFull(),
-            TextEntry::make('expectation_steps')->placeholder('-')->columnSpanFull(),
-            TextEntry::make('best_for')->placeholder('-')->columnSpanFull(),
-            TextEntry::make('faqs')->placeholder('-')->columnSpanFull(),
+            self::arrayEntry('highlights')->placeholder('-')->columnSpanFull(),
+            self::arrayEntry('inclusions')->placeholder('-')->columnSpanFull(),
+            self::arrayEntry('exclusions')->placeholder('-')->columnSpanFull(),
+            self::arrayEntry('important_notices')->placeholder('-')->columnSpanFull(),
+            self::arrayEntry('expectation_steps')->placeholder('-')->columnSpanFull(),
+            self::arrayEntry('best_for')->placeholder('-')->columnSpanFull(),
+            self::arrayEntry('faqs')->placeholder('-')->columnSpanFull(),
             TextEntry::make('cancellation_policy')->placeholder('-')->columnSpanFull(),
-            TextEntry::make('preferred_time_options')->placeholder('-')->columnSpanFull(),
-            TextEntry::make('tour_options')->label('Tour language choices')->placeholder('-')->columnSpanFull(),
-            TextEntry::make('booking_options')->label('Priced booking options')->placeholder('-')->columnSpanFull(),
-            TextEntry::make('gallery_videos')->placeholder('-')->columnSpanFull(),
+            self::arrayEntry('preferred_time_options')->placeholder('-')->columnSpanFull(),
+            self::arrayEntry('tour_options')->label('Tour language choices')->placeholder('-')->columnSpanFull(),
+            self::arrayEntry('booking_options')->label('Priced booking options')->placeholder('-')->columnSpanFull(),
+            self::arrayEntry('gallery_videos')->placeholder('-')->columnSpanFull(),
             IconEntry::make('is_featured')->boolean(),
             IconEntry::make('is_private')->boolean(),
             IconEntry::make('is_active')->boolean(),
             TextEntry::make('updated_at')->dateTime()->placeholder('-'),
         ]);
+    }
+
+    private static function arrayEntry(string $name): TextEntry
+    {
+        return TextEntry::make($name)
+            ->formatStateUsing(fn ($state) => self::formatArrayState($state));
+    }
+
+    private static function formatArrayState($state): ?string
+    {
+        if ($state === null || $state === []) {
+            return null;
+        }
+
+        if (! is_array($state)) {
+            return (string) $state;
+        }
+
+        if (array_is_list($state) && collect($state)->every(fn ($item) => is_scalar($item) || $item === null)) {
+            return collect($state)->filter(fn ($item) => filled($item))->implode(', ');
+        }
+
+        return json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?: null;
     }
 }

@@ -53,38 +53,38 @@ class ExperienceInfolist
                 TextEntry::make('hero_video_url')
                     ->placeholder('-')
                     ->columnSpanFull(),
-                TextEntry::make('highlights')
+                self::arrayEntry('highlights')
                     ->placeholder('-')
                     ->columnSpanFull(),
-                TextEntry::make('inclusions')
+                self::arrayEntry('inclusions')
                     ->placeholder('-')
                     ->columnSpanFull(),
-                TextEntry::make('exclusions')
+                self::arrayEntry('exclusions')
                     ->placeholder('-')
                     ->columnSpanFull(),
-                TextEntry::make('important_notices')
+                self::arrayEntry('important_notices')
                     ->placeholder('-')
                     ->columnSpanFull(),
-                TextEntry::make('expectation_steps')
+                self::arrayEntry('expectation_steps')
                     ->placeholder('-')
                     ->columnSpanFull(),
-                TextEntry::make('best_for')
+                self::arrayEntry('best_for')
                     ->placeholder('-')
                     ->columnSpanFull(),
-                TextEntry::make('faqs')
+                self::arrayEntry('faqs')
                     ->placeholder('-')
                     ->columnSpanFull(),
                 TextEntry::make('cancellation_policy')
                     ->placeholder('-')
                     ->columnSpanFull(),
-                TextEntry::make('preferred_time_options')
+                self::arrayEntry('preferred_time_options')
                     ->placeholder('-')
                     ->columnSpanFull(),
-                TextEntry::make('tour_options')
+                self::arrayEntry('tour_options')
                     ->label('Tour language choices')
                     ->placeholder('-')
                     ->columnSpanFull(),
-                TextEntry::make('booking_options')
+                self::arrayEntry('booking_options')
                     ->label('Priced booking options')
                     ->placeholder('-')
                     ->columnSpanFull(),
@@ -102,9 +102,32 @@ class ExperienceInfolist
                     ->placeholder('-'),
                 TextEntry::make('seo_description')
                     ->placeholder('-'),
-                TextEntry::make('gallery_videos')
+                self::arrayEntry('gallery_videos')
                     ->placeholder('-')
                     ->columnSpanFull(),
             ]);
+    }
+
+    private static function arrayEntry(string $name): TextEntry
+    {
+        return TextEntry::make($name)
+            ->formatStateUsing(fn ($state) => self::formatArrayState($state));
+    }
+
+    private static function formatArrayState($state): ?string
+    {
+        if ($state === null || $state === []) {
+            return null;
+        }
+
+        if (! is_array($state)) {
+            return (string) $state;
+        }
+
+        if (array_is_list($state) && collect($state)->every(fn ($item) => is_scalar($item) || $item === null)) {
+            return collect($state)->filter(fn ($item) => filled($item))->implode(', ');
+        }
+
+        return json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?: null;
     }
 }
