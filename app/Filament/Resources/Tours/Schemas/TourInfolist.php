@@ -11,21 +11,21 @@ class TourInfolist
     public static function configure(Schema $schema): Schema
     {
         return $schema->components([
-            TextEntry::make('title'),
-            TextEntry::make('slug'),
-            TextEntry::make('category')->placeholder('-'),
-            TextEntry::make('short_description')->placeholder('-')->columnSpanFull(),
-            TextEntry::make('description')->placeholder('-')->columnSpanFull(),
-            TextEntry::make('hero_video_url')->placeholder('-')->columnSpanFull(),
-            TextEntry::make('duration')->placeholder('-'),
-            TextEntry::make('location')->placeholder('-'),
-            TextEntry::make('pickup_note')->placeholder('-'),
-            TextEntry::make('experience_type')->placeholder('-'),
-            TextEntry::make('transfer_option')->placeholder('-'),
-            TextEntry::make('booking_type')->placeholder('-'),
+            self::textEntry('title'),
+            self::textEntry('slug'),
+            self::textEntry('category')->placeholder('-'),
+            self::textEntry('short_description')->placeholder('-')->columnSpanFull(),
+            self::textEntry('description')->placeholder('-')->columnSpanFull(),
+            self::textEntry('hero_video_url')->placeholder('-')->columnSpanFull(),
+            self::textEntry('duration')->placeholder('-'),
+            self::textEntry('location')->placeholder('-'),
+            self::textEntry('pickup_note')->placeholder('-'),
+            self::textEntry('experience_type')->placeholder('-'),
+            self::textEntry('transfer_option')->placeholder('-'),
+            self::textEntry('booking_type')->placeholder('-'),
             TextEntry::make('price_from')->label('Adult price from')->money('AED')->placeholder('-'),
             TextEntry::make('child_price_from')->label('Kid price from')->money('AED')->placeholder('-'),
-            TextEntry::make('currency')->placeholder('-'),
+            self::textEntry('currency')->placeholder('-'),
             self::arrayEntry('highlights')->placeholder('-')->columnSpanFull(),
             self::arrayEntry('inclusions')->placeholder('-')->columnSpanFull(),
             self::arrayEntry('exclusions')->placeholder('-')->columnSpanFull(),
@@ -33,10 +33,13 @@ class TourInfolist
             self::arrayEntry('expectation_steps')->placeholder('-')->columnSpanFull(),
             self::arrayEntry('best_for')->placeholder('-')->columnSpanFull(),
             self::arrayEntry('faqs')->placeholder('-')->columnSpanFull(),
-            TextEntry::make('cancellation_policy')->placeholder('-')->columnSpanFull(),
+            self::textEntry('cancellation_policy')->placeholder('-')->columnSpanFull(),
             self::arrayEntry('preferred_time_options')->placeholder('-')->columnSpanFull(),
             self::arrayEntry('tour_options')->label('Tour language choices')->placeholder('-')->columnSpanFull(),
             self::arrayEntry('booking_options')->label('Priced booking options')->placeholder('-')->columnSpanFull(),
+            self::arrayEntry('unavailable_dates')->placeholder('-')->columnSpanFull(),
+            self::arrayEntry('unavailable_periods')->placeholder('-')->columnSpanFull(),
+            self::arrayEntry('gallery_images')->placeholder('-')->columnSpanFull(),
             self::arrayEntry('gallery_videos')->placeholder('-')->columnSpanFull(),
             IconEntry::make('is_featured')->boolean(),
             IconEntry::make('is_private')->boolean(),
@@ -45,10 +48,16 @@ class TourInfolist
         ]);
     }
 
+    private static function textEntry(string $name): TextEntry
+    {
+        return TextEntry::make($name)
+            ->state(fn ($record) => self::formatArrayState($record->{$name} ?? null));
+    }
+
     private static function arrayEntry(string $name): TextEntry
     {
         return TextEntry::make($name)
-            ->formatStateUsing(fn ($state) => self::formatArrayState($state));
+            ->state(fn ($record) => self::formatArrayState($record->{$name} ?? null));
     }
 
     private static function formatArrayState($state): ?string

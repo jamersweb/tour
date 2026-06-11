@@ -21,6 +21,12 @@ class CollectionResource extends Resource
 {
     protected static ?string $model = Collection::class;
 
+    protected static ?string $navigationLabel = 'Subcategories';
+
+    protected static ?string $modelLabel = 'subcategory';
+
+    protected static ?string $pluralModelLabel = 'subcategories';
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static string|UnitEnum|null $navigationGroup = 'Content';

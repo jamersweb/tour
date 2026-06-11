@@ -8,6 +8,7 @@ use App\Models\Tour;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -44,6 +45,15 @@ class CartController extends Controller
 
         $payable = $this->resolvePayable($validated['type'], $validated['slug']);
         abort_if(! $payable || ! $payable->price_from, 404);
+
+        if (($payable instanceof Experience || $payable instanceof Tour)
+            && filled($validated['travel_date'] ?? null)
+            && $this->isUnavailableDate($payable, (string) $validated['travel_date'])
+        ) {
+            return back()->withErrors([
+                'travel_date' => 'This date is currently unavailable. Please choose another date.',
+            ]);
+        }
 
         $cart = $this->cart($request);
         $selectedBookingOption = $this->selectedBookingOption($payable, $validated['booking_option'] ?? null);
@@ -88,6 +98,16 @@ class CartController extends Controller
         $cart = $this->cart($request);
         abort_if(! isset($cart[$key]), 404);
 
+        $payable = $this->resolvePayable((string) ($cart[$key]['type'] ?? ''), (string) ($cart[$key]['slug'] ?? ''));
+        if (($payable instanceof Experience || $payable instanceof Tour)
+            && filled($validated['travel_date'] ?? null)
+            && $this->isUnavailableDate($payable, (string) $validated['travel_date'])
+        ) {
+            return back()->withErrors([
+                'travel_date' => 'This date is currently unavailable. Please choose another date.',
+            ]);
+        }
+
         $cart[$key]['guest_count'] = max($this->minimumGuestsForType((string) ($cart[$key]['type'] ?? 'experience')), (int) $validated['guest_count']);
         $cart[$key]['travel_date'] = $validated['travel_date'] ?? null;
 
@@ -131,7 +151,7 @@ class CartController extends Controller
                 if ($adultCount + $childCount < $guestCount) {
                     $adultCount = $guestCount - $childCount;
                 }
-                $childUnitAmount = $this->childUnitAmount($payable, $unitAmount);
+                $childUnitAmount = $this->childUnitAmount($payable, $unitAmount, $selectedBookingOption);
                 $total = ($unitAmount * $adultCount) + ($childUnitAmount * $childCount);
 
                 return [
@@ -178,7 +198,7 @@ class CartController extends Controller
                 if ($adultCount + $childCount < $guestCount) {
                     $adultCount = $guestCount - $childCount;
                 }
-                $childUnitAmount = $this->childUnitAmount($payable, $unitAmount);
+                $childUnitAmount = $this->childUnitAmount($payable, $unitAmount, $selectedBookingOption);
 
                 return ($unitAmount * $adultCount) + ($childUnitAmount * $childCount);
             });
@@ -266,6 +286,8 @@ class CartController extends Controller
                     'description' => filled($option['description'] ?? null) ? trim((string) $option['description']) : null,
                     'amountValue' => $amount,
                     'amount' => $this->formatMoney($amount, $payable->currency ?: 'AED'),
+                    'childAmountValue' => is_numeric($option['child_price'] ?? null) ? (float) $option['child_price'] : null,
+                    'childAmount' => is_numeric($option['child_price'] ?? null) ? $this->formatMoney((float) $option['child_price'], $payable->currency ?: 'AED') : null,
                 ];
             })
             ->all();
@@ -276,10 +298,46 @@ class CartController extends Controller
         return "{$currency} ".number_format($amount, 2);
     }
 
-    protected function childUnitAmount(Model $payable, float $adultAmount): float
+    protected function childUnitAmount(Model $payable, float $adultAmount, ?array $selectedBookingOption = null): float
     {
+        if (is_numeric($selectedBookingOption['childAmountValue'] ?? null)) {
+            return (float) $selectedBookingOption['childAmountValue'];
+        }
+
         $childAmount = $payable->getAttribute('child_price_from');
 
         return is_numeric($childAmount) ? (float) $childAmount : $adultAmount;
+    }
+
+    protected function isUnavailableDate(Model $payable, string $date): bool
+    {
+        try {
+            $selected = Carbon::parse($date)->toDateString();
+        } catch (\Throwable) {
+            return false;
+        }
+
+        if (in_array($selected, $payable->getAttribute('unavailable_dates') ?? [], true)) {
+            return true;
+        }
+
+        foreach ($payable->getAttribute('unavailable_periods') ?? [] as $period) {
+            if (! is_array($period) || blank($period['start'] ?? null) || blank($period['end'] ?? null)) {
+                continue;
+            }
+
+            try {
+                $start = Carbon::parse((string) $period['start'])->toDateString();
+                $end = Carbon::parse((string) $period['end'])->toDateString();
+            } catch (\Throwable) {
+                continue;
+            }
+
+            if ($selected >= $start && $selected <= $end) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

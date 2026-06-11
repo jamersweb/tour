@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Experiences\Schemas;
 
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -29,14 +30,8 @@ class ExperienceForm
                             ->required()
                             ->maxLength(255)
                             ->unique(ignoreRecord: true),
-                        Select::make('category')
-                            ->required()
-                            ->options([
-                                'Desert' => 'Desert',
-                                'Yacht' => 'Yacht',
-                                'City' => 'City',
-                                'Water & Family' => 'Water & Family',
-                            ]),
+                        Hidden::make('category')
+                            ->default('Activity'),
                         TextInput::make('tag')
                             ->maxLength(40),
                         TextInput::make('duration')
@@ -162,7 +157,14 @@ class ExperienceForm
                                     ->required()
                                     ->numeric()
                                     ->prefix('AED')
-                                    ->placeholder('950'),
+                                    ->placeholder('950')
+                                    ->label('Adult price'),
+                                TextInput::make('child_price')
+                                    ->numeric()
+                                    ->prefix('AED')
+                                    ->placeholder('750')
+                                    ->label('Kid price')
+                                    ->helperText('Optional. Leave blank to use the product-level kid price or the adult option price.'),
                                 Textarea::make('description')
                                     ->rows(2)
                                     ->maxLength(240)
@@ -173,12 +175,15 @@ class ExperienceForm
                             ->columnSpanFull(),
                     ])
                     ->columns(1),
-                Section::make('Collections and Pricing')
+                Section::make('Subcategories and Pricing')
                     ->schema([
                         Select::make('collections')
+                            ->label('Subcategories')
+                            ->helperText('Assign this tour or ticket to one or more header subcategories.')
                             ->relationship('collections', 'name')
                             ->multiple()
-                            ->preload(),
+                            ->preload()
+                            ->searchable(),
                         TextInput::make('price_from')
                             ->label('Adult price from')
                             ->numeric()
@@ -202,6 +207,33 @@ class ExperienceForm
                             ->helperText('Lower values appear first on the homepage grid.'),
                     ])
                     ->columns(2),
+                Section::make('Availability Calendar')
+                    ->description('Block dates or seasonal periods when this tour or ticket should not be bookable online.')
+                    ->schema([
+                        TagsInput::make('unavailable_dates')
+                            ->label('Unavailable dates')
+                            ->placeholder('2026-12-25')
+                            ->helperText('Use YYYY-MM-DD format.'),
+                        Repeater::make('unavailable_periods')
+                            ->label('Unavailable date ranges')
+                            ->schema([
+                                TextInput::make('start')
+                                    ->required()
+                                    ->placeholder('2026-06-01')
+                                    ->helperText('YYYY-MM-DD'),
+                                TextInput::make('end')
+                                    ->required()
+                                    ->placeholder('2026-08-31')
+                                    ->helperText('YYYY-MM-DD'),
+                                TextInput::make('label')
+                                    ->maxLength(120)
+                                    ->placeholder('Summer closure'),
+                            ])
+                            ->columns(3)
+                            ->defaultItems(0)
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(1),
                 Section::make('Publishing')
                     ->schema([
                         Toggle::make('is_featured')

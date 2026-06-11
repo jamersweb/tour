@@ -473,8 +473,8 @@ class PageController extends Controller
     {
         return Inertia::render('TourgratPartner', [
             'seo' => [
-                'title' => 'Partner With Us | Tour Grat by Acute Tourism',
-                'description' => 'Tour Grat by Acute Tourism is a referral platform where approved referrers can connect travelers to Acute Tourism and track eligible confirmed booking rewards.',
+                'title' => 'Partner With Us | Tourgrat by Acute Tourism',
+                'description' => 'Tourgrat by Acute Tourism is a referral platform where approved referrers can connect travelers to Acute Tourism and track eligible confirmed booking rewards.',
             ],
         ]);
     }
@@ -562,6 +562,7 @@ class PageController extends Controller
                 'transferOption' => $experience->transfer_option,
                 'bookingType' => $experience->booking_type,
                 'bookingOptions' => $this->pricedBookingOptions($experience->booking_options, $experience->currency),
+                'availability' => $this->availabilityPayload($experience),
                 'priceFrom' => $this->formatMoney($experience->price_from, $experience->currency),
                 'priceFromValue' => $experience->price_from ? (float) $experience->price_from : null,
                 'childPriceFrom' => $this->formatMoney($experience->child_price_from, $experience->currency),
@@ -816,6 +817,7 @@ class PageController extends Controller
                 'transferOption' => $tour->transfer_option,
                 'bookingType' => $tour->booking_type,
                 'bookingOptions' => $this->pricedBookingOptions($tour->booking_options, $tour->currency),
+                'availability' => $this->availabilityPayload($tour),
                 'priceFrom' => $this->formatMoney($tour->price_from, $tour->currency),
                 'priceFromValue' => $tour->price_from ? (float) $tour->price_from : null,
                 'childPriceFrom' => $this->formatMoney($tour->child_price_from, $tour->currency),
@@ -2183,9 +2185,31 @@ class PageController extends Controller
                     'description' => filled($option['description'] ?? null) ? trim((string) $option['description']) : null,
                     'amountValue' => $amount,
                     'amount' => $this->formatMoney($amount, $currency),
+                    'childAmountValue' => is_numeric($option['child_price'] ?? null) ? (float) $option['child_price'] : null,
+                    'childAmount' => is_numeric($option['child_price'] ?? null) ? $this->formatMoney((float) $option['child_price'], $currency) : null,
                 ];
             })
             ->all();
+    }
+
+    protected function availabilityPayload(Experience|Tour $payable): array
+    {
+        return [
+            'unavailableDates' => collect($payable->unavailable_dates ?? [])
+                ->filter(fn ($date) => is_string($date) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $date))
+                ->unique()
+                ->values()
+                ->all(),
+            'unavailablePeriods' => collect($payable->unavailable_periods ?? [])
+                ->filter(fn ($period) => is_array($period) && filled($period['start'] ?? null) && filled($period['end'] ?? null))
+                ->map(fn (array $period) => [
+                    'start' => (string) $period['start'],
+                    'end' => (string) $period['end'],
+                    'label' => filled($period['label'] ?? null) ? (string) $period['label'] : null,
+                ])
+                ->values()
+                ->all(),
+        ];
     }
 
     protected function averageRating($reviews): float

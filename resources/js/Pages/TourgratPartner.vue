@@ -14,7 +14,7 @@ const page = usePage();
 const steps = [
     ['1', 'Send a referral', 'Share a traveler, group, company, or guest who may need tours, tickets, visas, or travel arrangements.'],
     ['2', 'Acute follows up', 'Our team checks the request, assists the customer, and manages the booking or consultation process.'],
-    ['3', 'Track your reward', 'When a referral becomes an eligible confirmed booking, your reward can be tracked inside Tour Grat.'],
+    ['3', 'Track your reward', 'When a referral becomes an eligible confirmed booking, your reward can be tracked inside Tourgrat.'],
 ];
 
 const audiences = [
@@ -34,9 +34,9 @@ const benefits = [
 const faqs = [
     ['Do I need to sell the tour myself?', 'No. Your role is to refer a potential customer. Acute Tourism handles consultation, booking, and service arrangements.'],
     ['When do I earn a reward?', 'Rewards apply when a referral meets the program terms and becomes an eligible confirmed booking.'],
-    ['Can anyone join?', 'Tour Grat is designed for people who can refer genuine travel opportunities, subject to review and approval.'],
+    ['Can anyone join?', 'Tourgrat is designed for people who can refer genuine travel opportunities, subject to review and approval.'],
     ['What can I refer?', 'You can refer tours, tickets, holiday packages, visa assistance requests, group travel, and corporate travel opportunities.'],
-    ['Is this employment with Acute Tourism?', 'No. Tour Grat is not employment, not a part-time job, and not a salary-based role. It is an optional referral rewards program.'],
+    ['Is this employment with Acute Tourism?', 'No. Tourgrat is not employment, not a part-time job, and not a salary-based role. It is an optional referral rewards program.'],
     ['How much can I earn per referral?', 'Rewards vary by product, booking value, and program terms. Selected eligible confirmed referrals can earn rewards as high as 15%.'],
 ];
 
@@ -47,7 +47,7 @@ const form = useForm({
     phone: '',
     travel_date: '',
     guest_count: 1,
-    interest: 'Tour Grat Referrer Application',
+    interest: 'Tourgrat Referrer Application',
     referrer_type: 'Individual referrer',
     referral_source: '',
     message: '',
@@ -85,10 +85,10 @@ function submit() {
         <section class="tourgrat-hero">
             <div class="container tourgrat-hero__grid">
                 <div>
-                    <p class="tourgrat-kicker">Tour Grat by Acute Tourism</p>
+                    <p class="tourgrat-kicker">Tourgrat by Acute Tourism</p>
                     <h1>Refer travelers. Earn up to 15%.</h1>
                     <p>
-                        Tour Grat is a simple referral platform for anyone who can connect travelers to Acute Tourism tours,
+                        Tourgrat is a simple referral platform for anyone who can connect travelers to Acute Tourism tours,
                         tickets, packages, visa assistance, or group requests and earn rewards as high as 15% per eligible confirmed referral.
                     </p>
                     <ul class="tourgrat-points">
@@ -103,11 +103,11 @@ function submit() {
                     </div>
                 </div>
 
-                <aside class="tourgrat-app" aria-label="Tour Grat app preview">
+                <aside class="tourgrat-app" aria-label="Tourgrat app preview">
                     <div class="tourgrat-app__screen">
                         <div class="tourgrat-app__top">
                             <div>T</div>
-                            <span><strong>Tour Grat</strong><small>Referrer Dashboard</small></span>
+                            <span><strong>Tourgrat</strong><small>Referrer Dashboard</small></span>
                         </div>
                         <div class="tourgrat-app__body">
                             <div class="tourgrat-app__title"><small>Control center</small><strong>Dashboard</strong></div>
@@ -137,7 +137,7 @@ function submit() {
             <div class="container">
                 <div class="tourgrat-heading">
                     <p class="tourgrat-eyebrow">Simple process</p>
-                    <h2>How Tour Grat works</h2>
+                    <h2>How Tourgrat works</h2>
                     <p>You focus on referring the right traveler. Acute Tourism handles the travel service, customer support, and booking process.</p>
                 </div>
                 <div class="tourgrat-steps">
@@ -156,7 +156,7 @@ function submit() {
                     <p class="tourgrat-eyebrow">Who can join?</p>
                     <h2>Everyone with travel connections.</h2>
                     <p>
-                        You do not need to be a professional travel agent. Tour Grat is useful for anyone who naturally meets
+                        You do not need to be a professional travel agent. Tourgrat is useful for anyone who naturally meets
                         people planning trips, activities, visas, or Dubai experiences.
                     </p>
                     <div class="tourgrat-pills">
@@ -178,11 +178,11 @@ function submit() {
                 <div class="tourgrat-heading">
                     <p class="tourgrat-eyebrow">Why it is worth your time</p>
                     <h2>Clear, trackable, and low effort.</h2>
-                    <p>Tour Grat is built for simple referrals, not complex travel selling.</p>
+                    <p>Tourgrat is built for simple referrals, not complex travel selling.</p>
                 </div>
                 <div class="tourgrat-commission">
                     <article><span>Commission highlight</span><strong>Up to 15%</strong><p>Selected eligible referrals can earn rewards as high as 15% of the confirmed booking value.</p></article>
-                    <article><span>Typical model</span><strong>Trackable rewards</strong><p>Tour Grat shows reward status, pending payouts, and completed earnings.</p></article>
+                    <article><span>Typical model</span><strong>Trackable rewards</strong><p>Tourgrat shows reward status, pending payouts, and completed earnings.</p></article>
                     <article><span>Why it matters</span><strong>Acute closes</strong><p>You do not need to manage quotes, fulfillment, or travel operations.</p></article>
                 </div>
                 <div class="tourgrat-benefits">
@@ -197,7 +197,7 @@ function submit() {
         <section class="tourgrat-section tourgrat-download">
             <div class="container tourgrat-download__box">
                 <div>
-                    <h2>Download Tour Grat and start referring.</h2>
+                    <h2>Download Tourgrat and start referring.</h2>
                     <p>Use the app to submit referrals, check status, and track rewards from eligible confirmed bookings.</p>
                 </div>
                 <div class="tourgrat-store-buttons">
@@ -210,7 +210,7 @@ function submit() {
         <section id="tourgrat-apply" class="tourgrat-section tourgrat-section--soft">
             <div class="container tourgrat-form-grid">
                 <div>
-                    <p class="tourgrat-eyebrow">Join Tour Grat</p>
+                    <p class="tourgrat-eyebrow">Join Tourgrat</p>
                     <h2>Apply to become a referrer</h2>
                     <p>Tell us who you are and how you usually meet or connect with travelers. Our team will review your details and guide you on the next steps.</p>
                     <ul class="tourgrat-checks">
@@ -239,7 +239,7 @@ function submit() {
         <section class="tourgrat-section">
             <div class="container tourgrat-clarity">
                 <p class="tourgrat-eyebrow">Important clarification</p>
-                <h2>Tour Grat is a referral program, not employment.</h2>
+                <h2>Tourgrat is a referral program, not employment.</h2>
                 <p>This clarification helps interested referrers understand the opportunity and the terms before joining.</p>
                 <div>
                     <article><strong>Not a job</strong><span>Acute Tourism is not hiring referrers as employees, part-time staff, or freelancers.</span></article>

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Tours\Schemas;
 
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -23,13 +24,8 @@ class TourForm
                 ->schema([
                     TextInput::make('title')->required()->maxLength(255),
                     TextInput::make('slug')->required()->maxLength(255)->unique(ignoreRecord: true),
-                    Select::make('category')
-                        ->options([
-                            'City Tour' => 'City Tour',
-                            'Cultural Tour' => 'Cultural Tour',
-                            'Adventure Tour' => 'Adventure Tour',
-                            'Private Tour' => 'Private Tour',
-                        ]),
+                    Hidden::make('category')
+                        ->default('Activity'),
                     TextInput::make('duration')->maxLength(80),
                     TextInput::make('location')->maxLength(120),
                     TextInput::make('pickup_note')->maxLength(180),
@@ -135,7 +131,14 @@ class TourForm
                                 ->required()
                                 ->numeric()
                                 ->prefix('AED')
-                                ->placeholder('950'),
+                                ->placeholder('950')
+                                ->label('Adult price'),
+                            TextInput::make('child_price')
+                                ->numeric()
+                                ->prefix('AED')
+                                ->placeholder('750')
+                                ->label('Kid price')
+                                ->helperText('Optional. Leave blank to use the product-level kid price or the adult option price.'),
                             Textarea::make('description')
                                 ->rows(2)
                                 ->maxLength(240)
@@ -160,11 +163,40 @@ class TourForm
             Section::make('Collections')
                 ->schema([
                     Select::make('collections')
+                        ->label('Subcategories')
+                        ->helperText('Assign this tour to one or more header subcategories.')
                         ->relationship('collections', 'name')
                         ->multiple()
                         ->preload()
                         ->searchable(),
                 ]),
+            Section::make('Availability Calendar')
+                ->description('Block dates or seasonal periods when this tour should not be bookable online.')
+                ->schema([
+                    TagsInput::make('unavailable_dates')
+                        ->label('Unavailable dates')
+                        ->placeholder('2026-12-25')
+                        ->helperText('Use YYYY-MM-DD format.'),
+                    Repeater::make('unavailable_periods')
+                        ->label('Unavailable date ranges')
+                        ->schema([
+                            TextInput::make('start')
+                                ->required()
+                                ->placeholder('2026-06-01')
+                                ->helperText('YYYY-MM-DD'),
+                            TextInput::make('end')
+                                ->required()
+                                ->placeholder('2026-08-31')
+                                ->helperText('YYYY-MM-DD'),
+                            TextInput::make('label')
+                                ->maxLength(120)
+                                ->placeholder('Summer closure'),
+                        ])
+                        ->columns(3)
+                        ->defaultItems(0)
+                        ->columnSpanFull(),
+                ])
+                ->columns(1),
             Section::make('Publishing')
                 ->schema([
                     Toggle::make('is_featured')->required()->inline(false),

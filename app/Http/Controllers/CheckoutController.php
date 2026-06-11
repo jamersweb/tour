@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -336,6 +337,15 @@ class CheckoutController extends Controller
         }
 
         $validated = $request->validated();
+        if (($payable instanceof Experience || $payable instanceof Tour)
+            && filled($validated['travel_date'] ?? null)
+            && $this->isUnavailableDate($payable, (string) $validated['travel_date'])
+        ) {
+            return back()->withErrors([
+                'travel_date' => 'This date is currently unavailable. Please choose another date.',
+            ])->withInput();
+        }
+
         $guestCount = (int) ($overrides['guest_count'] ?? ($validated['guest_count'] ?? 1));
         $guestCount = $payable instanceof Package ? max(2, $guestCount) : max(1, $guestCount);
         $adultCount = (int) ($overrides['adult_count'] ?? ($validated['adult_count'] ?? $guestCount));
@@ -345,7 +355,7 @@ class CheckoutController extends Controller
         }
         $selectedBookingOption = $this->selectedBookingOption($payable, $validated['booking_option'] ?? null);
         $adultAmount = (float) ($selectedBookingOption['amountValue'] ?? $payable->price_from);
-        $childAmount = $this->childUnitAmount($payable, $adultAmount);
+        $childAmount = $this->childUnitAmount($payable, $adultAmount, $selectedBookingOption);
         $totalAmount = round((float) ($overrides['amount'] ?? (($adultAmount * max(0, $adultCount)) + ($childAmount * max(0, $childCount)))), 2);
         $currency = (string) ($overrides['currency'] ?? $payable->currency);
         $preferenceNotes = collect([
@@ -511,6 +521,7 @@ class CheckoutController extends Controller
             'title' => $title,
             'summary' => $summary,
             'unitAmountValue' => $unitAmount,
+            'childUnitAmountValue' => (float) ($selectedBookingOption['childAmountValue'] ?? $productDetails['childPriceValue'] ?? $unitAmount),
             'currency' => $currency,
             'amount' => "{$currency} ".number_format($unitAmount, 2),
             'image' => $image,
@@ -534,6 +545,7 @@ class CheckoutController extends Controller
             'experienceType' => $payable->experience_type ?: ($category ?: ($isPrivate ? 'Private Tour' : 'Experience')),
             'transferOption' => $payable->transfer_option ?: ($payable->pickup_note ?: 'Transfer availability confirmed after booking'),
             'bookingType' => $payable->booking_type ?: 'Subject to Availability',
+            'childPriceValue' => is_numeric($payable->getAttribute('child_price_from')) ? (float) $payable->getAttribute('child_price_from') : null,
         ];
     }
 
@@ -580,6 +592,8 @@ class CheckoutController extends Controller
                     'description' => filled($option['description'] ?? null) ? trim((string) $option['description']) : null,
                     'amountValue' => $amount,
                     'amount' => $this->formatMoney($amount, $payable->currency ?: 'AED'),
+                    'childAmountValue' => is_numeric($option['child_price'] ?? null) ? (float) $option['child_price'] : null,
+                    'childAmount' => is_numeric($option['child_price'] ?? null) ? $this->formatMoney((float) $option['child_price'], $payable->currency ?: 'AED') : null,
                 ];
             })
             ->all();
@@ -632,6 +646,13 @@ class CheckoutController extends Controller
                 continue;
             }
 
+            if (($payable instanceof Experience || $payable instanceof Tour)
+                && filled($item['travel_date'] ?? null)
+                && $this->isUnavailableDate($payable, (string) $item['travel_date'])
+            ) {
+                abort(422, "{$payable->title} is unavailable on {$item['travel_date']}.");
+            }
+
             $itemCurrency = $payable->currency ?: 'AED';
             if ($currency !== null && $currency !== $itemCurrency) {
                 abort(422, 'Cart checkout requires all items to use the same currency.');
@@ -653,7 +674,7 @@ class CheckoutController extends Controller
             }
             $selectedBookingOption = $this->selectedBookingOption($payable, $item['booking_option'] ?? null);
             $unitAmount = (float) ($selectedBookingOption['amountValue'] ?? $payable->price_from);
-            $childUnitAmount = $this->childUnitAmount($payable, $unitAmount);
+            $childUnitAmount = $this->childUnitAmount($payable, $unitAmount, $selectedBookingOption);
             $lineTotal = round(($unitAmount * $lineAdultCount) + ($childUnitAmount * $lineChildCount), 2);
             $total += $lineTotal;
             $guestCount += $lineGuestCount;
@@ -726,10 +747,46 @@ class CheckoutController extends Controller
         return "{$currency} ".number_format($amount, 2);
     }
 
-    protected function childUnitAmount(Model $payable, float $adultAmount): float
+    protected function childUnitAmount(Model $payable, float $adultAmount, ?array $selectedBookingOption = null): float
     {
+        if (is_numeric($selectedBookingOption['childAmountValue'] ?? null)) {
+            return (float) $selectedBookingOption['childAmountValue'];
+        }
+
         $childAmount = $payable->getAttribute('child_price_from');
 
         return is_numeric($childAmount) ? (float) $childAmount : $adultAmount;
+    }
+
+    protected function isUnavailableDate(Model $payable, string $date): bool
+    {
+        try {
+            $selected = Carbon::parse($date)->toDateString();
+        } catch (\Throwable) {
+            return false;
+        }
+
+        if (in_array($selected, $payable->getAttribute('unavailable_dates') ?? [], true)) {
+            return true;
+        }
+
+        foreach ($payable->getAttribute('unavailable_periods') ?? [] as $period) {
+            if (! is_array($period) || blank($period['start'] ?? null) || blank($period['end'] ?? null)) {
+                continue;
+            }
+
+            try {
+                $start = Carbon::parse((string) $period['start'])->toDateString();
+                $end = Carbon::parse((string) $period['end'])->toDateString();
+            } catch (\Throwable) {
+                continue;
+            }
+
+            if ($selected >= $start && $selected <= $end) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -25,6 +25,14 @@ class CollectionForm
                             ->required()
                             ->maxLength(255)
                             ->unique(ignoreRecord: true),
+                        Select::make('collection_group')
+                            ->label('Menu group')
+                            ->required()
+                            ->options([
+                                'location' => 'By Location',
+                                'activity' => 'By Activity Type',
+                            ])
+                            ->default('activity'),
                         TextInput::make('summary')
                             ->maxLength(240),
                         Textarea::make('description')
@@ -41,8 +49,8 @@ class CollectionForm
                             ->directory('collections')
                             ->imageEditor(),
                     ]),
-                Section::make('Tours and Tickets in this Collection')
-                    ->description('Choose which tours and ticket experiences appear under this category/collection.')
+                Section::make('Tours and Tickets in this Subcategory')
+                    ->description('Choose which tours and ticket experiences appear under this header subcategory.')
                     ->schema([
                         Select::make('experiences')
                             ->label('Tours & tickets')

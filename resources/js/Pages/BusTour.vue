@@ -191,12 +191,27 @@ const galleryFolders = [
     },
 ];
 
-const activeGalleryIndex = ref(null);
-const activeGalleryImageIndex = ref(0);
-const activeGallery = computed(() => (
-    activeGalleryIndex.value === null ? null : galleryFolders[activeGalleryIndex.value] ?? null
+const galleryTrackRef = ref(null);
+const busGalleryMedia = computed(() => galleryFolders.flatMap((folder) => [
+    ...(folder.images || []).map((url, index) => ({
+        type: 'image',
+        url,
+        title: folder.title,
+        copy: folder.copy,
+        key: `${folder.key}-image-${index}`,
+    })),
+    ...(folder.videos || []).map((url, index) => ({
+        type: 'video',
+        url,
+        title: folder.title,
+        copy: folder.copy,
+        key: `${folder.key}-video-${index}`,
+    })),
+]));
+const activeMediaIndex = ref(null);
+const activeMedia = computed(() => (
+    activeMediaIndex.value === null ? null : busGalleryMedia.value[activeMediaIndex.value] ?? null
 ));
-const activeGalleryImage = computed(() => activeGallery.value?.images?.[activeGalleryImageIndex.value] ?? null);
 
 function galleryCoverStyle(url) {
     return {
@@ -204,23 +219,34 @@ function galleryCoverStyle(url) {
     };
 }
 
-function openGallery(index) {
-    activeGalleryIndex.value = index;
-    activeGalleryImageIndex.value = 0;
+function openMedia(index) {
+    activeMediaIndex.value = index;
 }
 
-function closeGallery() {
-    activeGalleryIndex.value = null;
-    activeGalleryImageIndex.value = 0;
+function closeMedia() {
+    activeMediaIndex.value = null;
 }
 
-function showGalleryImage(index) {
-    if (! activeGallery.value?.images?.length) {
+function showMedia(index) {
+    if (! busGalleryMedia.value.length) {
         return;
     }
 
-    const total = activeGallery.value.images.length;
-    activeGalleryImageIndex.value = ((index % total) + total) % total;
+    const total = busGalleryMedia.value.length;
+    activeMediaIndex.value = ((index % total) + total) % total;
+}
+
+function scrollGallery(direction) {
+    const track = galleryTrackRef.value;
+
+    if (! track) {
+        return;
+    }
+
+    track.scrollBy({
+        left: direction * Math.max(280, track.clientWidth * 0.78),
+        behavior: 'smooth',
+    });
 }
 
 const audiences = [
@@ -436,36 +462,53 @@ function submit() {
                     <h2 class="acute-heading">A closer look at the journey</h2>
                     <p class="acute-copy">See the bus, onboard comfort, hosted moments and route highlights before you request availability.</p>
                 </div>
-                <div class="acute-gallery-wrap acute-gallery-wrap--expanded">
-                    <button
-                        type="button"
-                        class="acute-gallery-feature acute-gallery-folder"
-                        :style="galleryCoverStyle(galleryFolders[0].cover)"
-                        :aria-label="`Open ${galleryFolders[0].title} gallery`"
-                        @click="openGallery(0)"
-                    >
-                        <div class="acute-gallery-caption">
-                            <strong>{{ galleryFolders[0].title }}</strong>
-                            <span>{{ galleryFolders[0].copy }}</span>
-                            <em>{{ galleryFolders[0].images.length }} photos</em>
-                        </div>
-                    </button>
-                    <div class="acute-gallery-grid">
+                <div class="acute-gallery-carousel" aria-label="Bus tour media carousel">
+                    <div class="acute-gallery-carousel__controls">
                         <button
-                            v-for="(folder, index) in galleryFolders.slice(1)"
-                            :key="folder.key"
                             type="button"
-                            class="acute-gallery-tile acute-gallery-folder"
-                            :class="folder.key"
-                            :style="galleryCoverStyle(folder.cover)"
-                            :aria-label="`Open ${folder.title} gallery`"
-                            @click="openGallery(index + 1)"
+                            class="acute-gallery-carousel__arrow"
+                            aria-label="Scroll gallery left"
+                            @click="scrollGallery(-1)"
                         >
-                            <div class="acute-gallery-caption">
-                                <strong>{{ folder.title }}</strong>
-                                <span>{{ folder.copy }}</span>
-                                <em>{{ folder.images.length }} photos</em>
-                            </div>
+                            ‹
+                        </button>
+                        <button
+                            type="button"
+                            class="acute-gallery-carousel__arrow"
+                            aria-label="Scroll gallery right"
+                            @click="scrollGallery(1)"
+                        >
+                            ›
+                        </button>
+                    </div>
+                    <div ref="galleryTrackRef" class="acute-gallery-carousel__track">
+                        <button
+                            v-for="(item, index) in busGalleryMedia"
+                            :key="item.key"
+                            type="button"
+                            class="acute-gallery-carousel__item"
+                            :aria-label="`Open ${item.title} media ${index + 1}`"
+                            @click="openMedia(index)"
+                        >
+                            <video
+                                v-if="item.type === 'video'"
+                                :src="item.url"
+                                muted
+                                playsinline
+                                preload="metadata"
+                            ></video>
+                            <img
+                                v-else
+                                :src="item.url"
+                                :alt="item.title"
+                                loading="lazy"
+                                decoding="async"
+                            />
+                            <span v-if="item.type === 'video'" class="acute-gallery-carousel__play" aria-hidden="true"></span>
+                            <span class="acute-gallery-carousel__caption">
+                                <strong>{{ item.title }}</strong>
+                                <em>{{ index + 1 }} / {{ busGalleryMedia.length }}</em>
+                            </span>
                         </button>
                     </div>
                 </div>
@@ -506,30 +549,44 @@ function submit() {
             <a class="acute-btn gold" href="#enquiry">Request Availability</a>
         </div>
 
-        <div v-if="activeGallery" class="experience-lightbox acute-gallery-lightbox" @click.self="closeGallery">
-            <button type="button" class="experience-lightbox__close" @click="closeGallery">Close</button>
+        <div v-if="activeMedia" class="experience-lightbox acute-gallery-lightbox" @click.self="closeMedia">
+            <button type="button" class="experience-lightbox__close" @click="closeMedia">Close</button>
             <div class="experience-lightbox__dialog acute-gallery-lightbox__dialog">
                 <div class="acute-gallery-lightbox__media-wrap">
-                    <button type="button" class="acute-gallery-lightbox__nav prev" aria-label="Previous photo" @click="showGalleryImage(activeGalleryImageIndex - 1)">‹</button>
-                    <img class="experience-lightbox__media" :src="activeGalleryImage" :alt="`${activeGallery.title} photo ${activeGalleryImageIndex + 1}`" />
-                    <button type="button" class="acute-gallery-lightbox__nav next" aria-label="Next photo" @click="showGalleryImage(activeGalleryImageIndex + 1)">›</button>
+                    <button type="button" class="acute-gallery-lightbox__nav prev" aria-label="Previous media" @click="showMedia(activeMediaIndex - 1)">‹</button>
+                    <video
+                        v-if="activeMedia.type === 'video'"
+                        class="experience-lightbox__media"
+                        :src="activeMedia.url"
+                        controls
+                        autoplay
+                        playsinline
+                    ></video>
+                    <img
+                        v-else
+                        class="experience-lightbox__media"
+                        :src="activeMedia.url"
+                        :alt="`${activeMedia.title} media ${activeMediaIndex + 1}`"
+                    />
+                    <button type="button" class="acute-gallery-lightbox__nav next" aria-label="Next media" @click="showMedia(activeMediaIndex + 1)">›</button>
                 </div>
                 <div class="acute-gallery-lightbox__content">
                     <div>
-                        <span>{{ activeGalleryImageIndex + 1 }} / {{ activeGallery.images.length }}</span>
-                        <h3>{{ activeGallery.title }}</h3>
-                        <p>{{ activeGallery.copy }}</p>
+                        <span>{{ activeMediaIndex + 1 }} / {{ busGalleryMedia.length }}</span>
+                        <h3>{{ activeMedia.title }}</h3>
+                        <p>{{ activeMedia.copy }}</p>
                     </div>
-                    <div class="acute-gallery-lightbox__thumbs" aria-label="Gallery photos">
+                    <div class="acute-gallery-lightbox__thumbs" aria-label="Gallery media">
                         <button
-                            v-for="(image, index) in activeGallery.images"
-                            :key="image"
+                            v-for="(item, index) in busGalleryMedia"
+                            :key="item.key"
                             type="button"
-                            :class="{ active: index === activeGalleryImageIndex }"
-                            :aria-label="`Show photo ${index + 1}`"
-                            @click="showGalleryImage(index)"
+                            :class="{ active: index === activeMediaIndex }"
+                            :aria-label="`Show media ${index + 1}`"
+                            @click="showMedia(index)"
                         >
-                            <img :src="image" :alt="`${activeGallery.title} thumbnail ${index + 1}`" />
+                            <video v-if="item.type === 'video'" :src="item.url" muted playsinline preload="metadata"></video>
+                            <img v-else :src="item.url" :alt="`${item.title} thumbnail ${index + 1}`" loading="lazy" decoding="async" />
                         </button>
                     </div>
                 </div>

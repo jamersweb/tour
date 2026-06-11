@@ -65,6 +65,24 @@ const selectedBookingOptionKey = ref(bookingOptions.value[0]?.key || '');
 const selectedBookingOption = computed(() => (
     bookingOptions.value.find((option) => option.key === selectedBookingOptionKey.value) || bookingOptions.value[0] || null
 ));
+const unavailableDates = computed(() => new Set(props.tour.availability?.unavailableDates || []));
+const unavailablePeriods = computed(() => props.tour.availability?.unavailablePeriods || []);
+const selectedDateUnavailable = computed(() => {
+    if (!form.travel_date) {
+        return false;
+    }
+
+    if (unavailableDates.value.has(form.travel_date)) {
+        return true;
+    }
+
+    return unavailablePeriods.value.some((period) => (
+        period.start && period.end && form.travel_date >= period.start && form.travel_date <= period.end
+    ));
+});
+const availabilityMessage = computed(() => (
+    selectedDateUnavailable.value ? 'This date is currently unavailable. Please choose another date.' : ''
+));
 
 const form = useForm({
     travel_date: '',
@@ -94,7 +112,7 @@ const totalAmount = computed(() => {
     const adults = Math.max(0, Number.parseInt(form.adult_count, 10) || 0) || bookingGuestCount.value;
     const kids = Math.max(0, Number.parseInt(form.child_count, 10) || 0);
     const adultAmount = Number.parseFloat(selectedBookingOption.value?.amountValue ?? props.tour.priceFromValue ?? '0') || 0;
-    const childAmount = Number.parseFloat(props.tour.childPriceFromValue ?? adultAmount) || adultAmount;
+    const childAmount = Number.parseFloat(selectedBookingOption.value?.childAmountValue ?? props.tour.childPriceFromValue ?? adultAmount) || adultAmount;
     const total = (adultAmount * adults) + (childAmount * kids);
 
     return `AED ${new Intl.NumberFormat('en-US', {
@@ -117,7 +135,7 @@ const focusBookingForm = (field = 'date') => {
 const addToCart = () => {
     const guestCount = bookingGuestCount.value;
 
-    if (!form.travel_date) {
+    if (!form.travel_date || selectedDateUnavailable.value) {
         focusBookingForm('date');
         return;
     }
@@ -138,7 +156,7 @@ const addToCart = () => {
 const bookNow = () => {
     const guestCount = bookingGuestCount.value;
 
-    if (!form.travel_date) {
+    if (!form.travel_date || selectedDateUnavailable.value) {
         focusBookingForm('date');
         return;
     }
@@ -409,7 +427,7 @@ onBeforeUnmount(() => {
                                     <span>Booking option</span>
                                     <select v-model="selectedBookingOptionKey">
                                         <option v-for="option in bookingOptions" :key="option.key" :value="option.key">
-                                            {{ option.label }} - {{ option.amount }}
+                                            {{ option.label }} - Adult {{ option.amount }}<template v-if="option.childAmount"> | Kids {{ option.childAmount }}</template>
                                         </option>
                                     </select>
                                     <small v-if="selectedBookingOption?.description">{{ selectedBookingOption.description }}</small>
@@ -419,6 +437,7 @@ onBeforeUnmount(() => {
                                     <span>Travel Date</span>
                                     <input v-model="form.travel_date" type="date" />
                                     <small v-if="cartForm.errors.travel_date">{{ cartForm.errors.travel_date }}</small>
+                                    <small v-else-if="availabilityMessage">{{ availabilityMessage }}</small>
                                 </label>
 
                                 <label class="field">
@@ -448,12 +467,12 @@ onBeforeUnmount(() => {
                             <button
                                 class="button-secondary add-cart-button"
                                 type="button"
-                                :disabled="cartForm.processing || !tour.priceFrom"
+                                :disabled="cartForm.processing || !tour.priceFrom || selectedDateUnavailable"
                                 @click="addToCart"
                             >
                                 {{ cartForm.processing ? 'Adding...' : 'Add to Cart' }}
                             </button>
-                            <button class="button-primary add-cart-button" type="button" @click="bookNow">
+                            <button class="button-primary add-cart-button" type="button" :disabled="selectedDateUnavailable" @click="bookNow">
                                 Book Now
                             </button>
                         </article>

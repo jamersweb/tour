@@ -80,13 +80,17 @@ const totalAmount = computed(() => {
 
     const adults = Math.max(0, Number.parseInt(form.adult_count, 10) || 0);
     const kids = Math.max(0, Number.parseInt(form.child_count, 10) || 0);
-    const guestCount = Math.max(1, adults + kids || Number.parseInt(form.guest_count, 10) || 1);
     const unitAmount = Number.parseFloat(props.checkout.unitAmountValue || 0);
+    const childUnitAmount = Number.parseFloat(props.checkout.childUnitAmountValue ?? unitAmount) || unitAmount;
+    const fallbackGuestCount = Math.max(1, Number.parseInt(form.guest_count, 10) || 1);
+    const total = adults || kids
+        ? (unitAmount * adults) + (childUnitAmount * kids)
+        : unitAmount * fallbackGuestCount;
 
     return `${props.checkout.currency} ${new Intl.NumberFormat('en-US', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-    }).format(unitAmount * guestCount)}`;
+    }).format(total)}`;
 });
 
 const selectedRows = computed(() => {

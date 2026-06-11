@@ -12,17 +12,17 @@ class ExperienceInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('title'),
-                TextEntry::make('slug'),
-                TextEntry::make('category'),
-                TextEntry::make('short_description')
+                self::textEntry('title'),
+                self::textEntry('slug'),
+                self::textEntry('category'),
+                self::textEntry('short_description')
                     ->placeholder('-'),
-                TextEntry::make('description')
+                self::textEntry('description')
                     ->placeholder('-')
                     ->columnSpanFull(),
-                TextEntry::make('duration')
+                self::textEntry('duration')
                     ->placeholder('-'),
-                TextEntry::make('location')
+                self::textEntry('location')
                     ->placeholder('-'),
                 TextEntry::make('price_from')
                     ->label('Adult price from')
@@ -32,8 +32,8 @@ class ExperienceInfolist
                     ->label('Kid price from')
                     ->numeric()
                     ->placeholder('-'),
-                TextEntry::make('currency'),
-                TextEntry::make('tag')
+                self::textEntry('currency'),
+                self::textEntry('tag')
                     ->placeholder('-'),
                 IconEntry::make('is_featured')
                     ->boolean(),
@@ -47,10 +47,10 @@ class ExperienceInfolist
                 TextEntry::make('updated_at')
                     ->dateTime()
                     ->placeholder('-'),
-                TextEntry::make('hero_summary')
+                self::textEntry('hero_summary')
                     ->placeholder('-')
                     ->columnSpanFull(),
-                TextEntry::make('hero_video_url')
+                self::textEntry('hero_video_url')
                     ->placeholder('-')
                     ->columnSpanFull(),
                 self::arrayEntry('highlights')
@@ -74,7 +74,7 @@ class ExperienceInfolist
                 self::arrayEntry('faqs')
                     ->placeholder('-')
                     ->columnSpanFull(),
-                TextEntry::make('cancellation_policy')
+                self::textEntry('cancellation_policy')
                     ->placeholder('-')
                     ->columnSpanFull(),
                 self::arrayEntry('preferred_time_options')
@@ -88,30 +88,45 @@ class ExperienceInfolist
                     ->label('Priced booking options')
                     ->placeholder('-')
                     ->columnSpanFull(),
-                TextEntry::make('pickup_note')
+                self::arrayEntry('unavailable_dates')
+                    ->placeholder('-')
+                    ->columnSpanFull(),
+                self::arrayEntry('unavailable_periods')
+                    ->placeholder('-')
+                    ->columnSpanFull(),
+                self::textEntry('pickup_note')
                     ->placeholder('-'),
-                TextEntry::make('experience_type')
+                self::textEntry('experience_type')
                     ->placeholder('-'),
-                TextEntry::make('transfer_option')
+                self::textEntry('transfer_option')
                     ->placeholder('-'),
-                TextEntry::make('booking_type')
+                self::textEntry('booking_type')
                     ->placeholder('-'),
                 TextEntry::make('sort_order')
                     ->numeric(),
-                TextEntry::make('seo_title')
+                self::textEntry('seo_title')
                     ->placeholder('-'),
-                TextEntry::make('seo_description')
+                self::textEntry('seo_description')
                     ->placeholder('-'),
+                self::arrayEntry('gallery_images')
+                    ->placeholder('-')
+                    ->columnSpanFull(),
                 self::arrayEntry('gallery_videos')
                     ->placeholder('-')
                     ->columnSpanFull(),
             ]);
     }
 
+    private static function textEntry(string $name): TextEntry
+    {
+        return TextEntry::make($name)
+            ->state(fn ($record) => self::formatArrayState($record->{$name} ?? null));
+    }
+
     private static function arrayEntry(string $name): TextEntry
     {
         return TextEntry::make($name)
-            ->formatStateUsing(fn ($state) => self::formatArrayState($state));
+            ->state(fn ($record) => self::formatArrayState($record->{$name} ?? null));
     }
 
     private static function formatArrayState($state): ?string
