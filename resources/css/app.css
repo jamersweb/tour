@@ -16561,6 +16561,16 @@ textarea {
 }
 
 @media (max-width: 720px) {
+    .site-footer .footer-brand,
+    .site-footer .footer-copy,
+    .site-footer .footer-tourgrat strong {
+        display: none;
+    }
+
+    .site-footer .footer-brand-column {
+        gap: 0;
+    }
+
     body:has(.about-page) .site-shell,
     body:has(.contact-page) .site-shell,
     body:has(.corporate-page) .site-shell,
