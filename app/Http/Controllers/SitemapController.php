@@ -71,9 +71,9 @@ class SitemapController extends Controller
         return [
             $this->row('/', $lastmod, 'daily', '1.0'),
             $this->row('/about', $lastmod, 'monthly', '0.7'),
-            $this->row('/partner-with-us', $lastmod, 'monthly', '0.65'),
-            $this->row('/bus-tour', $lastmod, 'weekly', '0.75'),
-            $this->row('/corporate-events', $lastmod, 'monthly', '0.55'),
+            $this->row('/earn-with-tourgrat', $lastmod, 'monthly', '0.65'),
+            $this->row('/luxury-bus-tour-dubai', $lastmod, 'weekly', '0.75'),
+            $this->row('/corporate-travel-event-planning-dubai', $lastmod, 'monthly', '0.55'),
             $this->row('/contact', $lastmod, 'monthly', '0.7'),
             $this->row('/faq', $lastmod, 'monthly', '0.55'),
             $this->row('/cancellation-policy', $lastmod, 'yearly', '0.35'),
@@ -85,7 +85,7 @@ class SitemapController extends Controller
     protected function experienceUrls(): array
     {
         $urls = [
-            $this->row('/experiences', $this->sectionLastModified('experiences'), 'daily', '0.9'),
+            $this->row('/dubai-tours-and-tickets', $this->sectionLastModified('experiences'), 'daily', '0.9'),
         ];
 
         Experience::query()
@@ -118,7 +118,7 @@ class SitemapController extends Controller
     protected function packageUrls(): array
     {
         $urls = [
-            $this->row('/packages', $this->sectionLastModified('packages'), 'daily', '0.9'),
+            $this->row('/dubai-holiday-packages', $this->sectionLastModified('packages'), 'daily', '0.9'),
         ];
 
         Package::query()
@@ -146,7 +146,7 @@ class SitemapController extends Controller
         ]);
 
         return collect([
-            '/visa-services',
+            '/tourist-visa-assistance-uae-residents',
             '/schengen-visa',
             '/uk-visa',
             '/usa-visa',
@@ -161,7 +161,7 @@ class SitemapController extends Controller
             '/evisa-assistance',
             '/tourist-visa-assistance',
         ])
-            ->map(fn (string $path) => $this->row($path, $lastmod, 'weekly', $path === '/visa-services' ? '0.85' : '0.75'))
+            ->map(fn (string $path) => $this->row($path, $lastmod, 'weekly', $path === '/tourist-visa-assistance-uae-residents' ? '0.85' : '0.75'))
             ->all();
     }
 

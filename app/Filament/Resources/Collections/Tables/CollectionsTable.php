@@ -40,6 +40,7 @@ class CollectionsTable
                     ->numeric()
                     ->sortable(),
                 IconColumn::make('is_featured')
+                    ->label('Shown on menu')
                     ->boolean(),
                 TextColumn::make('created_at')
                     ->dateTime()
@@ -57,7 +58,8 @@ class CollectionsTable
                         'location' => 'By Location',
                         'activity' => 'By Activity Type',
                     ]),
-                TernaryFilter::make('is_featured'),
+                TernaryFilter::make('is_featured')
+                    ->label('Shown on menu'),
             ])
             ->recordActions([
                 ViewAction::make(),

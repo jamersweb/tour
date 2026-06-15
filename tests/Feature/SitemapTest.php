@@ -19,10 +19,29 @@ class SitemapTest extends TestCase
         $response->assertHeader('Content-Type', 'application/xml; charset=UTF-8');
 
         $content = $response->getContent();
-        $this->assertStringContainsString('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">', $content);
-        $this->assertStringContainsString(url('/experiences/private-heritage-desert-safari'), $content);
-        $this->assertStringContainsString(url('/packages/ufc-fight-night-returns-to-abu-dhabi'), $content);
-        $this->assertStringContainsString(url('/blog/private-yacht-charter-dubai-guide'), $content);
-        $this->assertStringContainsString(url('/blog?category=yacht-guide'), $content);
+        $this->assertStringContainsString('<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">', $content);
+        $this->assertStringContainsString(url('/pages-sitemap.xml'), $content);
+        $this->assertStringContainsString(url('/experiences-sitemap.xml'), $content);
+        $this->assertStringContainsString(url('/packages-sitemap.xml'), $content);
+        $this->assertStringContainsString(url('/blog-sitemap.xml'), $content);
+
+        $blogResponse = $this->get('/blog-sitemap.xml');
+
+        $blogResponse->assertOk();
+        $blogContent = $blogResponse->getContent();
+        $this->assertStringContainsString('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">', $blogContent);
+        $this->assertStringContainsString(url('/blog'), $blogContent);
+
+        $experienceResponse = $this->get('/experiences-sitemap.xml');
+
+        $experienceResponse->assertOk();
+        $this->assertStringContainsString(url('/dubai-tours-and-tickets'), $experienceResponse->getContent());
+        $this->assertStringNotContainsString(url('/experiences').'</loc>', $experienceResponse->getContent());
+
+        $packageResponse = $this->get('/packages-sitemap.xml');
+
+        $packageResponse->assertOk();
+        $this->assertStringContainsString(url('/dubai-holiday-packages'), $packageResponse->getContent());
+        $this->assertStringNotContainsString(url('/packages').'</loc>', $packageResponse->getContent());
     }
 }

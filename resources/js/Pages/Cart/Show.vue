@@ -142,8 +142,8 @@ function clearCart() {
                     <h2>Start with an experience or package.</h2>
                     <p>Add something to your cart, then return here to review guest count and travel date.</p>
                     <div class="about-actions">
-                        <Link class="button-primary" href="/experiences">Browse experiences</Link>
-                        <Link class="button-secondary" href="/packages">Browse packages</Link>
+                        <Link class="button-primary" href="/dubai-tours-and-tickets">Browse experiences</Link>
+                        <Link class="button-secondary" href="/dubai-holiday-packages">Browse packages</Link>
                     </div>
                 </article>
             </div>

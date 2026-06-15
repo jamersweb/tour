@@ -16,7 +16,7 @@ class RedirectTest extends TestCase
     {
         $response = $this->get('/tours');
 
-        $response->assertRedirect('/experiences');
+        $response->assertRedirect('/dubai-tours-and-tickets');
         $response->assertStatus(301);
     }
 

@@ -27,7 +27,7 @@ defineProps({
 
                     <div class="about-actions">
                         <Link class="button-primary" href="/contact">Contact Acute Tourism</Link>
-                        <Link class="button-secondary" href="/experiences">Browse experiences</Link>
+                        <Link class="button-secondary" href="/dubai-tours-and-tickets">Browse experiences</Link>
                     </div>
                 </div>
 

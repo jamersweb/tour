@@ -135,8 +135,8 @@ const whyAcuteCards = computed(() => [
         tone: 'green',
     },
     {
-        title: 'Group Friendly',
-        copy: 'Solo, family, and groups.',
+        title: 'Support Before and After Booking',
+        copy: 'Get help choosing, confirming, and adjusting your travel plans when support is needed.',
         icon: 'group',
         tone: 'orange',
     },
@@ -311,14 +311,14 @@ onUnmounted(() => detachMediaListeners());
                     <span class="home-title-mobile">{{ hero.mobileTitle || hero.title }}</span>
                 </h1>
                 <p class="home-hero-video__lead">
-                    Search Dubai tours, attraction tickets, holiday packages, and visa assistance from one local travel team.
+                    {{ hero.description }}
                 </p>
                 <div class="home-hero-rating" aria-label="Rated 4.9 out of 5 by more than 2,500 travelers">
                     <span aria-hidden="true">★★★★★</span>
                     <strong>4.9/5 by 2,500+ travelers</strong>
                 </div>
                 <div class="home-hero-search-shell">
-                    <form class="home-hero-search" action="/experiences" method="get" role="search">
+                    <form class="home-hero-search" action="/dubai-tours-and-tickets" method="get" role="search">
                         <input
                             v-model="heroSearchQuery"
                             name="search"
@@ -421,7 +421,7 @@ onUnmounted(() => detachMediaListeners());
                         >
                             <span aria-hidden="true">&gt;</span>
                         </button>
-                        <Link class="home-dashboard-more" href="/experiences">View All &rarr;</Link>
+                        <Link class="home-dashboard-more" href="/dubai-tours-and-tickets">View All &rarr;</Link>
                     </div>
                 </div>
                 <div
@@ -461,7 +461,7 @@ onUnmounted(() => detachMediaListeners());
                         :class="{ 'is-active': activeSlides.mustDo === index }"
                     ></span>
                 </div>
-                <Link class="home-mobile-view-all" href="/experiences">View All &rarr;</Link>
+                <Link class="home-mobile-view-all" href="/dubai-tours-and-tickets">View All &rarr;</Link>
             </div>
         </section>
 
@@ -473,7 +473,7 @@ onUnmounted(() => detachMediaListeners());
                         <h2>Holiday Packages</h2>
                         <p class="home-dashboard-subcopy">Starting prices and key highlights are visible before customers request a quote.</p>
                     </div>
-                    <Link class="home-dashboard-more" href="/packages">View All Packages &rarr;</Link>
+                    <Link class="home-dashboard-more" href="/dubai-holiday-packages">View All Packages &rarr;</Link>
                 </div>
                 <div
                     class="home-dashboard-grid home-dashboard-grid--three home-mobile-carousel"
@@ -512,7 +512,7 @@ onUnmounted(() => detachMediaListeners());
                         :class="{ 'is-active': activeSlides.packages === index }"
                     ></span>
                 </div>
-                <Link class="home-mobile-view-all" href="/packages">View All Packages &rarr;</Link>
+                <Link class="home-mobile-view-all" href="/dubai-holiday-packages">View All Packages &rarr;</Link>
             </div>
         </section>
 
@@ -568,7 +568,7 @@ onUnmounted(() => detachMediaListeners());
                         >
                             <span aria-hidden="true">&gt;</span>
                         </button>
-                        <Link class="home-dashboard-more" href="/visa-services">View All Visa Services &rarr;</Link>
+                        <Link class="home-dashboard-more" href="/tourist-visa-assistance-uae-residents">View All Visa Services &rarr;</Link>
                     </div>
                 </div>
                 <details class="home-visa-disclaimer">
@@ -645,7 +645,7 @@ onUnmounted(() => detachMediaListeners());
             </div>
         </section>
 
-        <section class="home-dashboard-section home-dashboard-section--light home-dashboard-section--reviews" data-reveal>
+        <section v-if="testimonials?.length" class="home-dashboard-section home-dashboard-section--light home-dashboard-section--reviews" data-reveal>
             <div class="container home-dashboard-stack">
                 <div class="home-dashboard-heading">
                     <div>

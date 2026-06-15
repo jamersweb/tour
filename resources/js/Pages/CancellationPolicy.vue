@@ -20,12 +20,16 @@ const page = usePage();
         <section class="about-hero policy-hero">
             <div class="container about-hero__grid">
                 <div class="about-hero__content">
-                    <p class="about-kicker">Cancellation Policy</p>
-                    <h1 class="about-title">Clear cancellation terms for bookings handled by Acute Tourism.</h1>
+                    <p class="about-kicker">Acute Tourism Policy</p>
+                    <h1 class="about-title">Cancellation Policy</h1>
                     <p class="about-copy">
-                        This page explains how cancellation, amendment, no-show, and refund handling generally work across
-                        experiences, tours, packages, and other travel-related services arranged through Acute Tourism.
+                        This page explains how cancellations, amendments, no-shows, and refunds are handled for tours, entry tickets,
+                        holiday packages, and other travel services arranged through Acute Tourism.
                     </p>
+                    <div class="faq-meta policy-meta">
+                        <span class="filter-chip active">Acute Tourism LLC</span>
+                        <span class="filter-chip">Last updated: 13 June 2026</span>
+                    </div>
 
                     <div class="about-actions">
                         <Link class="button-primary" href="/contact">Contact Acute Tourism</Link>
@@ -47,10 +51,13 @@ const page = usePage();
 
         <section class="section-block policy-sections">
             <div class="container policy-sections__stack">
-                <article v-for="section in policySections" :key="section.title" class="about-card">
+                <article v-for="section in policySections" :key="section.title" class="about-card policy-section-card">
                     <p class="about-card__label">Policy section</p>
                     <h2>{{ section.title }}</h2>
-                    <p>{{ section.body }}</p>
+                    <ul v-if="section.items" class="about-list">
+                        <li v-for="item in section.items" :key="item">{{ item }}</li>
+                    </ul>
+                    <p v-else>{{ section.body }}</p>
                 </article>
             </div>
         </section>
@@ -59,11 +66,8 @@ const page = usePage();
             <div class="container about-columns">
                 <article class="about-card">
                     <p class="eyebrow">Need help?</p>
-                    <h2>Contact the team with your reference.</h2>
-                    <p>
-                        For the fastest handling, send the booking reference, lead traveler name, service date,
-                        and the product booked when contacting us.
-                    </p>
+                    <h2>Need help?</h2>
+                    <p>For faster handling, contact Acute Tourism with the relevant booking reference, service date, or request details.</p>
                 </article>
 
                 <article class="about-card">

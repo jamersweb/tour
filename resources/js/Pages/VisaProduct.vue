@@ -214,7 +214,7 @@ const faqItems = computed(() => props.visa?.faqItems ?? defaultFaqItems);
         <div class="visa-product-ambient visa-product-ambient--two" aria-hidden="true"></div>
 
         <div class="container visa-product-breadcrumb">
-            <Link href="/visa-services">Visa Services</Link>
+            <Link href="/tourist-visa-assistance-uae-residents">Visa Services</Link>
             <span>/</span>
             <span>{{ visaPage.shortTitle }}</span>
         </div>

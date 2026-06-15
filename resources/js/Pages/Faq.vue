@@ -1,31 +1,4 @@
 <script setup>
-const planningFaqs = [
-    {
-        question: 'How far in advance should I book?',
-        answer: 'For the best availability, book as early as possible, especially for private experiences, group requests, or popular travel dates. Last-minute requests can still work, but options may narrow depending on timing and supplier capacity.',
-    },
-    {
-        question: 'Can I cancel and get a refund?',
-        answer: 'Cancellation terms depend on the product, supplier, and how close the request is to the travel date. Where a product supports flexible cancellation, that policy will be shown clearly before payment or in the final booking details.',
-    },
-    {
-        question: 'What happens after I complete a booking?',
-        answer: 'After booking, the team confirms the operational details such as timing, meeting point, pickup, guest information, and any product-specific instructions. You should keep your confirmation reference available for follow-up.',
-    },
-    {
-        question: 'Do I need to provide my phone number during booking?',
-        answer: 'Yes. A reachable contact number makes coordination easier for pickup timing, schedule confirmation, and urgent operational updates on the day of service.',
-    },
-    {
-        question: 'Are pickup and drop-off always included?',
-        answer: 'Not always. Some products include transport, some offer it as an option, and others require a direct meeting point. The exact inclusion depends on the product you choose.',
-    },
-    {
-        question: 'Can one experience run in more than one language?',
-        answer: 'Some shared activities may operate with multilingual guidance when needed. Private bookings are usually the best option when you want a more controlled language or pacing preference.',
-    },
-];
-
 import SiteMeta from '../Components/SiteMeta.vue';
 import SiteLayout from '../Layouts/SiteLayout.vue';
 
@@ -33,9 +6,86 @@ defineOptions({ layout: SiteLayout });
 
 defineProps({
     seo: Object,
-    featuredFaqs: Array,
-    faqGroups: Array,
 });
+
+const faqGroups = [
+    {
+        category: 'About Acute Tourism',
+        items: [
+            ['What does Acute Tourism do?', 'Acute Tourism LLC is a Dubai-based travel agency helping customers with tours and tickets, holiday packages, international visa assistance, Panoramic Bus experiences, corporate events, and general travel planning support.'],
+            ['Where is Acute Tourism located?', 'Acute Tourism is located at Shop 10, Kempinski Hotel & Residences, Palm Jumeirah, Dubai.'],
+            ['Can I speak to a real person before booking?', 'Yes. Customers can contact the Acute Tourism team before booking to clarify tour details, package options, visa support, availability, inclusions, pickup details, and next steps.'],
+            ['How fast does Acute Tourism respond?', 'Acute Tourism aims to respond within 2 hours on WhatsApp during normal working conditions. Response time may vary during busy periods, public holidays, or outside regular service hours.'],
+        ],
+    },
+    {
+        category: 'Tours & Tickets',
+        items: [
+            ['How do I know which tour is right for me?', 'You can browse by activity type or location, or contact Acute Tourism for help choosing the most suitable option based on your travel date, group size, budget, pickup area, and experience preference.'],
+            ['Are Dubai tours refundable?', 'Generally, tours are refundable if cancelled at least 24 hours before the scheduled tour start time, unless a supplier-specific rule says otherwise.'],
+            ['Are attraction and entry tickets refundable?', 'Entry tickets and attraction tickets are generally non-refundable once issued or confirmed. This includes time-slot tickets, theme parks, museums, shows, and other admission-based products.'],
+            ['Are pickup and drop-off included in all tours?', 'Not always. Some tours include pickup and drop-off, some offer transport as an optional add-on, and some require guests to go directly to the meeting point. The product page or team confirmation will state what applies.'],
+            ['Can I book a private tour?', 'Yes. Private tours can be arranged depending on the activity, date, guide or driver availability, group size, and service requirements.'],
+        ],
+    },
+    {
+        category: 'Holiday Packages',
+        items: [
+            ['Can Acute Tourism customize a holiday package?', 'Yes. Holiday packages can be customized based on destination, travel date, number of travelers, hotel category, activities, transfers, budget, and travel style.'],
+            ['What can be included in a holiday package?', 'A package may include hotels, airport transfers, tours, attraction tickets, transport, itinerary planning, and selected travel services depending on the package type and customer request.'],
+            ['Is the cancellation policy the same for all holiday packages?', 'No. Holiday package cancellation is dynamic and depends on the travel date, hotel rules, supplier conditions, entry tickets, transfers, and what is included in the package. The applicable cancellation policy will be shared at the time of booking.'],
+            ['Can I request a 3-star, 4-star, or 5-star hotel?', 'Yes. Customers can request a hotel category, and the team will recommend available options based on the destination, travel date, budget, and package style.'],
+            ['Do holiday package prices change?', 'Yes. Prices can change depending on hotel availability, season, travel date, supplier rates, exchange rates, room category, and included services.'],
+        ],
+    },
+    {
+        category: 'International Visa Assistance',
+        items: [
+            ['Does Acute Tourism provide visa assistance?', 'Yes. Acute Tourism provides international visa assistance for UAE-based travelers, including document guidance, checklist support, appointment guidance where applicable, and application preparation support.'],
+            ['Can Acute Tourism guarantee visa approval?', 'No. Visa approval is decided only by the relevant embassy, consulate, immigration authority, or government department. Acute Tourism can guide and support the application process, but cannot guarantee approval or processing time.'],
+            ['What documents are usually required for visa assistance?', 'Common documents may include passport copy, UAE residence visa, Emirates ID, photo, bank statement, employment or business documents, travel itinerary, hotel booking, flight details, and other supporting documents depending on the destination.'],
+            ['Can you help if my documents are not complete?', 'Yes. The team can review your situation and explain what may be missing or what needs to be improved before submission, based on the destination requirements.'],
+            ['Are visa fees refundable?', 'Visa-related fees, appointment fees, service fees, and government or embassy fees may be non-refundable once processing, appointment booking, or submission has started.'],
+        ],
+    },
+    {
+        category: 'Panoramic Bus',
+        items: [
+            ['What is the Panoramic Bus experience?', 'The Panoramic Bus is a premium group sightseeing experience designed to give guests a comfortable and elevated way to explore key Dubai highlights.'],
+            ['Is the Panoramic Bus suitable for groups?', 'Yes. It is suitable for tourists, families, private groups, corporate groups, and guests who want a more comfortable Dubai sightseeing experience.'],
+            ['Can the Panoramic Bus be booked for private or corporate use?', 'Yes. Private and corporate arrangements may be possible depending on date, availability, route, group size, and event requirements.'],
+            ['When should I book the Panoramic Bus?', 'It is best to book early, especially for weekends, holidays, peak tourist seasons, private bookings, and group arrangements.'],
+        ],
+    },
+    {
+        category: 'Corporate Events',
+        items: [
+            ['Does Acute Tourism handle corporate events?', 'Yes. Acute Tourism supports corporate events, executive hosting, client entertainment, incentive travel, private group experiences, desert events, yacht events, and transport coordination.'],
+            ['Can we request a corporate proposal?', 'Yes. Companies can request a proposal by sharing the event date, group size, guest profile, preferred experience type, budget range if available, and any transport, food, venue, or coordination requirements.'],
+            ['Do corporate events include human consultation?', 'Yes. Corporate event requests are consultation-led. The team will first understand the purpose of the event before recommending the right format or experience.'],
+            ['Can Acute Tourism coordinate transport for corporate groups?', 'Yes. Transport, pickup planning, guest movement, bus coordination, and supplier timing can be arranged depending on the event requirements.'],
+        ],
+    },
+    {
+        category: 'Bookings, Payments & Support',
+        items: [
+            ['How do I make a booking?', 'You can book through the website where available, send an enquiry, or contact Acute Tourism directly for support with tours, packages, visa assistance, corporate events, or Panoramic Bus requests.'],
+            ['When is a booking confirmed?', 'A booking is confirmed only after payment or required deposit has been received and written confirmation has been issued by Acute Tourism.'],
+            ['Are payments secure?', 'Acute Tourism uses approved payment channels where applicable. Payment confirmation and booking support are handled by the Acute Tourism team.'],
+            ['Can I change my booking date?', 'Date changes are handled case by case and depend on supplier availability, product rules, ticket conditions, and whether any additional cost applies.'],
+            ['What should I do if I entered wrong booking details?', 'Contact Acute Tourism as soon as possible with your booking reference and the correct information. Changes are subject to supplier rules and may not always be possible after confirmation.'],
+        ],
+    },
+    {
+        category: 'Cancellations & Refunds',
+        items: [
+            ['How long does a refund take?', 'Approved refunds are usually processed within 5 to 7 working days after approval. Final posting time may also depend on the bank, card issuer, or payment provider.'],
+            ['Are transaction charges refundable?', 'Transaction charges, card fees, gateway fees, or payment provider charges paid during booking may not be refunded because they are paid to external payment providers.'],
+            ['What happens if I do not show up for a tour?', 'No-shows, late arrival, or failure to arrive at the pickup point may be treated as non-refundable unless the supplier confirms otherwise.'],
+            ['Where can I read the full cancellation policy?', 'Customers should refer to the Cancellation & Refund Policy page for full details on tours, tickets, packages, amendments, no-shows, refunds, and transaction charges.'],
+        ],
+    },
+];
 </script>
 
 <template>
@@ -45,70 +95,55 @@ defineProps({
         <section class="faq-hero">
             <div class="container faq-hero__grid">
                 <div class="home-hero-motion">
-                    <p class="about-kicker">FAQ</p>
-                    <h1 class="about-title">Questions around bookings, planning, payments, and service coordination.</h1>
+                    <p class="about-kicker">Acute Tourism FAQs</p>
+                    <h1 class="about-title">Frequently Asked Questions</h1>
                     <p class="about-copy">
-                        Use this page to understand how Acute Tourism handles inquiries, payment, planning flow, and
-                        service expectations across experiences, tours, packages, and visa-related requests.
+                        Find clear answers about Acute Tourism services, including tours and tickets, holiday packages,
+                        international visa assistance, Panoramic Bus, corporate events, bookings, payments, cancellations, and customer support.
                     </p>
+                    <div class="faq-meta">
+                        <span class="filter-chip active">Acute Tourism LLC</span>
+                        <span class="filter-chip">Last updated: 13 June 2026</span>
+                    </div>
                 </div>
 
                 <div class="about-card about-card--primary home-hero-motion">
                     <p class="about-card__label">What this covers</p>
                     <ul class="about-list about-list--tight">
-                        <li>Booking and payment questions</li>
-                        <li>Planning, timing, and availability</li>
-                        <li>What happens after you submit an inquiry</li>
-                        <li>How support works across products</li>
+                        <li>Tours, tickets, and private bookings</li>
+                        <li>Holiday packages and visa assistance</li>
+                        <li>Panoramic Bus and corporate events</li>
+                        <li>Payments, cancellations, and refunds</li>
                     </ul>
-                </div>
-            </div>
-        </section>
-
-        <section v-if="featuredFaqs.length" class="section-block faq-featured" data-reveal>
-            <div class="container">
-                <div class="section-heading">
-                    <p class="eyebrow">Top Questions</p>
-                    <h2>Start with the answers clients ask for most often.</h2>
-                </div>
-
-                <div class="faq-featured__grid">
-                    <article v-for="faq in featuredFaqs" :key="faq.question" class="about-card">
-                        <p class="about-card__label">{{ faq.category }}</p>
-                        <h3>{{ faq.question }}</h3>
-                        <p>{{ faq.answer }}</p>
-                    </article>
                 </div>
             </div>
         </section>
 
         <section class="section-block faq-groups" data-reveal>
             <div class="container faq-groups__stack">
-                <section class="faq-group-panel">
-                    <div class="faq-group-panel__head">
-                        <p class="about-kicker">Planning and Booking</p>
-                    </div>
-
-                    <div class="faq-group-panel__items">
-                        <article v-for="faq in planningFaqs" :key="faq.question" class="faq-item faq-item--refined">
-                            <h3>{{ faq.question }}</h3>
-                            <p>{{ faq.answer }}</p>
-                        </article>
-                    </div>
-                </section>
-
                 <section v-for="group in faqGroups" :key="group.category" class="faq-group-panel">
                     <div class="faq-group-panel__head">
                         <p class="about-kicker">{{ group.category }}</p>
                     </div>
 
-                    <div class="faq-group-panel__items">
-                        <article v-for="faq in group.items" :key="faq.question" class="faq-item faq-item--refined">
-                            <h3>{{ faq.question }}</h3>
-                            <p>{{ faq.answer }}</p>
-                        </article>
+                    <div class="content-faq-list">
+                        <details v-for="(faq, index) in group.items" :key="faq[0]" :open="index === 0" class="content-faq-item">
+                            <summary>{{ faq[0] }}</summary>
+                            <p>{{ faq[1] }}</p>
+                        </details>
                     </div>
                 </section>
+            </div>
+        </section>
+
+        <section class="section-block">
+            <div class="container contact-band">
+                <h2>Still have a question?</h2>
+                <p>Contact Acute Tourism with your travel date, preferred service, number of guests, and any important details so the team can guide you properly.</p>
+                <div class="about-actions">
+                    <a class="button-secondary" href="mailto:info@acutetourism.org">info@acutetourism.org</a>
+                    <a class="button-secondary" href="tel:+971585161554">(+971) 58 516 1554</a>
+                </div>
             </div>
         </section>
     </div>

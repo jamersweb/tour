@@ -86,7 +86,7 @@ function submit() {
             <div class="container tourgrat-hero__grid">
                 <div>
                     <p class="tourgrat-kicker">Tourgrat by Acute Tourism</p>
-                    <h1>Refer travelers. Earn up to 15%.</h1>
+                    <h1>Earn With Tourgrat</h1>
                     <p>
                         Tourgrat is a simple referral platform for anyone who can connect travelers to Acute Tourism tours,
                         tickets, packages, visa assistance, or group requests and earn rewards as high as 15% per eligible confirmed referral.

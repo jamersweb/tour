@@ -20,12 +20,16 @@ const page = usePage();
         <section class="about-hero policy-hero">
             <div class="container about-hero__grid">
                 <div class="about-hero__content">
-                    <p class="about-kicker">Privacy Policy</p>
-                    <h1 class="about-title">How Acute Tourism collects, uses, and protects customer information.</h1>
+                    <p class="about-kicker">Acute Tourism Policy</p>
+                    <h1 class="about-title">Privacy Policy</h1>
                     <p class="about-copy">
-                        This page explains how personal information may be collected through inquiries, bookings,
-                        payments, and website usage, and how that information is handled as part of Acute Tourism operations.
+                        This Privacy Policy explains how Acute Tourism may collect, use, share, protect, and retain customer information
+                        when providing tours, holiday packages, visa assistance, corporate events, and related travel services.
                     </p>
+                    <div class="faq-meta policy-meta">
+                        <span class="filter-chip active">Acute Tourism LLC</span>
+                        <span class="filter-chip">Last updated: 13 June 2026</span>
+                    </div>
 
                     <div class="about-actions">
                         <Link class="button-primary" href="/contact">Contact Acute Tourism</Link>
@@ -47,10 +51,13 @@ const page = usePage();
 
         <section class="section-block policy-sections">
             <div class="container policy-sections__stack">
-                <article v-for="section in privacySections" :key="section.title" class="about-card">
+                <article v-for="section in privacySections" :key="section.title" class="about-card policy-section-card">
                     <p class="about-card__label">Privacy section</p>
                     <h2>{{ section.title }}</h2>
-                    <p>{{ section.body }}</p>
+                    <ul v-if="section.items" class="about-list">
+                        <li v-for="item in section.items" :key="item">{{ item }}</li>
+                    </ul>
+                    <p v-else>{{ section.body }}</p>
                 </article>
             </div>
         </section>
@@ -59,11 +66,8 @@ const page = usePage();
             <div class="container about-columns">
                 <article class="about-card">
                     <p class="eyebrow">Questions?</p>
-                    <h2>Contact the company directly for clarification.</h2>
-                    <p>
-                        If you need more context on how your inquiry, booking, or transaction data is handled,
-                        contact Acute Tourism with the relevant reference or request details.
-                    </p>
+                    <h2>Need help?</h2>
+                    <p>For faster handling, contact Acute Tourism with the relevant booking reference, service date, or request details.</p>
                 </article>
 
                 <article class="about-card">

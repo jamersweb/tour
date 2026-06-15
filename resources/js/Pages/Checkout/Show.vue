@@ -24,7 +24,7 @@ const form = useForm({
     child_count: props.checkout.defaults?.child_count || 0,
     booking_option: props.checkout.defaults?.booking_option || '',
     tour_option: '',
-    preferred_time: props.checkout.preferenceOptions?.times?.[0] || 'Flexible',
+    preferred_time: props.checkout.preferenceOptions?.times?.[0] || '',
     hotel_pickup_location: '',
     special_request: '',
     traveler_contacts: [
@@ -43,8 +43,9 @@ const tourOptions = computed(() => preferenceOptions.value.tourOptions || []);
 const timeOptions = computed(() => {
     const options = preferenceOptions.value.times || [];
 
-    return options.length ? options : ['Flexible', 'Morning', 'Afternoon', 'Evening'];
+    return options;
 });
+const showPreferredTime = computed(() => supportsTourPreferences.value && timeOptions.value.length > 0);
 
 const phoneCountryOptions = [
     { code: '+971', flag: 'AE', label: 'United Arab Emirates' },
@@ -114,9 +115,9 @@ const selectedRows = computed(() => {
             rows.push({ label: 'Tour language', value: form.tour_option || 'Selected later' });
         }
 
-        rows.push(
-            { label: 'Tour time', value: form.preferred_time || 'Flexible' },
-        );
+        if (showPreferredTime.value) {
+            rows.push({ label: 'Tour time', value: form.preferred_time || 'Selected later' });
+        }
     }
 
     return rows;
@@ -194,7 +195,7 @@ const submit = () => {
                         <small v-if="form.errors.tour_option">{{ form.errors.tour_option }}</small>
                     </label>
 
-                    <label v-if="supportsTourPreferences" class="field">
+                    <label v-if="showPreferredTime" class="field">
                         <span>Preferred tour time</span>
                         <select v-model="form.preferred_time">
                             <option v-for="option in timeOptions" :key="option" :value="option">{{ option }}</option>

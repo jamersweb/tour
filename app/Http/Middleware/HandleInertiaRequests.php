@@ -123,16 +123,17 @@ class HandleInertiaRequests extends Middleware
                     'socialLinks' => $footerSocialLinks,
                 ],
                 'footerNavigation' => [
-                    ['label' => 'Tours and Tickets', 'href' => route('experiences.index')],
+                    ['label' => 'Tours & Tickets', 'href' => route('experiences.index')],
                     ['label' => 'Holiday Packages', 'href' => route('packages.index')],
                     ['label' => 'Visa Services', 'href' => route('visa.index')],
+                    ['label' => 'Panoramic Bus', 'href' => route('bus-tour')],
+                    ['label' => 'Corporate Events', 'href' => route('corporate-events')],
                     ['label' => 'About us', 'href' => route('about')],
                     ['label' => 'Blog', 'href' => route('blog')],
                     ['label' => 'Cancellation Policy', 'href' => route('cancellation-policy')],
                     ['label' => 'Terms & Conditions', 'href' => route('terms-and-conditions')],
                     ['label' => 'Privacy Policy', 'href' => route('privacy-policy')],
-                    ['label' => 'Corporate Events', 'href' => route('corporate-events')],
-                    ['label' => 'Partner With Us', 'href' => route('partner-with-us')],
+                    ['label' => 'Earn With Tourgrat', 'href' => route('partner-with-us')],
                     ['label' => 'Contact', 'href' => route('contact')],
                 ],
                 'primaryNavigation' => [
@@ -143,7 +144,7 @@ class HandleInertiaRequests extends Middleware
                     ],
                     ['label' => 'Holiday Packages', 'href' => route('packages.index')],
                     ['label' => 'Visa Services', 'href' => route('visa.index')],
-                    ['label' => 'Bus Tour', 'href' => route('bus-tour')],
+                    ['label' => 'Panoramic Bus', 'href' => route('bus-tour')],
                     ['label' => 'Contact', 'href' => route('contact')],
                 ],
                 'mobileNavigation' => [
@@ -154,7 +155,7 @@ class HandleInertiaRequests extends Middleware
                     ],
                     ['label' => 'Holiday Packages', 'href' => route('packages.index')],
                     ['label' => 'Visa Services', 'href' => route('visa.index')],
-                    ['label' => 'Bus Tour', 'href' => route('bus-tour')],
+                    ['label' => 'Panoramic Bus', 'href' => route('bus-tour')],
                     ['label' => 'Contact', 'href' => route('contact')],
                 ],
             ],
@@ -191,6 +192,7 @@ class HandleInertiaRequests extends Middleware
     private function toursAndTicketsNavigation(): array
     {
         $groups = Collection::query()
+            ->where('is_featured', true)
             ->orderBy('collection_group')
             ->orderBy('sort_order')
             ->orderBy('name')

@@ -43,7 +43,7 @@ const supportLines = computed(() => {
 });
 
 const backHref = computed(() =>
-    props.payment?.itemType === 'Package' ? '/packages' : '/experiences',
+    props.payment?.itemType === 'Package' ? '/dubai-holiday-packages' : '/dubai-tours-and-tickets',
 );
 
 const backLabel = computed(() =>

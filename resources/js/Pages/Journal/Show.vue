@@ -35,7 +35,7 @@ defineProps({
 
         <section class="section-block journal-section">
             <div class="container narrow">
-                <article class="journal-content">{{ article.content }}</article>
+                <article class="journal-content" v-html="article.content"></article>
             </div>
         </section>
 

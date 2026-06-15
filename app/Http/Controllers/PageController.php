@@ -215,14 +215,14 @@ class PageController extends Controller
 
         return Inertia::render('Home', [
             'seo' => [
-                'title' => 'Exclusively Curated Holiday Experiences',
-                'description' => 'Luxury travel planning, premium Dubai experiences, and professional visa services from one polished travel brand.',
+                'title' => 'Custom Travel Planning in Dubai | Acute Tourism',
+                'description' => 'Plan better trips with Acute Tourism - custom travel planning in Dubai, tours and tickets, holiday packages, outbound visa assistance, and expert human support.',
             ],
             'hero' => [
-                'eyebrow' => $settings->home_hero_eyebrow ?: 'Acute Tourism Dubai',
-                'title' => $settings->home_hero_title ?: 'Your Dubai Holiday, Handled',
+                'eyebrow' => 'Custom Travel Planning in Dubai',
+                'title' => 'Travel Planned Around You',
                 'mobileTitle' => 'Tours, Packages & Visa Assistance',
-                'description' => $settings->home_hero_description ?: 'From private tours and custom holiday packages to international visa assistance, Acute Tourism helps you plan every part of your journey with ease.',
+                'description' => 'Book Dubai experiences, plan holidays, arrange panoramic bus travel, and get outbound visa assistance with expert human support.',
                 'heroImageUrl' => 'https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=2000&q=80',
                 'videoUrl' => 'https://acutetourism.org/videos/hero-section-intro.mp4',
                 'primaryCta' => ['label' => $settings->home_primary_cta_label ?: 'Explore Dubai Experiences', 'href' => route('experiences.index')],
@@ -278,51 +278,35 @@ class PageController extends Controller
             'recommendations' => $visaServices,
             'serviceFocus' => [
                 [
-                    'title' => 'Things to do',
-                    'copy' => 'Book activities, tickets, and experiences.',
+                    'title' => 'Dubai Experiences',
+                    'copy' => 'Book top Dubai tours and tickets.',
                     'href' => route('experiences.index'),
                     'cta' => 'Explore now',
-                    'tag' => 'Tours & tickets',
+                    'tag' => 'Tours & Tickets',
                 ],
                 [
-                    'title' => 'Holiday packages',
-                    'copy' => 'Plan hotels, transfers, and activities.',
+                    'title' => 'Holiday Packages',
+                    'copy' => 'Plan complete Dubai holidays with support.',
                     'href' => route('packages.index'),
                     'cta' => 'View packages',
-                    'tag' => 'Custom trips',
+                    'tag' => 'Custom Trips',
                 ],
                 [
-                    'title' => 'Visa services',
-                    'copy' => 'Prepare documents with consultant support.',
+                    'title' => 'Visa Services',
+                    'copy' => 'Prepare outbound visa documents.',
                     'href' => route('visa.index'),
                     'cta' => 'Check visas',
-                    'tag' => 'Visa guidance',
+                    'tag' => 'Visa Guidance',
                 ],
                 [
-                    'title' => 'Bus tours',
-                    'copy' => 'Premium panoramic UAE day experiences.',
+                    'title' => 'Panoramic Bus',
+                    'copy' => 'Exclusive UAE day trips with panoramic views.',
                     'href' => route('bus-tour'),
-                    'cta' => 'View bus tours',
-                    'tag' => 'Luxury group tours',
+                    'cta' => 'View Panoramic Bus',
+                    'tag' => 'Exclusive',
                 ],
             ],
-            'testimonials' => [
-                [
-                    'name' => 'Sarah',
-                    'tag' => 'Desert Safari',
-                    'quote' => 'Felt like a private concierge from start to finish.',
-                ],
-                [
-                    'name' => 'James',
-                    'tag' => 'Schengen Visa',
-                    'quote' => 'Visas back with no stress whatsoever.',
-                ],
-                [
-                    'name' => 'Elena',
-                    'tag' => 'UAE package holiday',
-                    'quote' => 'One invoice, one point of contact, exactly what we wanted.',
-                ],
-            ],
+            'testimonials' => [],
             'trustProof' => [
                 'reviewSource' => $settings->google_reviews_url ? 'Google' : 'Tripadvisor',
                 'reviewsUrl' => $settings->google_reviews_url ?: $settings->tripadvisor_reviews_url,
@@ -463,8 +447,8 @@ class PageController extends Controller
     {
         return Inertia::render('BusTour', [
             'seo' => [
-                'title' => 'Luxury Bus Tour Dubai | Premium Panoramic UAE Experiences',
-                'description' => 'Book a luxury bus tour in Dubai with Acute Tourism. Premium panoramic UAE day experiences with hotel pick-up, professional guide, lunch, selected attractions, refreshments and private group options.',
+                'title' => 'Luxury Bus Tour Dubai | Panoramic UAE Bus Trips',
+                'description' => "Join Acute Tourism's luxury bus tour Dubai experience with panoramic views, exclusive seats, curated UAE day trips, hotel pick-up, sightseeing, meals, and guided support.",
             ],
         ]);
     }
@@ -473,8 +457,8 @@ class PageController extends Controller
     {
         return Inertia::render('TourgratPartner', [
             'seo' => [
-                'title' => 'Partner With Us | Tourgrat by Acute Tourism',
-                'description' => 'Tourgrat by Acute Tourism is a referral platform where approved referrers can connect travelers to Acute Tourism and track eligible confirmed booking rewards.',
+                'title' => 'Travel Referral Program Dubai | Earn With Tourgrat',
+                'description' => "Earn with Tourgrat by sharing travel leads, tracking bookings, and receiving rewards through Acute Tourism's referral program for tours, packages, and travel services.",
             ],
         ]);
     }
@@ -652,8 +636,8 @@ class PageController extends Controller
 
         return Inertia::render('Packages/Index', [
             'seo' => [
-                'title' => 'Packages',
-                'description' => 'Curated Dubai and Abu Dhabi travel packages combining experiences, stays, and events.',
+                'title' => 'Dubai Holiday Packages with Travel Support | Acute Tourism',
+                'description' => 'Plan Dubai holiday packages with Acute Tourism, including hotels, transfers, tours, attraction tickets, desert safaris, and travel support for families, couples, and groups.',
             ],
             'packages' => $packages
                 ->map(fn (Package $package, int $index) => [
@@ -888,21 +872,21 @@ class PageController extends Controller
                     'eyebrow' => 'Itineraries',
                     'title' => 'Travel planning',
                     'copy' => 'Customized holiday planning across Europe and beyond with practical support from departure to return.',
-                    'href' => url('/packages'),
+                    'href' => url('/dubai-holiday-packages'),
                     'cta' => 'View packages',
                 ],
                 [
                     'eyebrow' => 'Approvals',
                     'title' => 'Visa consultation',
                     'copy' => 'End-to-end support for Schengen and other routes with document checks and application guidance.',
-                    'href' => url('/visa-services'),
+                    'href' => url('/tourist-visa-assistance-uae-residents'),
                     'cta' => 'All visa services',
                 ],
                 [
                     'eyebrow' => 'Experiences',
                     'title' => 'Dubai experiences',
                     'copy' => 'Tours, desert safaris, and itinerary planning for travelers visiting the UAE.',
-                    'href' => url('/experiences'),
+                    'href' => url('/dubai-tours-and-tickets'),
                     'cta' => 'Browse experiences',
                 ],
             ],
@@ -914,16 +898,16 @@ class PageController extends Controller
             ],
             'visaRoutes' => [
                 ['code' => 'EU', 'title' => 'Schengen Visa', 'subtitle' => '27 European countries', 'href' => '#visa-form', 'featured' => true],
-                ['code' => 'UK', 'title' => 'UK Visa', 'subtitle' => 'United Kingdom', 'href' => url('/visa-services#uk-visa')],
-                ['code' => 'US', 'title' => 'USA Visa', 'subtitle' => 'United States', 'href' => url('/visa-services#usa-visa')],
-                ['code' => 'JP', 'title' => 'Japan Visa', 'subtitle' => 'Japan', 'href' => url('/visa-services#japan-visa')],
-                ['code' => 'CA', 'title' => 'Canada Visa', 'subtitle' => 'Canada', 'href' => url('/visa-services#canada-visa')],
-                ['code' => 'ZA', 'title' => 'South Africa Visa', 'subtitle' => 'South Africa', 'href' => url('/visa-services#south-africa-visa')],
-                ['code' => 'AU', 'title' => 'Australia Visa', 'subtitle' => 'Australia', 'href' => url('/visa-services#australia-visa')],
-                ['code' => 'MY', 'title' => 'Malaysia Visa', 'subtitle' => 'Malaysia', 'href' => url('/visa-services#malaysia-visa')],
-                ['code' => 'VN', 'title' => 'Vietnam Visa', 'subtitle' => 'Vietnam', 'href' => url('/visa-services#vietnam-visa')],
-                ['code' => 'TR', 'title' => 'Turkey Visa', 'subtitle' => 'Turkey', 'href' => url('/visa-services')],
-                ['code' => 'EV', 'title' => 'Other eVisa help', 'subtitle' => 'Online routes', 'href' => url('/visa-services#evisa-assistance')],
+                ['code' => 'UK', 'title' => 'UK Visa', 'subtitle' => 'United Kingdom', 'href' => url('/tourist-visa-assistance-uae-residents#uk-visa')],
+                ['code' => 'US', 'title' => 'USA Visa', 'subtitle' => 'United States', 'href' => url('/tourist-visa-assistance-uae-residents#usa-visa')],
+                ['code' => 'JP', 'title' => 'Japan Visa', 'subtitle' => 'Japan', 'href' => url('/tourist-visa-assistance-uae-residents#japan-visa')],
+                ['code' => 'CA', 'title' => 'Canada Visa', 'subtitle' => 'Canada', 'href' => url('/tourist-visa-assistance-uae-residents#canada-visa')],
+                ['code' => 'ZA', 'title' => 'South Africa Visa', 'subtitle' => 'South Africa', 'href' => url('/tourist-visa-assistance-uae-residents#south-africa-visa')],
+                ['code' => 'AU', 'title' => 'Australia Visa', 'subtitle' => 'Australia', 'href' => url('/tourist-visa-assistance-uae-residents#australia-visa')],
+                ['code' => 'MY', 'title' => 'Malaysia Visa', 'subtitle' => 'Malaysia', 'href' => url('/tourist-visa-assistance-uae-residents#malaysia-visa')],
+                ['code' => 'VN', 'title' => 'Vietnam Visa', 'subtitle' => 'Vietnam', 'href' => url('/tourist-visa-assistance-uae-residents#vietnam-visa')],
+                ['code' => 'TR', 'title' => 'Turkey Visa', 'subtitle' => 'Turkey', 'href' => url('/tourist-visa-assistance-uae-residents')],
+                ['code' => 'EV', 'title' => 'Other eVisa help', 'subtitle' => 'Online routes', 'href' => url('/tourist-visa-assistance-uae-residents#evisa-assistance')],
             ],
             'visualGallery' => [
                 [
@@ -1404,8 +1388,8 @@ class PageController extends Controller
 
         return Inertia::render('VisaServices', [
             'seo' => [
-                'title' => 'Visa Services',
-                'description' => 'Professional visa services for Schengen, UK, USA, Japan, Canada, Australia, Malaysia, Vietnam, Brazil, South Africa, and e-visa assistance.',
+                'title' => 'Tourist Visa Assistance for UAE Residents | Acute Tourism',
+                'description' => 'Get tourist visa assistance for UAE residents, including document guidance for Schengen, UK, USA, Japan, Canada, Australia, and selected e-visa destinations.',
             ],
             'contact' => [
                 'email' => $settings->contact_email,
@@ -1416,7 +1400,7 @@ class PageController extends Controller
             ],
             'hero' => [
                 'eyebrow' => 'Visa Services',
-                'title' => 'Visa support for the destinations travellers ask for most.',
+                'title' => 'Tourist Visa Assistance for UAE Residents',
                 'description' => 'From Schengen and major western destinations to Australia, Malaysia, and Vietnam, with clear categories and a dedicated Schengen page for full guidance.',
             ],
             'visaCategories' => [
@@ -1538,13 +1522,13 @@ class PageController extends Controller
     {
         return Inertia::render('About', [
             'seo' => [
-                'title' => 'About',
-                'description' => 'Travel smart. Travel seamless. Travel with Acute Tourism LLC.',
+                'title' => 'Travel Planning Agency in Dubai | About Acute Tourism',
+                'description' => 'Learn about Acute Tourism, a Dubai travel planning agency helping customers book tours, holiday packages, visa assistance, and curated travel experiences with human support.',
             ],
             'pillars' => [
-                'Refined travel experiences across Dubai and the UAE with precision and attention to detail.',
-                'Luxury hotel reservations, private airport transfers, guided tours, and exclusive desert experiences.',
-                'Strong local network for priority access, competitive value, and personalized itineraries.',
+                'Dubai-based team with local travel and supplier knowledge.',
+                'Support across planning, booking, confirmation, and follow-up.',
+                'Clear communication before payment or document submission.',
             ],
         ]);
     }
@@ -1553,37 +1537,77 @@ class PageController extends Controller
     {
         return Inertia::render('CancellationPolicy', [
             'seo' => [
-                'title' => 'Cancellation Policy',
-                'description' => 'Review the Acute Tourism cancellation and refund policy for experiences, tours, packages, and related travel services.',
+                'title' => 'Cancellation Policy | Acute Tourism',
+                'description' => "Review Acute Tourism's cancellation policy for tours, tickets, holiday packages, visa assistance, panoramic bus experiences, and selected travel bookings.",
             ],
             'policySections' => [
                 [
                     'title' => 'General Booking Policy',
-                    'body' => 'Cancellation terms can vary by product, supplier, transport arrangement, accommodation component, and how close the booking is to the service date. Acute Tourism aims to present the applicable terms as clearly as possible before payment or final confirmation.',
+                    'items' => [
+                        'Cancellation and refund terms may vary depending on the product, supplier, booking date, travel date, and what is included in the service.',
+                        'Acute Tourism will share the applicable cancellation terms before or at the time of booking where supplier-specific conditions apply.',
+                        'Customers should not assume a cancellation or refund is approved until written confirmation is received from Acute Tourism.',
+                    ],
                 ],
                 [
-                    'title' => 'Experiences and Tours',
-                    'body' => 'Many standard experiences and tours may qualify for a full refund when cancelled at least 24 hours before the scheduled start time. Some products, however, may have stricter conditions because of ticket issuance, limited-capacity inventory, or third-party operating rules.',
+                    'title' => 'Tours and Experiences',
+                    'items' => [
+                        'Generally, tours and experiences are refundable if cancelled at least 24 hours before the scheduled tour start time.',
+                        'Cancellations made less than 24 hours before the tour start time may be non-refundable.',
+                        'Failure to arrive at the pickup point, late arrival, or missed participation may be treated as a no-show and may be non-refundable.',
+                        'Some tours may have stricter supplier terms, especially if they involve private arrangements, limited capacity, special permits, or third-party confirmation.',
+                    ],
                 ],
                 [
-                    'title' => 'Packages and Multi-Service Bookings',
-                    'body' => 'Packages that combine hotels, transfers, attraction tickets, or special event access may follow supplier-specific rules. Once any non-refundable component is committed, the refundable amount can change even if the overall booking is cancelled before travel.',
+                    'title' => 'Entry Tickets and Attraction Tickets',
+                    'items' => [
+                        'Entry tickets and attraction tickets are generally non-refundable once issued or confirmed.',
+                        'This includes, but is not limited to, attraction tickets, theme park tickets, museum tickets, event tickets, show tickets, and time-slot based admissions.',
+                        'Date changes for entry tickets depend on the supplier or attraction rules and are not guaranteed.',
+                    ],
                 ],
                 [
-                    'title' => 'Late Cancellations and No-Shows',
-                    'body' => 'Cancellations made after the applicable cut-off time, failure to arrive at the pickup point, or missed participation because of delayed customer response may be treated as non-refundable unless the supplier confirms otherwise.',
+                    'title' => 'Holiday Packages',
+                    'items' => [
+                        'Cancellation terms for holiday packages are dynamic and depend on the travel date, hotels, transfers, tickets, flights where applicable, supplier rules, and what is included in the package.',
+                        'For every holiday package, the applicable cancellation policy will be shared at the time of booking or before final confirmation.',
+                        'Some package components may be fully refundable, partially refundable, or non-refundable depending on supplier conditions.',
+                        'If a holiday package includes hotel stays, special event access, entry tickets, transport, or third-party services, each component may follow its own cancellation rule.',
+                        'Any change in supplier terms, availability, seasonality, or travel date may affect the final cancellation or refund amount.',
+                    ],
                 ],
                 [
                     'title' => 'Date Changes and Amendments',
-                    'body' => 'Requests to reschedule are handled case by case. Amendments depend on availability, the original supplier terms, and whether any new cost applies on the revised date. A change request should not be treated as confirmed until Acute Tourism provides written confirmation.',
+                    'items' => [
+                        'Date changes and amendments are handled case by case.',
+                        'Approval depends on supplier availability, price difference, original booking terms, and whether the change is requested within the allowed time.',
+                        'Additional charges may apply for date changes, guest name changes, hotel changes, transport changes, or service upgrades.',
+                        'A change request is not confirmed until Acute Tourism provides written confirmation.',
+                    ],
                 ],
                 [
-                    'title' => 'Refund Processing',
-                    'body' => 'Where a refund is approved, the processing time depends on the payment method and the external provider involved. Acute Tourism can confirm the refund status from our side, but final posting time is also affected by the card issuer or payment channel.',
+                    'title' => 'Refund Processing Timeline',
+                    'items' => [
+                        'Approved refunds are usually processed within 5 to 7 working days after the refund has been approved.',
+                        "The final time for the amount to reflect in the customer's account may also depend on the bank, card issuer, or payment provider.",
+                        'Acute Tourism can confirm the refund status from our side, but bank or payment gateway posting times are outside our control.',
+                    ],
                 ],
                 [
-                    'title' => 'How to Request a Cancellation',
-                    'body' => 'To request a cancellation, reply using your booking reference or contact the Acute Tourism team directly with the lead traveler name, service date, and the item booked. This helps us validate the file and apply the correct supplier rule quickly.',
+                    'title' => 'Transaction Charges and Payment Provider Fees',
+                    'items' => [
+                        'Transaction charges, card fees, gateway fees, or payment provider charges paid during booking may not be refunded.',
+                        'These charges are paid to external payment providers and may be deducted from the refundable amount where applicable.',
+                        'Any refundable amount will be calculated after considering supplier charges, non-refundable components, and payment provider charges where applicable.',
+                    ],
+                ],
+                [
+                    'title' => 'How to Request a Cancellation or Refund',
+                    'items' => [
+                        'Contact Acute Tourism with your booking reference, lead traveler name, service date, and booked product or package.',
+                        'The team will review the booking terms and supplier conditions before confirming the refund status.',
+                        'Refunds, cancellations, and amendments should only be considered approved once confirmed in writing by Acute Tourism.',
+                    ],
                 ],
             ],
         ]);
@@ -1593,49 +1617,86 @@ class PageController extends Controller
     {
         return Inertia::render('TermsAndConditions', [
             'seo' => [
-                'title' => 'Terms and Conditions',
-                'description' => 'Review the Acute Tourism terms and conditions governing use of the website, bookings, payments, and related travel services.',
+                'title' => 'Terms and Conditions | Acute Tourism',
+                'description' => 'Read the terms and conditions for using Acute Tourism services, including tours, packages, visa assistance, payments, cancellations, and bookings.',
             ],
             'termsSections' => [
                 [
-                    'title' => 'Use of This Website',
-                    'body' => 'By accessing the Acute Tourism website, you agree to use it for lawful purposes only. The information on the site is intended to support travel discovery, planning, and booking inquiries, and should not be used in a way that disrupts site access, misrepresents intent, or interferes with operations.',
+                    'title' => 'Use of the Website',
+                    'items' => [
+                        'By using the Acute Tourism website, making an enquiry, submitting a form, or confirming a booking, you agree to these Terms and Conditions.',
+                        'The website is intended to provide information about tours, holiday packages, visa assistance, corporate events, and related travel services.',
+                        'Acute Tourism may update website content, pricing, availability, policies, and service details at any time where necessary.',
+                    ],
                 ],
                 [
-                    'title' => 'Bookings and Availability',
-                    'body' => 'All products, services, pricing, timing, and inclusions are subject to confirmation. A listing on the site does not guarantee final availability until the booking has been accepted, supplier space has been confirmed where required, and payment or deposit obligations have been satisfied.',
+                    'title' => 'Bookings and Confirmations',
+                    'items' => [
+                        'A booking is only considered confirmed after payment or agreed deposit has been received and written confirmation has been issued by Acute Tourism.',
+                        'Availability may change before confirmation, especially for hotels, private tours, attraction tickets, transport, seasonal products, and high-demand dates.',
+                        'Customers are responsible for checking booking details, guest names, dates, pickup locations, inclusions, exclusions, and timing before confirming.',
+                    ],
                 ],
                 [
                     'title' => 'Pricing and Payment',
-                    'body' => 'Displayed pricing may change because of supplier revisions, ticket availability, seasonal demand, special-event dates, accommodation rules, or transport updates. Where a payment is required, the customer is responsible for ensuring that the traveler details, dates, and selected product are correct before submission.',
-                ],
-                [
-                    'title' => 'Product Descriptions',
-                    'body' => 'Acute Tourism aims to present accurate information about experiences, tours, packages, and travel services. However, some operational elements may change after publication, including route order, meeting points, duration, language arrangement, pickup windows, or supplier-managed inclusions.',
+                    'items' => [
+                        'Prices may vary depending on season, supplier availability, group size, travel date, hotel category, service level, and exchange or supplier changes.',
+                        'Any quote shared by Acute Tourism is valid only for the stated period or until availability changes.',
+                        'Full payment or a deposit may be required depending on the service type.',
+                        'Payment provider fees, transaction charges, bank charges, or card charges may apply and may not be refundable.',
+                    ],
                 ],
                 [
                     'title' => 'Customer Responsibilities',
-                    'body' => 'Customers are responsible for providing correct contact details, traveler names, date preferences, and any relevant travel information requested during inquiry or booking. Where identification, visas, attraction tickets, or arrival timing matter, the customer is responsible for providing accurate supporting details on time.',
+                    'items' => [
+                        'Customers must provide accurate names, contact details, travel dates, passport information where needed, pickup details, and any other information required to arrange the service.',
+                        'Customers must arrive on time for tours, transfers, pickups, tickets, appointments, and scheduled activities.',
+                        'Customers are responsible for checking passport validity, visa requirements, travel restrictions, health requirements, insurance, and personal eligibility before travel.',
+                        'Acute Tourism is not responsible for service disruption caused by incorrect information provided by the customer.',
+                    ],
+                ],
+                [
+                    'title' => 'Supplier and Third-Party Services',
+                    'items' => [
+                        'Some services are operated by third-party suppliers such as hotels, transport companies, attractions, theme parks, event venues, embassies, consulates, immigration authorities, and activity providers.',
+                        'Supplier rules, operating hours, safety requirements, ticket conditions, cancellation rules, and availability may apply.',
+                        'Acute Tourism will assist with coordination, but some final decisions or service conditions may depend on the relevant third-party provider.',
+                    ],
+                ],
+                [
+                    'title' => 'Visa Assistance Terms',
+                    'items' => [
+                        'Acute Tourism provides visa assistance, document guidance, appointment support where applicable, and application preparation support.',
+                        'Visa approval is not guaranteed by Acute Tourism.',
+                        'Final visa decisions are made only by the relevant embassy, consulate, immigration authority, or government department.',
+                        'Visa fees, service fees, appointment fees, and document-related charges may be non-refundable once processing or submission has started.',
+                    ],
                 ],
                 [
                     'title' => 'Changes, Cancellations, and Refunds',
-                    'body' => 'Cancellation, amendment, and refund handling are governed by the applicable product terms, supplier rules, and payment conditions. Customers should review the dedicated cancellation policy and any product-specific conditions shown before purchase or final confirmation.',
+                    'items' => [
+                        'All changes, cancellations, and refunds are subject to the applicable cancellation and refund policy.',
+                        'Tours are generally refundable if cancelled at least 24 hours before the scheduled tour start time, unless supplier-specific conditions state otherwise.',
+                        'Entry tickets are generally non-refundable once issued or confirmed.',
+                        'Holiday package cancellation rules are dynamic and depend on the travel date and package components.',
+                        'Approved refunds are usually processed within 5 to 7 working days after approval.',
+                    ],
                 ],
                 [
-                    'title' => 'Third-Party Suppliers',
-                    'body' => 'Many services offered through Acute Tourism rely on third-party providers such as attraction operators, transport companies, hotels, ticketing partners, and event suppliers. Acute Tourism coordinates these arrangements, but some performance obligations, restrictions, and operational decisions remain under the control of those providers.',
+                    'title' => 'Liability and Force Majeure',
+                    'items' => [
+                        'Acute Tourism is not responsible for delays, cancellations, losses, or changes caused by events outside our reasonable control.',
+                        'This may include weather conditions, traffic, accidents, government restrictions, supplier disruption, technical issues, force majeure events, or changes imposed by authorities.',
+                        'Where possible, Acute Tourism will assist with alternatives or rescheduling, subject to supplier terms and availability.',
+                    ],
                 ],
                 [
-                    'title' => 'Limitation of Liability',
-                    'body' => 'Acute Tourism is not responsible for loss or disruption caused by customer-provided errors, late arrival, force majeure events, government restrictions, attraction closures, transport incidents, supplier interruptions, or any event outside reasonable operational control. Liability is limited to the extent permitted by applicable law.',
-                ],
-                [
-                    'title' => 'Intellectual Property and Content',
-                    'body' => 'The branding, layout, written copy, and site materials used on the Acute Tourism website may not be copied, republished, or reused for commercial purposes without permission, except where usage is otherwise permitted by law.',
-                ],
-                [
-                    'title' => 'Contact and Policy Updates',
-                    'body' => 'Acute Tourism may update these terms from time to time as the business, products, payment flow, or supplier structure evolves. Customers should review the latest version before submitting a booking or inquiry if they want the current terms on record.',
+                    'title' => 'Governing Law',
+                    'items' => [
+                        'These Terms and Conditions are intended to be governed by the applicable laws and regulations of the United Arab Emirates.',
+                        'Any dispute should first be raised with Acute Tourism directly so both parties can attempt to resolve the matter fairly.',
+                        'If a matter cannot be resolved directly, it may be handled through the appropriate legal or regulatory channels in the UAE.',
+                    ],
                 ],
             ],
         ]);
@@ -1645,49 +1706,81 @@ class PageController extends Controller
     {
         return Inertia::render('PrivacyPolicy', [
             'seo' => [
-                'title' => 'Privacy Policy',
-                'description' => 'Review how Acute Tourism collects, uses, stores, and protects personal information provided through the website and booking process.',
+                'title' => 'Privacy Policy | Acute Tourism',
+                'description' => 'Learn how Acute Tourism collects, uses, and protects customer information for travel bookings, inquiries, payments, and support services.',
             ],
             'privacySections' => [
                 [
                     'title' => 'Information We Collect',
-                    'body' => 'Acute Tourism may collect personal information when you submit an inquiry, request a booking, complete a checkout, contact the team, or otherwise interact with the website. This may include your name, email address, phone number, travel date, guest count, and any trip-related details you provide voluntarily.',
+                    'items' => [
+                        'We may collect personal information such as name, phone number, email address, nationality, travel dates, destination, booking details, and enquiry details.',
+                        'For visa assistance or travel-related services, we may collect passport details, UAE residence information, employment details, travel history, financial documents, hotel bookings, flight details, and other supporting documents where required.',
+                        'We may also collect technical information such as website usage, device information, browser type, and interaction data for website improvement and security.',
+                    ],
                 ],
                 [
                     'title' => 'How We Use Your Information',
-                    'body' => 'The information you provide is used to respond to inquiries, prepare travel quotations, coordinate bookings, issue confirmations, process payments, support customer communication, and improve the operational quality of the services offered through Acute Tourism.',
+                    'items' => [
+                        'We use customer information to respond to enquiries, prepare quotes, arrange bookings, process payments, coordinate travel services, and provide customer support.',
+                        'For visa assistance, information may be used to review document readiness, prepare applications, guide customers, or support appointment and submission processes where applicable.',
+                        'We may use contact details to send booking updates, service reminders, payment information, policy updates, or relevant travel communication.',
+                    ],
                 ],
                 [
-                    'title' => 'Bookings and Supplier Coordination',
-                    'body' => 'Where necessary to fulfill a request, relevant customer details may be shared with third-party suppliers such as hotels, attraction operators, transport providers, ticketing partners, and related service vendors. Only the information reasonably required for service delivery should be shared for that purpose.',
+                    'title' => 'Sharing Information with Service Providers',
+                    'items' => [
+                        'We may share necessary information with trusted third-party providers to complete a service requested by the customer.',
+                        'These providers may include hotels, transport companies, attractions, tour operators, payment providers, visa centers, embassies, consulates, immigration-related service providers, insurance providers, or event partners.',
+                        'Only the information required to deliver or support the requested service will be shared where reasonably possible.',
+                    ],
                 ],
                 [
-                    'title' => 'Payments and Transaction Data',
-                    'body' => 'Payment-related information may be processed through external payment providers or gateways. Acute Tourism may retain booking references, transaction records, traveler details, and operational notes needed for reconciliation, customer support, and lawful recordkeeping, but sensitive payment handling may also be governed by the payment provider’s own policies.',
+                    'title' => 'Payment and Transaction Information',
+                    'items' => [
+                        'Payments may be processed through secure third-party payment providers.',
+                        'Acute Tourism does not intend to store full card details on the website unless handled through approved secure payment systems.',
+                        'Payment providers may collect and process transaction information according to their own security and privacy standards.',
+                    ],
                 ],
                 [
-                    'title' => 'Communication and Follow-Up',
-                    'body' => 'If you contact Acute Tourism or submit a booking request, the team may use your details to send confirmations, clarifications, itinerary updates, payment reminders, or operational messages connected to your request. Communication may continue where required to complete or support the service you asked for.',
+                    'title' => 'Document Handling',
+                    'items' => [
+                        'Travel and visa documents may contain sensitive personal information, so customers should only submit documents through approved communication channels shared by Acute Tourism.',
+                        'Documents are used only for the purpose of providing the requested travel, visa, booking, or support service.',
+                        'Customers should ensure that all documents submitted are accurate, valid, and lawfully provided.',
+                    ],
                 ],
                 [
-                    'title' => 'Cookies and Website Usage',
-                    'body' => 'The site may use cookies, session handling, and technical logging to support security, authentication, error handling, and site functionality. These tools help maintain the website and improve user experience, but they also form part of how the platform operates and should be understood as part of normal website use.',
+                    'title' => 'Data Security',
+                    'items' => [
+                        'Acute Tourism takes reasonable steps to protect customer information from unauthorized access, misuse, loss, or disclosure.',
+                        'No online transmission or storage system can be guaranteed to be completely secure, but we aim to use appropriate safeguards and responsible handling practices.',
+                        'Access to customer information is limited to team members or service providers who need it to support the requested service.',
+                    ],
                 ],
                 [
                     'title' => 'Data Retention',
-                    'body' => 'Personal data may be kept for as long as needed to provide requested services, meet operational obligations, resolve disputes, maintain internal records, or comply with legal, accounting, tax, or payment-related requirements.',
+                    'items' => [
+                        'Customer information may be retained for as long as needed to provide the service, manage booking records, comply with legal obligations, handle disputes, support accounting requirements, or improve customer service.',
+                        'Visa and travel documents may be retained only as long as reasonably required for the service or related record purposes.',
+                        'Customers may request deletion of certain information, subject to legal, operational, accounting, or dispute-resolution requirements.',
+                    ],
                 ],
                 [
-                    'title' => 'Data Protection and Security',
-                    'body' => 'Acute Tourism takes reasonable steps to protect information against unauthorized access, misuse, or accidental disclosure. However, no online transmission or storage environment should be treated as risk-free, and customers should avoid sending unnecessary sensitive data through informal channels.',
+                    'title' => 'Marketing Communication',
+                    'items' => [
+                        'Acute Tourism may send service updates, travel offers, or relevant marketing communication where permitted.',
+                        'Customers can request to stop receiving promotional communication by contacting Acute Tourism.',
+                        'Important booking, payment, policy, or service-related messages may still be sent when necessary.',
+                    ],
                 ],
                 [
-                    'title' => 'Third-Party Links and External Services',
-                    'body' => 'The website may link to external sites, services, or providers. Once you leave the Acute Tourism website or interact directly with an external platform, the privacy practices of that external party apply and should be reviewed independently.',
-                ],
-                [
-                    'title' => 'Policy Updates and Contact',
-                    'body' => 'Acute Tourism may revise this privacy policy as website features, legal obligations, booking systems, or supplier workflows evolve. If you need clarification about how your information is handled, contact the company directly using the published contact details.',
+                    'title' => 'Customer Rights and Contact',
+                    'items' => [
+                        'Customers may contact Acute Tourism to request access, correction, or deletion of personal information where applicable.',
+                        'Requests will be reviewed based on legal, operational, and service-related requirements.',
+                        'For privacy-related requests, contact Acute Tourism through the official email or phone number listed on this page.',
+                    ],
                 ],
             ],
         ]);
@@ -1697,8 +1790,8 @@ class PageController extends Controller
     {
         return Inertia::render('CorporateEvents', [
             'seo' => [
-                'title' => 'Corporate Events',
-                'description' => 'Executive and incentive experiences for corporate groups in Dubai.',
+                'title' => 'Corporate Travel and Event Planning Dubai | Acute Tourism',
+                'description' => 'Plan corporate travel and event experiences in Dubai with Acute Tourism, including group tours, transfers, team activities, event travel support, and dedicated coordination.',
             ],
             'services' => [
                 'Executive desert experiences',
@@ -1715,8 +1808,8 @@ class PageController extends Controller
 
         return Inertia::render('Contact', [
             'seo' => [
-                'title' => 'Contact',
-                'description' => 'Contact Acute Tourism for concierge-led Dubai experience planning and group requests.',
+                'title' => 'Contact Acute Tourism | Travel Planning Support in Dubai',
+                'description' => 'Contact Acute Tourism for Dubai tours, holiday packages, panoramic bus experiences, outbound visa assistance, corporate travel, and custom travel planning support.',
             ],
             'contact' => [
                 'email' => $settings->contact_email,
@@ -1725,7 +1818,7 @@ class PageController extends Controller
                 'address' => $settings->contact_address,
                 'whatsappNumber' => $settings->whatsapp_number,
             ],
-            'interestOptions' => ['Tours', 'Holiday Package', 'Visa Service'],
+            'interestOptions' => ['Tours & Tickets', 'Holiday Package', 'International Visa Assistance', 'Panoramic Bus', 'Corporate Events', 'General Planning', 'Existing Booking Support'],
         ]);
     }
 
@@ -1750,9 +1843,9 @@ class PageController extends Controller
 
         return Inertia::render('Journal/Index', [
             'seo' => [
-                'title' => $selectedCategory?->seo_title ?: ($selectedCategory ? "{$selectedCategory->name} Blog" : 'Blog'),
+                'title' => $selectedCategory?->seo_title ?: ($selectedCategory ? "{$selectedCategory->name} Blog" : 'Dubai Travel Planning Tips | Acute Tourism Blog'),
                 'description' => $selectedCategory?->seo_description
-                    ?: ($selectedCategory?->description ?: 'Dubai travel guides, visa explainers, and holiday planning articles from Acute Tourism.'),
+                    ?: ($selectedCategory?->description ?: 'Read practical Dubai travel planning tips, visa guidance, itinerary ideas, tour recommendations, and holiday planning advice from Acute Tourism.'),
             ],
             'featuredArticle' => $featuredArticle ? [
                 'title' => $featuredArticle->title,
@@ -1854,8 +1947,8 @@ class PageController extends Controller
     {
         return Inertia::render('Faq', [
             'seo' => [
-                'title' => 'FAQ',
-                'description' => 'Frequently asked questions about the Acute Tourism rebuild and booking approach.',
+                'title' => 'FAQs | Acute Tourism',
+                'description' => 'Find answers to common questions about Acute Tourism tours, tickets, holiday packages, visa assistance, Panoramic Bus, corporate events, bookings, payments, cancellations, and refunds.',
             ],
             'featuredFaqs' => Faq::query()
                 ->published()
@@ -1942,14 +2035,16 @@ class PageController extends Controller
 
         return Inertia::render('Experiences/Index', [
             'seo' => [
-                'title' => $pageLabel === 'Tours & Tickets' ? 'Tours & Tickets' : "{$pageLabel} | Tours & Tickets",
-                'description' => "Browse {$pageLabel} with Acute Tourism. Compare trusted activities, tours, tickets, duration, and prices before booking.",
+                'title' => $pageLabel === 'Tours & Tickets' ? 'Dubai Tours and Tickets with Local Support | Acute Tourism' : "{$pageLabel} | Tours & Tickets",
+                'description' => $pageLabel === 'Tours & Tickets'
+                    ? 'Book Dubai tours and attraction tickets with Acute Tourism, including desert safaris, yacht experiences, water activities, city tours, and selected Dubai attractions.'
+                    : "Browse {$pageLabel} with Acute Tourism. Compare trusted activities, tours, tickets, duration, and prices before booking.",
             ],
             'activeCategory' => $typeFilter ?? '',
             'activeLocation' => $locationFilter ?? 'all',
             'activeType' => $typeFilter ?? 'all',
             'pageTitle' => $pageLabel === 'Tours & Tickets'
-                ? "Book Dubai's Best Tours, Tickets & Activities"
+                ? 'Dubai Tours and Tickets'
                 : $pageLabel,
             'pageDescription' => $pageLabel === 'Tours & Tickets'
                 ? 'Compare top-rated activities by location, attraction type, price, reviews, and duration, then book the experience that fits your day.'

@@ -22,7 +22,7 @@ class ExampleTest extends TestCase
         $response->assertStatus(200);
         $response->assertInertia(fn (Assert $page) => $page
             ->component('Home')
-            ->where('seo.title', 'Exclusively Curated Holiday Experiences')
+            ->where('seo.title', 'Custom Travel Planning in Dubai | Acute Tourism')
             ->has('collections')
             ->has('featuredExperiences')
         );

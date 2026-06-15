@@ -245,6 +245,15 @@ const closeMedia = () => {
     activeMediaIndex.value = null;
 };
 
+const showMedia = (index) => {
+    if (!mediaItems.value.length) {
+        return;
+    }
+
+    const total = mediaItems.value.length;
+    activeMediaIndex.value = ((index % total) + total) % total;
+};
+
 const updateStickyCta = () => {
     const hero = document.querySelector('.package-detail-top-grid') || document.querySelector('.experience-operator-head');
     const heroBottom = hero?.getBoundingClientRect().bottom ?? 0;
@@ -277,7 +286,7 @@ onBeforeUnmount(() => {
                 <nav class="experience-breadcrumb" aria-label="Breadcrumb">
                     <Link href="/">Home</Link>
                     <span class="experience-breadcrumb__sep" aria-hidden="true">/</span>
-                    <Link href="/experiences">Experiences</Link>
+                    <Link href="/dubai-tours-and-tickets">Experiences</Link>
                     <span class="experience-breadcrumb__sep" aria-hidden="true">/</span>
                     <span class="experience-breadcrumb__current">{{ experience.title }}</span>
                 </nav>
@@ -577,6 +586,15 @@ onBeforeUnmount(() => {
         <div v-if="activeMediaItem" class="experience-lightbox" @click.self="closeMedia">
             <button type="button" class="experience-lightbox__close" @click="closeMedia">Close</button>
             <div class="experience-lightbox__dialog">
+                <button
+                    v-if="mediaItems.length > 1"
+                    type="button"
+                    class="experience-lightbox__nav experience-lightbox__nav--prev"
+                    aria-label="Previous media"
+                    @click="showMedia(activeMediaIndex - 1)"
+                >
+                    &lt;
+                </button>
                 <video
                     v-if="activeMediaItem.type === 'video'"
                     class="experience-lightbox__media"
@@ -591,6 +609,18 @@ onBeforeUnmount(() => {
                     :src="activeMediaItem.url"
                     :alt="experience.title"
                 />
+                <button
+                    v-if="mediaItems.length > 1"
+                    type="button"
+                    class="experience-lightbox__nav experience-lightbox__nav--next"
+                    aria-label="Next media"
+                    @click="showMedia(activeMediaIndex + 1)"
+                >
+                    &gt;
+                </button>
+            </div>
+            <div v-if="mediaItems.length > 1" class="experience-lightbox__counter">
+                {{ activeMediaIndex + 1 }} / {{ mediaItems.length }}
             </div>
         </div>
 

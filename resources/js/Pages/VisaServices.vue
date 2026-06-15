@@ -375,7 +375,7 @@ const whatsappHref = computed(() => {
             <div class="container hero-grid">
                 <div>
                     <p class="kicker">Visa Services</p>
-                    <h1 class="hero-title">Visa Assistance Made Clear, Simple, and Stress-Free</h1>
+                    <h1 class="hero-title">Tourist Visa Assistance for UAE Residents</h1>
                     <p class="hero-copy">
                         We help UAE residents prepare the right documents, understand the correct visa route, and avoid costly mistakes before applying to Schengen, UK, USA, Canada, Japan, Australia, and more.
                     </p>

@@ -21,7 +21,7 @@ class JournalTest extends TestCase
         $response->assertOk();
         $response->assertInertia(fn (Assert $page) => $page
             ->component('Journal/Index')
-            ->where('seo.title', 'Blog')
+            ->where('seo.title', 'Dubai Travel Planning Tips | Acute Tourism Blog')
             ->has('categories', 3)
             ->has('articles', 3)
             ->where('articles.0.slug', 'choose-premium-desert-safari-dubai')

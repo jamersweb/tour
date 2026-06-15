@@ -26,8 +26,8 @@ const initialVisibleCount = 16;
 const visibleLimit = ref(initialVisibleCount);
 
 const trustItems = [
-    { icon: '⭐', label: '4.8/5 average reviews' },
-    { icon: '👥', label: '10,000+ customers served' },
+    { icon: '⭐', label: 'Licensed Dubai operator' },
+    { icon: '👥', label: '2,500+ customers served' },
     { icon: '🔒', label: 'Secure payment' },
     { icon: '🏷️', label: 'Best price guarantee' },
 ];
@@ -53,13 +53,13 @@ const defaultTypeOptions = [
 const locationOptions = computed(() => (props.locationFilters?.length ? props.locationFilters : defaultLocationOptions)
     .map((option) => ({
         ...option,
-        href: option.href || (option.key === 'all' ? '/experiences' : `/experiences/location/${option.key}`),
+        href: option.href || (option.key === 'all' ? '/dubai-tours-and-tickets' : `/dubai-tours-and-tickets/location/${option.key}`),
     })));
 
 const typeOptions = computed(() => (props.typeFilters?.length ? props.typeFilters : defaultTypeOptions)
     .map((option) => ({
         ...option,
-        href: option.href || (option.key === 'all' ? '/experiences' : `/experiences/category/${option.key}`),
+        href: option.href || (option.key === 'all' ? '/dubai-tours-and-tickets' : `/dubai-tours-and-tickets/category/${option.key}`),
     })));
 
 const guideCards = [
@@ -80,21 +80,6 @@ const guideCards = [
     },
 ];
 
-const proofCards = [
-    {
-        name: 'Sarah M.',
-        quote: 'Easy booking and fast confirmation. The desert safari was exactly as described.',
-    },
-    {
-        name: 'Ahmed R.',
-        quote: 'Good price, clear pickup details, and smooth support from the team.',
-    },
-    {
-        name: 'Priya K.',
-        quote: 'Booked a yacht activity and everything was handled professionally.',
-    },
-];
-
 const faqItems = [
     {
         question: 'What is the difference between entry tickets and tours?',
@@ -107,10 +92,6 @@ const faqItems = [
     {
         question: 'Are transfers included?',
         answer: 'Some activities include transfers while others are ticket-only. Check the product page before booking so you know exactly what is included.',
-    },
-    {
-        question: 'Why do some activities show "Ask" instead of a fixed price?',
-        answer: 'Some prices depend on date, supplier availability, ticket type, transfers, or group size. Final price is shown before payment.',
     },
     {
         question: 'Which activities are best for families?',
@@ -213,14 +194,6 @@ const activitySubCategory = (item) => {
 };
 
 const numericPrice = (item) => Number.parseFloat(String(item.priceFrom || '').replace(/[^0-9.]/g, '')) || 0;
-
-const reviewText = (item) => {
-    const seed = Math.abs([...String(item.slug || item.title)].reduce((total, char) => total + char.charCodeAt(0), 0));
-    const rating = [4.6, 4.7, 4.8, 4.9][seed % 4];
-    const reviews = 69 + (seed % 430);
-
-    return `${rating}★ (${reviews} reviews)`;
-};
 
 const offerBadge = (item, index) => {
     const text = normalizedText(item);
@@ -395,7 +368,6 @@ watch(() => props.activeType, (value) => {
                                     <h3>{{ experience.title }}</h3>
                                     <div class="activity-meta-list">
                                         <span>{{ experience.duration || 'Flexible timing' }}</span>
-                                        <span class="activity-review">{{ reviewText(experience) }}</span>
                                     </div>
                                     <p class="price-line"><span>From</span>{{ experience.priceFrom || 'Ask' }}</p>
                                     <Link class="card-link" :href="experience.href || `/experiences/${experience.slug}`">Book Now</Link>
@@ -432,19 +404,6 @@ watch(() => props.activeType, (value) => {
                         <div class="guide-card__num">{{ card.number }}</div>
                         <h3>{{ card.title }}</h3>
                         <p>{{ card.copy }}</p>
-                    </article>
-                </div>
-            </div>
-        </section>
-
-        <section class="trust-strip">
-            <div class="container trust-box">
-                <h2>Live Customer Reviews</h2>
-                <div class="proof-grid">
-                    <article v-for="card in proofCards" :key="card.name" class="proof-card">
-                        <div class="proof-card__stars">★★★★★ 5.0</div>
-                        <p>"{{ card.quote }}"</p>
-                        <strong>{{ card.name }}</strong>
                     </article>
                 </div>
             </div>

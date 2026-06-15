@@ -20,12 +20,16 @@ const page = usePage();
         <section class="about-hero policy-hero">
             <div class="container about-hero__grid">
                 <div class="about-hero__content">
-                    <p class="about-kicker">Terms and Conditions</p>
-                    <h1 class="about-title">The operating terms that apply to use of the Acute Tourism website and booking flow.</h1>
+                    <p class="about-kicker">Acute Tourism Policy</p>
+                    <h1 class="about-title">Terms and Conditions</h1>
                     <p class="about-copy">
-                        These terms explain how website use, pricing, booking requests, third-party supplier handling,
-                        customer responsibilities, and commercial limitations are treated across the Acute Tourism platform.
+                        These Terms & Conditions explain the general rules for using the Acute Tourism website, making enquiries,
+                        confirming bookings, paying for services, requesting changes, and using travel-related services arranged by Acute Tourism.
                     </p>
+                    <div class="faq-meta policy-meta">
+                        <span class="filter-chip active">Acute Tourism LLC</span>
+                        <span class="filter-chip">Last updated: 13 June 2026</span>
+                    </div>
 
                     <div class="about-actions">
                         <Link class="button-primary" href="/contact">Contact Acute Tourism</Link>
@@ -47,10 +51,13 @@ const page = usePage();
 
         <section class="section-block policy-sections">
             <div class="container policy-sections__stack">
-                <article v-for="section in termsSections" :key="section.title" class="about-card">
+                <article v-for="section in termsSections" :key="section.title" class="about-card policy-section-card">
                     <p class="about-card__label">Terms section</p>
                     <h2>{{ section.title }}</h2>
-                    <p>{{ section.body }}</p>
+                    <ul v-if="section.items" class="about-list">
+                        <li v-for="item in section.items" :key="item">{{ item }}</li>
+                    </ul>
+                    <p v-else>{{ section.body }}</p>
                 </article>
             </div>
         </section>
@@ -59,11 +66,8 @@ const page = usePage();
             <div class="container about-columns">
                 <article class="about-card">
                     <p class="eyebrow">Before booking</p>
-                    <h2>Review both the commercial terms and the cancellation terms.</h2>
-                    <p>
-                        This page works together with the cancellation policy and any product-specific conditions shown
-                        on the related experience, tour, package, or service page.
-                    </p>
+                    <h2>Need help?</h2>
+                    <p>For faster handling, contact Acute Tourism with the relevant booking reference, service date, or request details.</p>
                 </article>
 
                 <article class="about-card">

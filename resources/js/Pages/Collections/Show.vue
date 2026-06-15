@@ -22,7 +22,7 @@ defineProps({
                 <p class="page-copy">{{ collection.description }}</p>
 
                 <div class="hero-actions">
-                    <Link class="button-primary" href="/experiences">Browse experiences</Link>
+                    <Link class="button-primary" href="/dubai-tours-and-tickets">Browse experiences</Link>
                     <Link class="button-secondary" href="/contact">Plan this collection</Link>
                 </div>
             </div>

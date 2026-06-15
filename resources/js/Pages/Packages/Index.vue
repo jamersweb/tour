@@ -145,7 +145,7 @@ const visiblePackages = computed(() => {
             <div class="container hero-grid">
                 <div>
                     <p class="kicker">Holiday Packages</p>
-                    <h1 class="hero-title">Dubai Holiday Packages, Curated for Effortless Travel</h1>
+                    <h1 class="hero-title">Dubai Holiday Packages</h1>
                     <p class="hero-copy">
                         Browse ready-made packages with hotels, transfers, tours, attractions, and planning support
                         arranged in one smooth itinerary.

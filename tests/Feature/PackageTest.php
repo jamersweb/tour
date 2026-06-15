@@ -25,12 +25,12 @@ class PackageTest extends TestCase
 
     public function test_package_index_renders(): void
     {
-        $response = $this->get('/packages');
+        $response = $this->get('/dubai-holiday-packages');
 
         $response->assertOk();
         $response->assertInertia(fn (Assert $page) => $page
             ->component('Packages/Index')
-            ->where('seo.title', 'Packages')
+            ->where('seo.title', 'Dubai Holiday Packages with Travel Support | Acute Tourism')
             ->has('packages')
         );
     }

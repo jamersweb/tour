@@ -19,7 +19,7 @@ class FaqTest extends TestCase
         $response->assertOk();
         $response->assertInertia(fn (Assert $page) => $page
             ->component('Faq')
-            ->where('seo.title', 'FAQ')
+            ->where('seo.title', 'FAQs | Acute Tourism')
             ->has('featuredFaqs')
             ->has('faqGroups')
         );

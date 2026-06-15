@@ -109,7 +109,7 @@ onBeforeUnmount(() => observer?.disconnect());
 
                 <div class="visa-v2-hero__cta">
                     <a class="button-primary visa-cta-primary" href="#visa-form">Start your request</a>
-                    <Link class="button-secondary visa-cta-secondary" href="/visa-services">All visa services</Link>
+                    <Link class="button-secondary visa-cta-secondary" href="/tourist-visa-assistance-uae-residents">All visa services</Link>
                 </div>
 
                 <div class="visa-v2-stats">
@@ -342,7 +342,7 @@ onBeforeUnmount(() => observer?.disconnect());
                         </div>
                         <div class="visa-v2-inline-cta">
                             <Link class="button-primary visa-cta-primary" href="/contact">Contact Acute Tourism</Link>
-                            <Link class="button-secondary visa-cta-secondary" href="/visa-services">All visa services</Link>
+                            <Link class="button-secondary visa-cta-secondary" href="/tourist-visa-assistance-uae-residents">All visa services</Link>
                         </div>
                     </div>
 

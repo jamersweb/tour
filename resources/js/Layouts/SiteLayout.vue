@@ -8,17 +8,37 @@ const logoutForm = useForm({});
 const headerRef = ref(null);
 const footerRef = ref(null);
 const mobileNavOpen = ref(false);
+const footerShortDescription = 'Curated Dubai tours, holidays, visas, and travel support.';
 const showMobileBottomNav = computed(() => {
     const currentPath = String(page.url || '/').split('?')[0].replace(/\/+$/, '') || '/';
 
     return currentPath === '/';
 });
-const partnerUrl = computed(() => page.props.site?.footerNavigation?.find((item) => item.label === 'Partner With Us')?.href || '/partner-with-us');
+const partnerUrl = computed(() => page.props.site?.footerNavigation?.find((item) => item.label === 'Earn With Tourgrat')?.href || '/earn-with-tourgrat');
 const paymentIcons = [
     { label: 'Cards', image: '/images/payment-card.svg' },
     { label: 'Wallet', image: '/images/payment-wallet.svg' },
     { label: 'Secure payment', image: '/images/payment-secure.svg' },
 ];
+const footerExploreLinks = computed(() => [
+    { label: 'Tours & Tickets', href: '/dubai-tours-and-tickets' },
+    { label: 'Holiday Packages', href: '/dubai-holiday-packages' },
+    { label: 'Visa Services', href: '/tourist-visa-assistance-uae-residents' },
+    { label: 'Panoramic Bus', href: '/luxury-bus-tour-dubai' },
+    { label: 'Corporate Events', href: '/corporate-travel-event-planning-dubai' },
+]);
+const footerSupportLinks = computed(() => [
+    { label: 'Contact Us', href: '/contact' },
+    { label: 'Terms & Conditions', href: '/terms-and-conditions' },
+    { label: 'Privacy Policy', href: '/privacy-policy' },
+    { label: 'Cancellation & Refund Policy', href: '/cancellation-policy' },
+    { label: 'FAQs', href: '/faq' },
+]);
+const footerCompanyLinks = computed(() => [
+    { label: 'About Us', href: '/about' },
+    { label: 'Earn With Tourgrat', href: partnerUrl.value },
+    { label: 'Blog', href: '/blog' },
+]);
 let revealObserver;
 let footerMediaQuery;
 
@@ -422,8 +442,8 @@ onBeforeUnmount(() => {
         </main>
 
         <footer ref="footerRef" class="site-footer">
-            <div class="container footer-grid">
-                <div>
+            <div class="container footer-grid footer-grid--columns footer-grid--branded">
+                <div class="footer-brand-column">
                     <div class="footer-brand">
                         <img
                             v-if="page.props.site.footerLogoUrl"
@@ -432,17 +452,17 @@ onBeforeUnmount(() => {
                             alt=""
                         />
                     </div>
-                    <p class="footer-copy">{{ page.props.site.footer.description }}</p>
+                    <p class="footer-copy">{{ footerShortDescription }}</p>
                     <div class="footer-tourgrat">
                         <strong>Tourgrat</strong>
                         <span>Acute Tourism's referrer platform for partners who send travel leads and track opportunities.</span>
                         <div class="footer-store-buttons">
-                            <a class="footer-store-btn" href="#" aria-label="Download Tourgrat on the App Store">
-                                <svg viewBox="0 0 24 24" aria-hidden="true">
-                                    <path d="M17.5 12.5c0-2.2 1.8-3.3 1.9-3.4-1-1.5-2.6-1.7-3.2-1.7-1.4-.1-2.6.8-3.3.8-.7 0-1.8-.8-2.9-.8-1.5 0-2.9.9-3.7 2.2-1.6 2.8-.4 6.9 1.1 9.1.8 1.1 1.7 2.3 2.9 2.3 1.1 0 1.6-.7 3-.7s1.8.7 3 .7 2.1-1.1 2.8-2.2c.9-1.3 1.2-2.5 1.3-2.6-.1 0-2.4-.9-2.4-3.7ZM15.3 5.9c.6-.8 1-1.8.9-2.9-.9 0-2 .6-2.7 1.4-.6.7-1.1 1.8-1 2.8 1 .1 2.1-.5 2.8-1.3Z" />
-                                </svg>
-                                <span><small>Download on the</small>App Store</span>
-                            </a>
+                        <a class="footer-store-btn" href="#" aria-label="Download Tourgrat on the App Store">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M17.5 12.5c0-2.2 1.8-3.3 1.9-3.4-1-1.5-2.6-1.7-3.2-1.7-1.4-.1-2.6.8-3.3.8-.7 0-1.8-.8-2.9-.8-1.5 0-2.9.9-3.7 2.2-1.6 2.8-.4 6.9 1.1 9.1.8 1.1 1.7 2.3 2.9 2.3 1.1 0 1.6-.7 3-.7s1.8.7 3 .7 2.1-1.1 2.8-2.2c.9-1.3 1.2-2.5 1.3-2.6-.1 0-2.4-.9-2.4-3.7ZM15.3 5.9c.6-.8 1-1.8.9-2.9-.9 0-2 .6-2.7 1.4-.6.7-1.1 1.8-1 2.8 1 .1 2.1-.5 2.8-1.3Z" />
+                            </svg>
+                            <span><small>Download on the</small>App Store</span>
+                        </a>
                             <a class="footer-store-btn" href="#" aria-label="Get Tourgrat on Google Play">
                                 <svg viewBox="0 0 24 24" aria-hidden="true">
                                     <path d="m4 3 11 9L4 21V3Zm12.2 7.9 2.5-1.5c.8-.5.8-1.6 0-2.1L6.3.3l9.9 10.6Zm0 2.2L6.3 23.7l12.4-7c.8-.5.8-1.6 0-2.1l-2.5-1.5Z" />
@@ -453,10 +473,10 @@ onBeforeUnmount(() => {
                     </div>
                 </div>
 
-                <details class="footer-panel" open @toggle="onFooterPanelToggle">
+                <details class="footer-panel footer-panel--explore" open @toggle="onFooterPanelToggle">
                     <summary class="footer-label">Explore</summary>
                     <ul class="footer-list">
-                        <li v-for="item in page.props.site.footerNavigation" :key="item.href">
+                        <li v-for="item in footerExploreLinks" :key="item.href">
                             <a
                                 v-if="String(item.href).startsWith('http')"
                                 class="footer-link"
@@ -471,84 +491,93 @@ onBeforeUnmount(() => {
                     </ul>
                 </details>
 
-                <details class="footer-panel" open @toggle="onFooterPanelToggle">
-                    <summary class="footer-label">Contact</summary>
+                <details class="footer-panel footer-panel--support" open @toggle="onFooterPanelToggle">
+                    <summary class="footer-label">Support</summary>
                     <ul class="footer-list">
-                        <li>
-                            <a class="footer-link" :href="`mailto:${page.props.site.contact.email}`">
-                                {{ page.props.site.contact.email }}
-                            </a>
-                        </li>
-                        <li v-if="page.props.site.contact.phone">
-                            <a class="footer-link" :href="phoneHref(page.props.site.contact.phone)">
-                                {{ page.props.site.contact.phone }}
-                            </a>
-                        </li>
-                        <li v-if="page.props.site.contact.phoneSecondary">
+                        <li v-for="item in footerSupportLinks" :key="item.href">
                             <a
+                                v-if="String(item.href).startsWith('http')"
                                 class="footer-link"
-                                :href="phoneHref(page.props.site.contact.phoneSecondary)"
+                                :href="item.href"
+                                target="_blank"
+                                rel="noreferrer"
                             >
-                                {{ page.props.site.contact.phoneSecondary }}
+                                {{ item.label }}
                             </a>
+                            <Link v-else class="footer-link" :href="item.href">{{ item.label }}</Link>
                         </li>
-                        <li v-if="whatsappHref(page.props.site.contact.whatsappNumber)">
-                            <a class="footer-link" :href="whatsappHref(page.props.site.contact.whatsappNumber)" target="_blank" rel="noreferrer">
-                                WhatsApp {{ page.props.site.contact.whatsappNumber }}
-                            </a>
-                        </li>
-                        <li>{{ page.props.site.contact.address }}</li>
                     </ul>
                 </details>
 
-                <details class="footer-panel" open @toggle="onFooterPanelToggle">
-                    <summary class="footer-label">Connect</summary>
-                    <div class="footer-social-icons" aria-label="Social links">
-                        <a
-                            v-for="link in page.props.site.footer.socialLinks"
-                            :key="`icon-${link.href}`"
-                            :href="link.href"
-                            target="_blank"
-                            rel="noreferrer"
-                            :aria-label="link.label"
-                        >
-                            <svg viewBox="0 0 24 24" aria-hidden="true">
-                                <path :d="footerSocialIconPath(link.label)"></path>
-                            </svg>
-                        </a>
-                        <a
-                            :href="page.props.site.footer.website"
-                            target="_blank"
-                            rel="noreferrer"
-                            aria-label="Official Website"
-                        >
-                            <svg viewBox="0 0 24 24" aria-hidden="true">
-                                <path :d="footerSocialIconPath('website')"></path>
-                            </svg>
-                        </a>
+                <div class="footer-work-column">
+                    <details class="footer-panel footer-panel--company" open @toggle="onFooterPanelToggle">
+                        <summary class="footer-label">Company</summary>
+                        <ul class="footer-list">
+                            <li v-for="item in footerCompanyLinks" :key="`${item.label}-${item.href}`">
+                                <a
+                                    v-if="String(item.href).startsWith('http')"
+                                    class="footer-link"
+                                    :href="item.href"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    {{ item.label }}
+                                </a>
+                                <Link v-else class="footer-link" :href="item.href">{{ item.label }}</Link>
+                            </li>
+                        </ul>
+                    </details>
+                    <div class="footer-payments-block">
+                        <p class="footer-label">Ways You Can Pay</p>
+                        <div class="footer-payment-icons" aria-label="Payment support">
+                            <span
+                                v-for="item in paymentIcons"
+                                :key="item.label"
+                                :title="item.label"
+                                :aria-label="item.label"
+                            >
+                                <img :src="item.image" :alt="item.label" width="64" height="64" loading="lazy" />
+                            </span>
+                        </div>
                     </div>
-                    <div class="footer-payment-icons" aria-label="Payment support">
-                        <span
-                            v-for="item in paymentIcons"
-                            :key="item.label"
-                            :title="item.label"
-                            :aria-label="item.label"
-                        >
-                            <img :src="item.image" :alt="item.label" width="64" height="64" loading="lazy" />
-                        </span>
-                    </div>
-                </details>
+                </div>
             </div>
 
-            <div class="container footer-bottom">
-                <span>{{ page.props.site.footer.legalName }}</span>
-                <span>{{ page.props.site.trust.licenseText }}</span>
-                <span>{{ page.props.site.trust.responseTime }}</span>
+            <div class="container footer-bottom footer-bottom--columns">
+                <div class="footer-bottom-copy">
+                    <span>{{ page.props.site.footer.legalName }}</span>
+                    <span>{{ page.props.site.trust.licenseText }}</span>
+                    <span>{{ page.props.site.trust.responseTime }}</span>
+                </div>
+                <div class="footer-social-icons" aria-label="Social links">
+                    <a
+                        v-for="link in page.props.site.footer.socialLinks"
+                        :key="`icon-${link.href}`"
+                        :href="link.href"
+                        target="_blank"
+                        rel="noreferrer"
+                        :aria-label="link.label"
+                    >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path :d="footerSocialIconPath(link.label)"></path>
+                        </svg>
+                    </a>
+                    <a
+                        :href="page.props.site.footer.website"
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label="Official Website"
+                    >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path :d="footerSocialIconPath('website')"></path>
+                        </svg>
+                    </a>
+                </div>
             </div>
         </footer>
 
         <nav v-if="showMobileBottomNav" class="mobile-bottom-nav" aria-label="Mobile quick navigation">
-            <Link class="mobile-bottom-nav__item" href="/experiences">
+            <Link class="mobile-bottom-nav__item" href="/dubai-tours-and-tickets">
                 <span class="mobile-bottom-nav__icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24">
                         <path d="M4 7h16"></path>
@@ -560,7 +589,7 @@ onBeforeUnmount(() => {
                 </span>
                 <span class="mobile-bottom-nav__label">Tours &amp; Tickets</span>
             </Link>
-            <Link class="mobile-bottom-nav__item" href="/packages">
+            <Link class="mobile-bottom-nav__item" href="/dubai-holiday-packages">
                 <span class="mobile-bottom-nav__icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24">
                         <path d="M4 8h16v11H4z"></path>
@@ -570,7 +599,7 @@ onBeforeUnmount(() => {
                 </span>
                 <span class="mobile-bottom-nav__label">Holiday Packages</span>
             </Link>
-            <Link class="mobile-bottom-nav__item" href="/visa-services">
+            <Link class="mobile-bottom-nav__item" href="/tourist-visa-assistance-uae-residents">
                 <span class="mobile-bottom-nav__icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24">
                         <path d="M7 3h7l4 4v14H7z"></path>

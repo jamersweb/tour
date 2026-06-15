@@ -30,7 +30,8 @@ class SiteSettingTest extends TestCase
         $response->assertOk();
         $response->assertInertia(fn (Assert $page) => $page
             ->component('Home')
-            ->where('hero.eyebrow', $settings->home_hero_eyebrow)
+            ->where('hero.eyebrow', 'Custom Travel Planning in Dubai')
+            ->where('hero.title', 'Travel Planned Around You')
             ->where('homeSections.collectionsEyebrow', $settings->home_collections_eyebrow)
             ->where('homeSections.collectionsTitle', $settings->home_collections_title)
             ->where('site.organization.type', 'TravelAgency')

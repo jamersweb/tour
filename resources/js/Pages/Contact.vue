@@ -19,7 +19,7 @@ const form = useForm({
     phone: '',
     travel_date: '',
     guest_count: 2,
-    interest: props.interestOptions?.[0] || 'Tours',
+    interest: props.interestOptions?.[0] || 'Tours & Tickets',
     message: '',
 });
 
@@ -38,15 +38,20 @@ const submit = () => {
         <section class="about-hero contact-hero">
             <div class="container about-hero__grid">
                 <div class="about-hero__content">
-                    <p class="about-kicker">Contact</p>
-                    <h1 class="about-title">Plan your Dubai trip with Acute Tourism.</h1>
+                    <p class="about-kicker">Contact Acute Tourism</p>
+                    <h1 class="about-title">Contact Acute Tourism</h1>
                     <p class="about-copy">
-                        Use this page for custom itineraries, package requests, group travel, direct support, and product
-                        clarification across the Dubai and UAE catalog.
+                        Contact us for a new travel enquiry or support with an existing booking. Our team can assist
+                        with tours, holiday packages, visa assistance, Panoramic Bus, corporate events, and general travel planning support.
                     </p>
                 </div>
 
                 <div class="contact-cards">
+                    <article class="about-card">
+                        <p class="about-card__label">Contact details</p>
+                        <h2>Reach us directly</h2>
+                        <p>For faster support, include your booking reference if you are an existing customer, or your travel date and service needed if you are making a new enquiry.</p>
+                    </article>
                     <article class="about-card">
                         <p class="about-card__label">Company email</p>
                         <a :href="`mailto:${contact.email}`">{{ contact.email }}</a>
@@ -67,11 +72,11 @@ const submit = () => {
         <section class="section-block contact-section">
             <div class="container contact-layout">
                 <div class="about-card about-card--primary">
-                    <p class="eyebrow">Inquiry Form</p>
-                    <h2>Tell us what you need.</h2>
+                    <p class="eyebrow">Enquiry form</p>
+                    <h2>Send your enquiry or support request.</h2>
                     <p>
-                        Share your trip timing, guest count, and the type of support you want. This is the clearest route
-                        for packages, experiences, corporate requests, and general planning.
+                        Share your trip timing, guest count, booking reference if available, and the type of support you want.
+                        This is the clearest route for tours, packages, visa assistance, Panoramic Bus, corporate requests, and existing booking support.
                     </p>
                 </div>
 
@@ -83,19 +88,19 @@ const submit = () => {
                     <form class="lead-form" @submit.prevent="submit">
                         <div class="form-grid">
                             <label class="field">
-                                <span>Name</span>
+                                <span>Full Name</span>
                                 <input v-model="form.name" type="text" autocomplete="name" />
                                 <small v-if="form.errors.name">{{ form.errors.name }}</small>
                             </label>
 
                             <label class="field">
-                                <span>Email</span>
+                                <span>Email Address</span>
                                 <input v-model="form.email" type="email" autocomplete="email" />
                                 <small v-if="form.errors.email">{{ form.errors.email }}</small>
                             </label>
 
                             <label class="field">
-                                <span>Phone</span>
+                                <span>Phone Number</span>
                                 <input v-model="form.phone" type="text" autocomplete="tel" />
                                 <small v-if="form.errors.phone">{{ form.errors.phone }}</small>
                             </label>
@@ -113,7 +118,7 @@ const submit = () => {
                             </label>
 
                             <label class="field">
-                                <span>Interest</span>
+                                <span>Service Needed</span>
                                 <select v-model="form.interest">
                                     <option v-for="option in interestOptions" :key="option" :value="option">{{ option }}</option>
                                 </select>
@@ -123,12 +128,12 @@ const submit = () => {
 
                         <label class="field">
                             <span>Message</span>
-                            <textarea v-model="form.message" rows="5"></textarea>
+                            <textarea v-model="form.message" rows="5" placeholder="Tell us what you need help with. Existing customers can include their booking reference here."></textarea>
                             <small v-if="form.errors.message">{{ form.errors.message }}</small>
                         </label>
 
                         <button class="button-primary" type="submit" :disabled="form.processing">
-                            {{ form.processing ? 'Sending...' : 'Send inquiry' }}
+                            {{ form.processing ? 'Sending...' : 'Send enquiry' }}
                         </button>
                     </form>
                 </div>
@@ -136,9 +141,10 @@ const submit = () => {
 
             <div class="container">
                 <div class="about-actions contact-actions">
-                    <Link class="button-secondary" href="/experiences">Book Tours</Link>
-                    <Link class="button-secondary" href="/visa-services">Book Visa Service</Link>
-                    <Link class="button-secondary" href="/packages">Book Holiday Package</Link>
+                    <Link class="button-secondary" href="/dubai-tours-and-tickets">Tours & Tickets</Link>
+                    <Link class="button-secondary" href="/dubai-holiday-packages">Holiday Packages</Link>
+                    <Link class="button-secondary" href="/tourist-visa-assistance-uae-residents">Visa Services</Link>
+                    <Link class="button-secondary" href="/corporate-travel-event-planning-dubai">Corporate Events</Link>
                 </div>
             </div>
         </section>

@@ -49,7 +49,7 @@ class CollectionForm
                             ->directory('collections')
                             ->imageEditor(),
                     ]),
-                Section::make('Tours and Tickets in this Subcategory')
+                Section::make('Tours & Tickets in this Subcategory')
                     ->description('Choose which tours and ticket experiences appear under this header subcategory.')
                     ->schema([
                         Select::make('experiences')
@@ -73,6 +73,8 @@ class CollectionForm
                             ->numeric()
                             ->default(0),
                         Toggle::make('is_featured')
+                            ->label('Show on website menu')
+                            ->helperText('Controls whether this Location or Activity Type subcategory appears in the Tours & Tickets header menu.')
                             ->required()
                             ->inline(false),
                     ])

@@ -12,7 +12,7 @@ class RedirectSeeder extends Seeder
         collect([
             [
                 'source_path' => '/tours',
-                'destination_url' => '/experiences',
+                'destination_url' => '/dubai-tours-and-tickets',
                 'status_code' => 301,
                 'is_active' => true,
             ],

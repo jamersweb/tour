@@ -19,7 +19,6 @@ class DatabaseSeeder extends Seeder
             AcuteTourismSeeder::class,
             LegacyTourSeeder::class,
             PackageSeeder::class,
-            ReviewSeeder::class,
             ContentSeeder::class,
             RedirectSeeder::class,
             AdminUserSeeder::class,

@@ -23,22 +23,30 @@ defineProps({
                 <div>
                     <p class="about-kicker">Blog</p>
                     <h1 class="about-title">
-                        {{ selectedCategory ? selectedCategory.name : 'Dubai travel articles, visa guides, and holiday planning tips.' }}
+                        {{ selectedCategory ? selectedCategory.name : 'Dubai Travel Planning Tips' }}
                     </h1>
                     <p class="about-copy">
                         {{
                             selectedCategory?.description ||
-                            'Read practical travel content for tours, holiday packages, visa planning, and Dubai itineraries.'
+                            'Simple articles to help customers choose Dubai tours, plan holiday packages, understand visa requirements, compare experiences, and book with more confidence.'
                         }}
                     </p>
+                    <div class="hero-pills">
+                        <span>Dubai Tours</span>
+                        <span>Holiday Packages</span>
+                        <span>Visa Guides</span>
+                        <span>Corporate Travel</span>
+                    </div>
                 </div>
 
                 <div class="about-card about-card--primary">
-                    <p class="about-card__label">Blog Categories</p>
+                    <p class="about-card__label">Featured article</p>
+                    <h2>{{ featuredArticle?.title || 'How to Choose a Premium Desert Safari in Dubai' }}</h2>
+                    <p>{{ featuredArticle?.excerpt || 'A simple guide to comparing desert safari options based on comfort, pickup, camp quality, food, entertainment, and service level.' }}</p>
                     <ul class="about-list about-list--tight">
-                        <li>Planning guides and route comparisons</li>
-                        <li>Visa and documentation explainers</li>
-                        <li>Holiday package buying guidance</li>
+                        <li>Dubai tours</li>
+                        <li>Holiday packages</li>
+                        <li>Visa guides</li>
                     </ul>
                 </div>
             </div>

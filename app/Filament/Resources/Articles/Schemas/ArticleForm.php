@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Articles\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -28,7 +29,23 @@ class ArticleForm
                         ->required(),
                     TextInput::make('read_time')->numeric()->required()->default(5)->suffix('min'),
                     Textarea::make('excerpt')->required()->rows(3)->maxLength(280)->columnSpanFull(),
-                    Textarea::make('content')->required()->rows(12)->columnSpanFull(),
+                    RichEditor::make('content')
+                        ->required()
+                        ->toolbarButtons([
+                            'bold',
+                            'italic',
+                            'underline',
+                            'strike',
+                            'bulletList',
+                            'orderedList',
+                            'link',
+                            'blockquote',
+                            'h2',
+                            'h3',
+                            'undo',
+                            'redo',
+                        ])
+                        ->columnSpanFull(),
                 ])
                 ->columns(2),
             Section::make('Media')

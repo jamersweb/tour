@@ -1,6 +1,6 @@
 <script setup>
 import { useForm, usePage } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import SiteMeta from '../Components/SiteMeta.vue';
 import SiteLayout from '../Layouts/SiteLayout.vue';
 
@@ -15,7 +15,7 @@ const page = usePage();
 const routes = [
     {
         key: 'dubai',
-        title: 'Dubai Panoramic Bus Tour + Food Tasting',
+        title: 'Dubai Panoramic Bus + Food Tasting',
         day: 'Dubai route',
         price: 'AED 499 per person',
         panelPrice: 'AED 499 / person',
@@ -28,7 +28,7 @@ const routes = [
     },
     {
         key: 'alain',
-        title: 'Al Ain Panoramic Bus Tour + Al Ain Zoo',
+        title: 'Al Ain Panoramic Bus + Al Ain Zoo',
         day: 'Al Ain route',
         price: 'AED 499 per person',
         panelPrice: 'AED 499 / person',
@@ -41,7 +41,7 @@ const routes = [
     },
     {
         key: 'fujairah',
-        title: 'Fujairah Panoramic Bus Tour',
+        title: 'Fujairah Panoramic Bus',
         day: 'Fujairah route',
         price: 'AED 699 per person',
         panelPrice: 'AED 699 / person',
@@ -54,7 +54,7 @@ const routes = [
     },
     {
         key: 'abudhabi',
-        title: 'Abu Dhabi Panoramic Bus Tour + Ferrari World',
+        title: 'Abu Dhabi Panoramic Bus + Ferrari World',
         day: 'Abu Dhabi route',
         price: 'AED 945 per person',
         panelPrice: 'AED 945 / person',
@@ -209,6 +209,8 @@ const busGalleryMedia = computed(() => galleryFolders.flatMap((folder) => [
     })),
 ]));
 const activeMediaIndex = ref(null);
+const showStickyCta = ref(false);
+let stickyCtaTimer = null;
 const activeMedia = computed(() => (
     activeMediaIndex.value === null ? null : busGalleryMedia.value[activeMediaIndex.value] ?? null
 ));
@@ -274,7 +276,7 @@ const form = useForm({
     phone: '',
     travel_date: '',
     guest_count: 2,
-    interest: 'Bus Tour',
+    interest: 'Panoramic Bus',
     route: '',
     message: '',
 });
@@ -303,6 +305,28 @@ function submit() {
         });
 }
 
+function updateStickyCta() {
+    const hero = document.querySelector('.acute-hero');
+    const heroBottom = hero?.getBoundingClientRect().bottom ?? 0;
+
+    showStickyCta.value = heroBottom < 0;
+}
+
+onMounted(() => {
+    updateStickyCta();
+    window.addEventListener('scroll', updateStickyCta, { passive: true });
+    window.addEventListener('resize', updateStickyCta);
+    stickyCtaTimer = window.setInterval(updateStickyCta, 250);
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener('scroll', updateStickyCta);
+    window.removeEventListener('resize', updateStickyCta);
+    if (stickyCtaTimer) {
+        window.clearInterval(stickyCtaTimer);
+    }
+});
+
 </script>
 
 <template>
@@ -311,8 +335,8 @@ function submit() {
     <main class="acute-bus-page">
         <section id="top" class="acute-hero">
             <div class="acute-hero-inner">
-                <div class="acute-eyebrow">Luxury Bus Tour Dubai</div>
-                <h1>Luxury Bus Tour Dubai for Premium UAE Day Experiences</h1>
+                <div class="acute-eyebrow">Panoramic Bus Dubai</div>
+                <h1>Luxury Bus Tour Dubai</h1>
                 <p>
                     Travel through Dubai, Al Ain, Fujairah or Abu Dhabi in a more comfortable and curated way. Acute Tourism's luxury bus tour Dubai experience is designed for premium guests who prefer hotel pick-up, guided sightseeing, included meals or tastings, selected attractions and a smoother day out without the feel of a crowded group tour.
                 </p>
@@ -544,7 +568,7 @@ function submit() {
             </div>
         </section>
 
-        <div class="acute-sticky-cta" aria-label="Request panoramic bus tour availability">
+        <div v-if="showStickyCta" class="acute-sticky-cta" aria-label="Request panoramic bus tour availability">
             <span><strong>Limited seats</strong> on scheduled departures</span>
             <a class="acute-btn gold" href="#enquiry">Request Availability</a>
         </div>
