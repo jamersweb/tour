@@ -113,13 +113,13 @@ const activityLocation = (item) => {
 const activityType = (item) => {
     const text = normalizedText(item);
 
-    if (text.includes('helicopter') || text.includes('sky') || text.includes('balloon')) return 'helicopter-sky';
+    if (text.includes('yacht') || text.includes('cruise') || text.includes('marina')) return 'yacht-cruises';
+    if (text.includes('helicopter') || /\bsky\b/.test(text) || text.includes('balloon')) return 'helicopter-sky';
     if (text.includes('desert') || text.includes('safari') || text.includes('quad') || text.includes('buggy')) return 'desert-safari';
     if (text.includes('city') || text.includes('landmark') || text.includes('chauffeur')) return 'city-tours';
     if (text.includes('jet ski') || text.includes('parasail') || text.includes('water sport')) return 'water-sports';
     if (text.includes('water park') || text.includes('aquaventure') || text.includes('wild wadi')) return 'water-parks';
     if (text.includes('theme park') || text.includes('ferrari') || text.includes('img world') || text.includes('warner')) return 'theme-parks';
-    if (text.includes('yacht') || text.includes('cruise') || text.includes('marina')) return 'yacht-cruises';
     if (text.includes('ticket') || text.includes('entry') || text.includes('pass')) return 'entry-tickets';
 
     return 'entry-tickets';
@@ -170,12 +170,12 @@ const activitySubCategory = (item) => {
         return 'abu-dhabi-tours';
     }
 
-    if (text.includes('helicopter') || text.includes('sky') || text.includes('balloon')) {
-        return 'helicopter-sky';
-    }
-
     if (text.includes('yacht') || text.includes('cruise') || text.includes('marina') || text.includes('dhow')) {
         return 'yacht-cruises';
+    }
+
+    if (text.includes('helicopter') || /\bsky\b/.test(text) || text.includes('balloon')) {
+        return 'helicopter-sky';
     }
 
     if (text.includes('desert') || text.includes('safari') || text.includes('quad') || text.includes('buggy') || text.includes('camel')) {
