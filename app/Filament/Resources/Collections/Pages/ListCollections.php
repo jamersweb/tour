@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\Collections\Pages;
 
 use App\Filament\Resources\Collections\CollectionResource;
-use Filament\Actions\CreateAction;
+use App\Filament\Resources\Collections\Widgets\ParentCategoriesTable;
 use Filament\Resources\Pages\ListRecords;
 
 class ListCollections extends ListRecords
@@ -12,25 +12,18 @@ class ListCollections extends ListRecords
 
     protected function getHeaderActions(): array
     {
+        return [];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
         return [
-            CreateAction::make('createLocation')
-                ->label('Add Location Subcategory')
-                ->modalHeading('New Location Subcategory')
-                ->fillForm([
-                    'collection_group' => 'location',
-                    'is_featured' => true,
-                    'sort_order' => 0,
-                ])
-                ->createAnother(false),
-            CreateAction::make('createActivity')
-                ->label('Add Activity Type Subcategory')
-                ->modalHeading('New Activity Type Subcategory')
-                ->fillForm([
-                    'collection_group' => 'activity',
-                    'is_featured' => true,
-                    'sort_order' => 0,
-                ])
-                ->createAnother(false),
+            ParentCategoriesTable::class,
         ];
+    }
+
+    public function getHeaderWidgetsColumns(): int|array
+    {
+        return 1;
     }
 }

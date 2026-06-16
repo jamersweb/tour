@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\Collections\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
@@ -10,7 +12,6 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
-use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -19,6 +20,8 @@ class CollectionsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->heading('Subcategories')
+            ->description('Create child subcategories under By Location or By Activity Type, assign tours, and control website menu visibility.')
             ->modifyQueryUsing(fn (Builder $query) => $query->whereIn('collection_group', ['location', 'activity']))
             ->columns([
                 TextColumn::make('name')
@@ -65,19 +68,30 @@ class CollectionsTable
                 TernaryFilter::make('is_featured')
                     ->label('Shown on menu'),
             ])
-            ->groups([
-                Group::make('collection_group')
-                    ->label('Parent category')
-                    ->getTitleFromRecordUsing(fn ($record): string => $record->collection_group === 'location'
-                        ? 'By Location'
-                        : 'By Activity Type')
-                    ->titlePrefixedWithLabel(false)
-                    ->collapsible(),
+            ->headerActions([
+                CreateAction::make('createLocation')
+                    ->label('Add Location Subcategory')
+                    ->modalHeading('New Location Subcategory')
+                    ->fillForm([
+                        'collection_group' => 'location',
+                        'is_featured' => true,
+                        'sort_order' => 0,
+                    ])
+                    ->createAnother(false),
+                CreateAction::make('createActivity')
+                    ->label('Add Activity Type Subcategory')
+                    ->modalHeading('New Activity Type Subcategory')
+                    ->fillForm([
+                        'collection_group' => 'activity',
+                        'is_featured' => true,
+                        'sort_order' => 0,
+                    ])
+                    ->createAnother(false),
             ])
-            ->defaultGroup('collection_group')
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
