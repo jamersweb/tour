@@ -7030,7 +7030,7 @@ textarea {
 /* Floating WhatsApp (SiteLayout) */
 .whatsapp-float {
     position: fixed;
-    z-index: 45;
+    z-index: 90;
     right: max(1.15rem, env(safe-area-inset-right, 0px));
     bottom: max(1.15rem, env(safe-area-inset-bottom, 0px));
     width: 3.4rem;
@@ -15720,6 +15720,10 @@ textarea {
 
     body:has(.experience-tour-page .detail-mobile-cta) .site-shell {
         padding-bottom: 0;
+    }
+
+    body:has(.experience-tour-page .detail-mobile-cta) .site-footer {
+        padding-bottom: calc(7.25rem + env(safe-area-inset-bottom, 0px));
     }
 
     .experience-tour-page {

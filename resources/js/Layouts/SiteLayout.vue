@@ -391,7 +391,7 @@ onBeforeUnmount(() => {
                             :href="partnerUrl"
                             @click="closeMobileNav"
                         >
-                            Partner with us
+                            Earn With Tourgrat
                         </Link>
                         <Link class="header-cart-link" :href="page.props.cart.url" aria-label="Cart" @click="closeMobileNav">
                             <svg viewBox="0 0 24 24" aria-hidden="true">

@@ -307,9 +307,11 @@ function submit() {
 
 function updateStickyCta() {
     const hero = document.querySelector('.acute-hero');
+    const footer = document.querySelector('.site-footer');
     const heroBottom = hero?.getBoundingClientRect().bottom ?? 0;
+    const footerTop = footer?.getBoundingClientRect().top ?? Number.POSITIVE_INFINITY;
 
-    showStickyCta.value = heroBottom < 0;
+    showStickyCta.value = heroBottom < 0 && footerTop > window.innerHeight - 120;
 }
 
 onMounted(() => {

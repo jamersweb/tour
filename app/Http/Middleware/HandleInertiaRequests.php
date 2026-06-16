@@ -193,6 +193,7 @@ class HandleInertiaRequests extends Middleware
     {
         $groups = Collection::query()
             ->where('is_featured', true)
+            ->whereIn('collection_group', ['location', 'activity'])
             ->orderBy('collection_group')
             ->orderBy('sort_order')
             ->orderBy('name')
@@ -208,12 +209,12 @@ class HandleInertiaRequests extends Middleware
                 [
                     'label' => 'By Location',
                     'href' => route('experiences.index'),
-                    'children' => $locationItems ?: $this->defaultLocationNavigationItems(),
+                    'children' => $locationItems,
                 ],
                 [
                     'label' => 'By Activity Type',
                     'href' => route('experiences.index'),
-                    'children' => $activityItems ?: $this->defaultActivityNavigationItems(),
+                    'children' => $activityItems,
                 ],
             ];
         }
@@ -223,35 +224,13 @@ class HandleInertiaRequests extends Middleware
             [
                 'label' => 'By Location',
                 'href' => route('experiences.index'),
-                'children' => $this->defaultLocationNavigationItems(),
+                'children' => [],
             ],
             [
                 'label' => 'By Activity Type',
                 'href' => route('experiences.index'),
-                'children' => $this->defaultActivityNavigationItems(),
+                'children' => [],
             ],
-        ];
-    }
-
-    private function defaultLocationNavigationItems(): array
-    {
-        return [
-            ['label' => 'Dubai', 'href' => route('experiences.location', 'dubai')],
-            ['label' => 'Abu Dhabi', 'href' => route('experiences.location', 'abu-dhabi')],
-            ['label' => 'Other Emirates', 'href' => route('experiences.location', 'other-emirates')],
-        ];
-    }
-
-    private function defaultActivityNavigationItems(): array
-    {
-        return [
-            ['label' => 'Entry Tickets', 'href' => route('experiences.category', 'entry-tickets')],
-            ['label' => 'Desert Safaris', 'href' => route('experiences.category', 'desert-safari')],
-            ['label' => 'City Tours', 'href' => route('experiences.category', 'city-tours')],
-            ['label' => 'Water Sports', 'href' => route('experiences.category', 'water-sports')],
-            ['label' => 'Water Parks', 'href' => route('experiences.category', 'water-parks')],
-            ['label' => 'Theme Parks', 'href' => route('experiences.category', 'theme-parks')],
-            ['label' => 'Yacht & Cruises', 'href' => route('experiences.category', 'yacht-cruises')],
         ];
     }
 

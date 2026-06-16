@@ -13,7 +13,24 @@ class ListCollections extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make('createLocation')
+                ->label('Add Location Subcategory')
+                ->modalHeading('New Location Subcategory')
+                ->fillForm([
+                    'collection_group' => 'location',
+                    'is_featured' => true,
+                    'sort_order' => 0,
+                ])
+                ->createAnother(false),
+            CreateAction::make('createActivity')
+                ->label('Add Activity Type Subcategory')
+                ->modalHeading('New Activity Type Subcategory')
+                ->fillForm([
+                    'collection_group' => 'activity',
+                    'is_featured' => true,
+                    'sort_order' => 0,
+                ])
+                ->createAnother(false),
         ];
     }
 }

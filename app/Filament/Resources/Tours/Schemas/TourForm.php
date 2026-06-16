@@ -160,7 +160,7 @@ class TourForm
                     TextInput::make('currency')->required()->default('AED')->maxLength(3),
                 ])
                 ->columns(2),
-            Section::make('Collections')
+            Section::make('Subcategories')
                 ->schema([
                     Select::make('collections')
                         ->label('Subcategories')

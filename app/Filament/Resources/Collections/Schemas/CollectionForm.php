@@ -16,9 +16,10 @@ class CollectionForm
     {
         return $schema
             ->components([
-                Section::make('Collection Details')
+                Section::make('Subcategory Details')
                     ->schema([
                         TextInput::make('name')
+                            ->label('Subcategory name')
                             ->required()
                             ->maxLength(255),
                         TextInput::make('slug')
@@ -26,7 +27,7 @@ class CollectionForm
                             ->maxLength(255)
                             ->unique(ignoreRecord: true),
                         Select::make('collection_group')
-                            ->label('Menu group')
+                            ->label('Parent category')
                             ->required()
                             ->options([
                                 'location' => 'By Location',
