@@ -7027,6 +7027,34 @@ textarea {
     }
 }
 
+@media (max-width: 960px) {
+    .checkout-page {
+        overflow-x: hidden;
+    }
+
+    .checkout-page .checkout-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) !important;
+        width: min(100% - 24px, 1180px);
+        max-width: 100%;
+    }
+
+    .checkout-form-card,
+    .checkout-summary-card {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .checkout-form-card {
+        order: 1;
+    }
+
+    .checkout-summary-card {
+        order: 2;
+        position: static;
+    }
+}
+
 /* Floating WhatsApp (SiteLayout) */
 .whatsapp-float {
     position: fixed;
