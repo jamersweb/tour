@@ -7,9 +7,10 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Stops shared proxies (LiteSpeed, CDNs, browsers) from caching Laravel HTML that embeds
+ * Stops shared proxies (LiteSpeed, CDNs, browsers) from caching app shell responses.
  *
- * @vite URLs. Without this, an old page can keep pointing at old hashed CSS/JS after deploy.
+ * HTML responses embed @vite URLs, and Inertia JSON responses share the same route URLs as
+ * their HTML documents. Either variant being cached stale can break browser back/forward.
  */
 class PreventStaleHtmlCache
 {
@@ -33,6 +34,10 @@ class PreventStaleHtmlCache
     {
         if (! in_array($response->getStatusCode(), [200, 302, 303, 307, 308], true)) {
             return false;
+        }
+
+        if ($request->headers->has('X-Inertia') || $response->headers->get('X-Inertia') === 'true') {
+            return true;
         }
 
         $type = (string) $response->headers->get('Content-Type', '');

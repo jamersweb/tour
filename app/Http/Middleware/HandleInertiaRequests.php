@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Collection;
 use App\Models\SiteSetting;
 use App\Support\MediaUrl;
 use App\Support\NetworkPayments;
@@ -190,31 +191,50 @@ class HandleInertiaRequests extends Middleware
      */
     private function toursAndTicketsNavigation(): array
     {
-        return [
+        $groups = Collection::query()
+            ->whereIn('collection_group', ['location', 'activity'])
+            ->where('is_featured', true)
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get(['name', 'slug', 'collection_group'])
+            ->groupBy('collection_group');
+
+        $navigation = [
             ['label' => 'All Tours & Tickets', 'href' => route('experiences.index')],
-            [
+        ];
+
+        if ($groups->has('location')) {
+            $navigation[] = [
                 'label' => 'By Location',
                 'href' => route('experiences.index'),
-                'children' => [
-                    ['label' => 'Dubai', 'href' => route('experiences.location', 'dubai')],
-                    ['label' => 'Abu Dhabi', 'href' => route('experiences.location', 'abu-dhabi')],
-                    ['label' => 'Other Emirates', 'href' => route('experiences.location', 'other-emirates')],
-                ],
-            ],
-            [
+                'children' => $this->collectionNavigationItems($groups->get('location')),
+            ];
+        }
+
+        if ($groups->has('activity')) {
+            $navigation[] = [
                 'label' => 'By Activity Type',
                 'href' => route('experiences.index'),
-                'children' => [
-                    ['label' => 'Entry Tickets', 'href' => route('experiences.category', 'entry-tickets')],
-                    ['label' => 'Desert Safari', 'href' => route('experiences.category', 'desert-safari')],
-                    ['label' => 'City Tours', 'href' => route('experiences.category', 'city-tours')],
-                    ['label' => 'Water Sports', 'href' => route('experiences.category', 'water-sports')],
-                    ['label' => 'Water Parks', 'href' => route('experiences.category', 'water-parks')],
-                    ['label' => 'Theme Parks', 'href' => route('experiences.category', 'theme-parks')],
-                    ['label' => 'Yacht & Cruises', 'href' => route('experiences.category', 'yacht-cruises')],
-                ],
-            ],
-        ];
+                'children' => $this->collectionNavigationItems($groups->get('activity')),
+            ];
+        }
+
+        return $navigation;
+    }
+
+    /**
+     * @param  \Illuminate\Support\Collection<int, Collection>  $collections
+     * @return array<int, array{label: string, href: string}>
+     */
+    private function collectionNavigationItems($collections): array
+    {
+        return $collections
+            ->map(fn (Collection $collection) => [
+                'label' => $collection->name,
+                'href' => route('collections.show', $collection->slug),
+            ])
+            ->values()
+            ->all();
     }
 
     /**
