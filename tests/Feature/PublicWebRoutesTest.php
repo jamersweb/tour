@@ -136,23 +136,27 @@ class PublicWebRoutesTest extends TestCase
     {
         Collection::query()->update(['is_featured' => false]);
 
-        Collection::query()->create([
-            'name' => 'Dubai Marina',
-            'slug' => 'dubai-marina',
-            'collection_group' => 'location',
-            'summary' => 'Dubai Marina tours and tickets.',
-            'sort_order' => 10,
-            'is_featured' => true,
-        ]);
+        Collection::query()->updateOrCreate(
+            ['slug' => 'dubai'],
+            [
+                'name' => 'Dubai',
+                'collection_group' => 'location',
+                'summary' => 'Dubai tours and tickets.',
+                'sort_order' => 10,
+                'is_featured' => true,
+            ],
+        );
 
-        Collection::query()->create([
-            'name' => 'Theme Parks',
-            'slug' => 'theme-parks-menu',
-            'collection_group' => 'activity',
-            'summary' => 'Theme park tickets.',
-            'sort_order' => 20,
-            'is_featured' => true,
-        ]);
+        Collection::query()->updateOrCreate(
+            ['slug' => 'theme-parks'],
+            [
+                'name' => 'Theme Parks',
+                'collection_group' => 'activity',
+                'summary' => 'Theme park tickets.',
+                'sort_order' => 20,
+                'is_featured' => true,
+            ],
+        );
 
         Collection::query()->create([
             'name' => 'Hidden Test Collection',
@@ -160,7 +164,7 @@ class PublicWebRoutesTest extends TestCase
             'collection_group' => 'activity',
             'summary' => 'Should not appear in the menu.',
             'sort_order' => 1,
-            'is_featured' => false,
+            'is_featured' => true,
         ]);
 
         $response = $this->get('/');
@@ -168,11 +172,11 @@ class PublicWebRoutesTest extends TestCase
         $response->assertOk();
         $response->assertInertia(fn (Assert $page) => $page
             ->where('site.primaryNavigation.0.children.1.label', 'By Location')
-            ->where('site.primaryNavigation.0.children.1.children.0.label', 'Dubai Marina')
-            ->where('site.primaryNavigation.0.children.1.children.0.href', route('collections.show', 'dubai-marina'))
+            ->where('site.primaryNavigation.0.children.1.children.0.label', 'Dubai')
+            ->where('site.primaryNavigation.0.children.1.children.0.href', route('experiences.location', 'dubai'))
             ->where('site.primaryNavigation.0.children.2.label', 'By Activity Type')
             ->where('site.primaryNavigation.0.children.2.children.0.label', 'Theme Parks')
-            ->where('site.primaryNavigation.0.children.2.children.0.href', route('collections.show', 'theme-parks-menu'))
+            ->where('site.primaryNavigation.0.children.2.children.0.href', route('experiences.category', 'theme-parks'))
         );
     }
 
