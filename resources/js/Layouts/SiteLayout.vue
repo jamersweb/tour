@@ -455,7 +455,7 @@ onBeforeUnmount(() => {
                     <p class="footer-copy">{{ footerShortDescription }}</p>
                     <div class="footer-tourgrat">
                         <strong>Tourgrat</strong>
-                        <span>Acute Tourism's referrer platform for partners who send travel leads and track opportunities.</span>
+                        <span>Acute Tourism's referrer platform Tourgrat lets referrers share Acute Tourism tours and earn rewards on verified bookings.</span>
                         <div class="footer-store-buttons">
                         <a class="footer-store-btn" href="#" aria-label="Download Tourgrat on the App Store">
                             <svg viewBox="0 0 24 24" aria-hidden="true">
