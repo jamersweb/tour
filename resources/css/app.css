@@ -10321,10 +10321,13 @@ textarea {
 }
 
 .home-dashboard-card--package-category .home-dashboard-card__media {
-    aspect-ratio: 1.25;
+    aspect-ratio: auto;
 }
 
 .home-dashboard-card--package-category .home-dashboard-card__media img {
+    display: block;
+    height: auto;
+    object-fit: contain;
     object-position: center;
 }
 
@@ -11027,7 +11030,7 @@ textarea {
     }
 
     .home-dashboard-card--package-category .home-dashboard-card__media {
-        aspect-ratio: 1.35 / 1;
+        aspect-ratio: auto;
     }
 
     .home-package-price {
@@ -14666,11 +14669,12 @@ textarea {
     }
 
     .home-dashboard-card--package-category .home-dashboard-card__media {
-        height: 180px;
+        height: auto;
         background: #f6f8fc;
     }
 
     .home-dashboard-card--package-category .home-dashboard-card__media img {
+        height: auto;
         object-fit: contain;
     }
 
@@ -14712,11 +14716,12 @@ textarea {
     }
 
     .home-dashboard-card--package-category .home-dashboard-card__media {
-        height: 180px;
+        height: auto;
         background: #f6f8fc;
     }
 
     .home-dashboard-card--package-category .home-dashboard-card__media img {
+        height: auto;
         object-fit: contain;
     }
 

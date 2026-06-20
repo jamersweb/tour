@@ -125,74 +125,6 @@ const activityType = (item) => {
     return 'entry-tickets';
 };
 
-const subCategoryDefinitions = [
-    {
-        key: 'desert-safari',
-        title: 'Desert Safari & Desert Adventure',
-        copy: 'Premium safaris, quad bikes, buggy rides, and desert camp experiences.',
-    },
-    {
-        key: 'yacht-cruises',
-        title: 'Yacht & Cruise Experiences',
-        copy: 'Private yachts, marina cruises, dinner cruises, and sea-view experiences.',
-    },
-    {
-        key: 'helicopter-sky',
-        title: 'Helicopter & Sky Experiences',
-        copy: 'Aerial sightseeing and sky-based activities for standout Dubai views.',
-    },
-    {
-        key: 'abu-dhabi-tours',
-        title: 'Abu Dhabi Tours',
-        copy: 'Day trips, landmarks, cultural attractions, and Abu Dhabi ticket products.',
-    },
-    {
-        key: 'dubai-city-tours',
-        title: 'Dubai City Tours',
-        copy: 'Guided city tours, landmark routes, chauffeur tours, and local highlights.',
-    },
-    {
-        key: 'entry-tickets-parks',
-        title: 'Entry Tickets and Parks',
-        copy: 'Attraction tickets, theme parks, water parks, and family-friendly venues.',
-    },
-    {
-        key: 'water-sports-sea',
-        title: 'Water sports and sea activities',
-        copy: 'Jet ski, parasailing, kayaking, and active experiences on the water.',
-    },
-];
-
-const activitySubCategory = (item) => {
-    const text = normalizedText(item);
-
-    if (text.includes('abu dhabi') || text.includes('yas island') || text.includes('ferrari world') || text.includes('warner')) {
-        return 'abu-dhabi-tours';
-    }
-
-    if (text.includes('yacht') || text.includes('cruise') || text.includes('marina') || text.includes('dhow')) {
-        return 'yacht-cruises';
-    }
-
-    if (text.includes('helicopter') || /\bsky\b/.test(text) || text.includes('balloon')) {
-        return 'helicopter-sky';
-    }
-
-    if (text.includes('desert') || text.includes('safari') || text.includes('quad') || text.includes('buggy') || text.includes('camel')) {
-        return 'desert-safari';
-    }
-
-    if (text.includes('city') || text.includes('landmark') || text.includes('chauffeur') || text.includes('burj khalifa') || text.includes('museum')) {
-        return 'dubai-city-tours';
-    }
-
-    if (text.includes('jet ski') || text.includes('parasail') || text.includes('water sport') || text.includes('banana boat') || text.includes('kayak') || text.includes('sea')) {
-        return 'water-sports-sea';
-    }
-
-    return 'entry-tickets-parks';
-};
-
 const numericPrice = (item) => Number.parseFloat(String(item.priceFrom || '').replace(/[^0-9.]/g, '')) || 0;
 
 const offerBadge = (item, index) => {
@@ -225,27 +157,6 @@ const filteredExperiences = computed(() => {
 
 const visibleExperiences = computed(() => filteredExperiences.value.slice(0, visibleLimit.value));
 const canLoadMore = computed(() => visibleExperiences.value.length < filteredExperiences.value.length);
-const subCategorySections = computed(() => subCategoryDefinitions
-    .map((section) => ({
-        ...section,
-        items: visibleExperiences.value.filter((experience) => activitySubCategory(experience) === section.key),
-    }))
-    .filter((section) => section.items.length > 0)
-);
-
-const activeTypeLabel = computed(() => typeOptions.value.find((option) => option.key === typeFilter.value)?.label || '');
-const displaySections = computed(() => {
-    if (typeFilter.value === 'all') {
-        return subCategorySections.value;
-    }
-
-    return [{
-        key: typeFilter.value,
-        title: activeTypeLabel.value,
-        copy: `All available ${activeTypeLabel.value.toLowerCase()} options.`,
-        items: visibleExperiences.value,
-    }].filter((section) => section.items.length > 0);
-});
 
 const loadMoreExperiences = () => {
     visibleLimit.value += initialVisibleCount;
@@ -338,43 +249,27 @@ watch(() => props.activeType, (value) => {
                     </div>
                 </div>
 
-                <div class="activity-subcategory-list">
-                    <section
-                        v-for="section in displaySections"
-                        :key="section.key"
-                        class="activity-subcategory-section"
-                    >
-                        <div class="activity-subcategory-heading">
-                            <div>
-                                <p class="eyebrow">{{ section.title }}</p>
-                                <p>{{ section.copy }}</p>
+                <div class="card-grid card-grid-four">
+                    <article v-for="(experience, index) in visibleExperiences" :key="`${experience.type || 'experience'}-${experience.slug}`" class="activity-card">
+                        <div v-if="experience.heroImageUrl" class="card-media">
+                            <img :src="experience.heroImageUrl" :alt="experience.title" />
+                            <span
+                                v-if="offerBadge(experience, index)"
+                                class="offer-badge"
+                                :class="offerBadge(experience, index).tone"
+                            >
+                                {{ offerBadge(experience, index).label }}
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <h3>{{ experience.title }}</h3>
+                            <div class="activity-meta-list">
+                                <span>{{ experience.duration || 'Flexible timing' }}</span>
                             </div>
-                            <span>{{ section.items.length }} options</span>
+                            <p class="price-line"><span>From</span>{{ experience.priceFrom || 'Ask' }}</p>
+                            <Link class="card-link" :href="experience.href || `/experiences/${experience.slug}`">Book Now</Link>
                         </div>
-
-                        <div class="card-grid card-grid-four">
-                            <article v-for="(experience, index) in section.items" :key="`${experience.type || 'experience'}-${experience.slug}`" class="activity-card">
-                                <div v-if="experience.heroImageUrl" class="card-media">
-                                    <img :src="experience.heroImageUrl" :alt="experience.title" />
-                                    <span
-                                        v-if="offerBadge(experience, index)"
-                                        class="offer-badge"
-                                        :class="offerBadge(experience, index).tone"
-                                    >
-                                        {{ offerBadge(experience, index).label }}
-                                    </span>
-                                </div>
-                                <div class="card-body">
-                                    <h3>{{ experience.title }}</h3>
-                                    <div class="activity-meta-list">
-                                        <span>{{ experience.duration || 'Flexible timing' }}</span>
-                                    </div>
-                                    <p class="price-line"><span>From</span>{{ experience.priceFrom || 'Ask' }}</p>
-                                    <Link class="card-link" :href="experience.href || `/experiences/${experience.slug}`">Book Now</Link>
-                                </div>
-                            </article>
-                        </div>
-                    </section>
+                    </article>
                 </div>
 
                 <div v-if="!visibleExperiences.length" class="pricing-note">

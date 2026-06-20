@@ -37,8 +37,21 @@ const defaultImportantNotices = [
     'Carry passport or valid identification where required for included attractions.',
 ];
 
+const normalizeTextList = (value) => {
+    if (Array.isArray(value)) {
+        return value.map((item) => String(item || '').trim()).filter(Boolean);
+    }
+
+    return String(value || '')
+        .split(/\r?\n/)
+        .map((item) => item.trim())
+        .filter(Boolean);
+};
+
 const importantNotices = computed(() => (
-    props.packageItem.importantNotices?.length ? props.packageItem.importantNotices : defaultImportantNotices
+    normalizeTextList(props.packageItem.importantNotices).length
+        ? normalizeTextList(props.packageItem.importantNotices)
+        : defaultImportantNotices
 ));
 
 const contactPhone = '(+971) 58 516 1554';
@@ -50,7 +63,9 @@ const defaultBestFor = [
 ];
 
 const bestFor = computed(() => (
-    props.packageItem.bestFor?.length ? props.packageItem.bestFor : defaultBestFor
+    normalizeTextList(props.packageItem.bestFor).length
+        ? normalizeTextList(props.packageItem.bestFor)
+        : defaultBestFor
 ));
 const cancellationPolicy = computed(() => (
     props.packageItem.cancellationPolicy || 'For a full refund, cancel at least 24 hours in advance of the start date of the experience.'

@@ -89,16 +89,24 @@ class PackageForm
             Section::make('Product Page Sections')
                 ->description('These fields control the extra sections shown on the public package product page.')
                 ->schema([
-                    TagsInput::make('best_for')
+                    Textarea::make('best_for')
                         ->label('Best fit')
-                        ->placeholder('Add a traveler type or use case'),
+                        ->placeholder('Add one best-fit item per line')
+                        ->rows(4)
+                        ->formatStateUsing(fn ($state) => self::textareaState($state))
+                        ->dehydrateStateUsing(fn ($state) => self::textareaLines($state))
+                        ->columnSpanFull(),
                     Textarea::make('cancellation_policy')
                         ->rows(3)
                         ->maxLength(700)
                         ->columnSpanFull(),
-                    TagsInput::make('important_notices')
+                    Textarea::make('important_notices')
                         ->label('Before you go')
-                        ->placeholder('Add an important notice'),
+                        ->placeholder('Add one notice per line')
+                        ->rows(4)
+                        ->formatStateUsing(fn ($state) => self::textareaState($state))
+                        ->dehydrateStateUsing(fn ($state) => self::textareaLines($state))
+                        ->columnSpanFull(),
                 ])
                 ->columns(1),
             Section::make('Publishing')
@@ -149,5 +157,37 @@ class PackageForm
         }
 
         return implode('<div style="margin-bottom:16px;"></div>', $parts) ?: '<span style="opacity:.7;">No saved media yet.</span>';
+    }
+
+    protected static function textareaState($state): ?string
+    {
+        if ($state === null || $state === '') {
+            return null;
+        }
+
+        if (! is_array($state)) {
+            return (string) $state;
+        }
+
+        return collect($state)
+            ->filter(fn ($item) => filled($item))
+            ->implode("\n");
+    }
+
+    protected static function textareaLines($state): array
+    {
+        if (is_array($state)) {
+            return collect($state)
+                ->map(fn ($item) => trim((string) $item))
+                ->filter()
+                ->values()
+                ->all();
+        }
+
+        return collect(preg_split('/\r\n|\r|\n/', (string) $state))
+            ->map(fn ($item) => trim($item))
+            ->filter()
+            ->values()
+            ->all();
     }
 }
