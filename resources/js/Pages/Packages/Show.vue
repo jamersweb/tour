@@ -31,19 +31,30 @@ const heroTiles = computed(() => {
     return Array.from({ length: Math.min(5, Math.max(5, mediaItems.value.length)) }, (_, index) => mediaItems.value[index % mediaItems.value.length]);
 });
 
-const importantNotices = computed(() => [
+const defaultImportantNotices = [
     'Please keep your contact number active after booking so final coordination can be shared easily.',
     'Hotel, transfers, and operating sequence may vary slightly depending on date and availability.',
     'Carry passport or valid identification where required for included attractions.',
-]);
+];
+
+const importantNotices = computed(() => (
+    props.packageItem.importantNotices?.length ? props.packageItem.importantNotices : defaultImportantNotices
+));
 
 const contactPhone = '(+971) 58 516 1554';
 const contactEmail = 'info@acutetourism.org';
-const bestFor = computed(() => [
+const defaultBestFor = [
     'First-time visitors who want Dubai highlights arranged in one plan.',
     'Families and groups who need hotels, transfers, and attractions coordinated together.',
     'Travelers who prefer a final quote based on dates, room type, guest count, and add-ons.',
-]);
+];
+
+const bestFor = computed(() => (
+    props.packageItem.bestFor?.length ? props.packageItem.bestFor : defaultBestFor
+));
+const cancellationPolicy = computed(() => (
+    props.packageItem.cancellationPolicy || 'For a full refund, cancel at least 24 hours in advance of the start date of the experience.'
+));
 const quickFacts = computed(() => [
     { label: 'Duration', value: props.packageItem.duration || 'Flexible' },
     { label: 'Destinations', value: props.packageItem.location || 'Dubai & UAE' },
@@ -588,7 +599,7 @@ onBeforeUnmount(() => {
                                 <span class="experience-operator-section__kicker">Booking terms</span>
                                 <h2>Cancellation Policy</h2>
                             </div>
-                            <p>For a full refund, cancel at least 24 hours in advance of the start date of the experience.</p>
+                            <p>{{ cancellationPolicy }}</p>
                         </article>
 
                         <article class="experience-operator-section package-support-strip">

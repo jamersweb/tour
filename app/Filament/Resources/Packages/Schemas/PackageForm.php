@@ -86,6 +86,21 @@ class PackageForm
                         ->columnSpanFull(),
                 ])
                 ->columns(1),
+            Section::make('Product Page Sections')
+                ->description('These fields control the extra sections shown on the public package product page.')
+                ->schema([
+                    TagsInput::make('best_for')
+                        ->label('Best fit')
+                        ->placeholder('Add a traveler type or use case'),
+                    Textarea::make('cancellation_policy')
+                        ->rows(3)
+                        ->maxLength(700)
+                        ->columnSpanFull(),
+                    TagsInput::make('important_notices')
+                        ->label('Before you go')
+                        ->placeholder('Add an important notice'),
+                ])
+                ->columns(1),
             Section::make('Publishing')
                 ->schema([
                     Toggle::make('is_featured')->required()->inline(false),

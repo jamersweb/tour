@@ -74,63 +74,47 @@ class PageController extends Controller
 
         $packages = Package::query()
             ->where('is_active', true)
+            ->where('is_featured', true)
             ->orderByDesc('is_featured')
             ->orderBy('title')
             ->limit(3)
             ->get()
-            ->values()
-            ->map(fn (Package $package, int $index) => [
-                'title' => $package->title,
-                'slug' => $package->slug,
-                'summary' => $package->short_description,
-                'duration' => $package->duration,
-                'location' => $package->location,
-                'priceFrom' => $this->formatMoney($package->price_from, $package->currency),
-                'heroImageUrl' => $this->packageShowcaseImage($package, $index),
-            ]);
-
-        $packageImages = $packages
-            ->pluck('heroImageUrl')
-            ->filter()
             ->values();
 
-        $packageCategories = collect([
-            [
-                'title' => 'Dubai Holiday Packages',
-                'summary' => 'Hotels, transfers, attractions, and desert experiences arranged into one city break plan.',
-                'priceLine' => 'From AED 2,950 / person',
-                'detail' => 'Duration: 4 days',
-                'href' => filled($packages->get(0)['slug'] ?? null)
-                    ? route('packages.show', $packages->get(0)['slug'])
-                    : route('packages.index'),
-                'cta' => 'Book Now',
-                'image' => $packageImages->get(0) ?: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80',
-                'highlights' => ['Hotels', 'Transfers', 'Attractions'],
-            ],
-            [
-                'title' => 'Event & UAE Packages',
-                'summary' => 'UAE event travel, attraction tickets, and transfer planning for tighter schedules.',
-                'priceLine' => 'From AED 2,200 / person',
-                'detail' => 'Duration: 3 days',
-                'href' => filled($packages->get(1)['slug'] ?? null)
-                    ? route('packages.show', $packages->get(1)['slug'])
-                    : route('packages.index'),
-                'cta' => 'Book Now',
-                'image' => $packageImages->get(1) ?: 'https://images.unsplash.com/photo-1512632578888-169bbbc64f33?auto=format&fit=crop&w=1200&q=80',
-                'highlights' => ['Event travel', 'Abu Dhabi', 'Tickets'],
-            ],
-            [
-                'title' => 'International Holiday Planning',
-                'summary' => 'Outbound trip planning with visa support, hotel guidance, transfers, and practical document timing.',
-                'priceLine' => 'Custom quote',
-                'detail' => 'Duration: Flexible',
-                'href' => filled($packages->get(2)['slug'] ?? null)
-                    ? route('packages.show', $packages->get(2)['slug'])
-                    : route('packages.index'),
-                'cta' => 'Book Now',
-                'image' => $packageImages->get(2) ?: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80',
-                'highlights' => ['Outbound', 'Visa support', 'Hotels'],
-            ],
+        if ($packages->isEmpty()) {
+            $packages = Package::query()
+                ->where('is_active', true)
+                ->orderByDesc('is_featured')
+                ->orderBy('title')
+                ->limit(3)
+                ->get()
+                ->values();
+        }
+
+        $packages = $packages->map(fn (Package $package, int $index) => [
+            'title' => $package->title,
+            'slug' => $package->slug,
+            'summary' => $package->short_description,
+            'duration' => $package->duration,
+            'location' => $package->location,
+            'priceFrom' => $this->formatMoney($package->price_from, $package->currency),
+            'heroImageUrl' => $this->packageShowcaseImage($package, $index),
+            'isFeatured' => $package->is_featured,
+        ]);
+
+        $packageCategories = $packages->map(fn (array $package) => [
+            'title' => $package['title'],
+            'summary' => $package['summary'],
+            'priceLine' => $package['priceFrom'] ? "From {$package['priceFrom']} / person" : 'Custom quote',
+            'detail' => $package['duration'] ?: 'Duration: Flexible',
+            'href' => route('packages.show', $package['slug']),
+            'cta' => 'Book Now',
+            'image' => $package['heroImageUrl'],
+            'highlights' => collect([
+                $package['isFeatured'] ? 'Featured' : null,
+                $package['location'],
+                $package['duration'],
+            ])->filter()->values()->all(),
         ]);
 
         $heroGallery = $featuredExperiences
@@ -737,6 +721,9 @@ class PageController extends Controller
                 'highlights' => $package->highlights ?? [],
                 'inclusions' => $package->inclusions ?? [],
                 'exclusions' => $package->exclusions ?? [],
+                'importantNotices' => $package->important_notices ?? [],
+                'bestFor' => $package->best_for ?? [],
+                'cancellationPolicy' => $package->cancellation_policy,
                 'itinerary' => $package->itinerary ?? [],
                 'averageRating' => $this->averageRating($package->reviews),
                 'reviewCount' => $package->reviews->count(),
@@ -2179,7 +2166,7 @@ class PageController extends Controller
 
     protected function packageShowcaseImage(Package $package, int $index): ?string
     {
-        if ($index === 0 && $package->hero_image_url) {
+        if ($package->hero_image_url) {
             return $package->hero_image_url;
         }
 

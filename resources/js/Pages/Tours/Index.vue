@@ -1,13 +1,58 @@
 <script setup>
+import { computed, ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import SiteMeta from '../../Components/SiteMeta.vue';
 import SiteLayout from '../../Layouts/SiteLayout.vue';
 
 defineOptions({ layout: SiteLayout });
 
-defineProps({
+const props = defineProps({
     seo: Object,
     tours: Array,
+});
+
+const activeCategory = ref('all');
+const activeLocation = ref('all');
+const activeSort = ref('recommended');
+
+const normalizeKey = (value) => String(value || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+const uniqueOptions = (field, allLabel) => {
+    const options = new Map();
+
+    (props.tours || []).forEach((tour) => {
+        const value = tour[field];
+        const key = normalizeKey(value);
+
+        if (key && !options.has(key)) {
+            options.set(key, { key, label: value });
+        }
+    });
+
+    return [{ key: 'all', label: allLabel }, ...options.values()];
+};
+
+const categoryOptions = computed(() => uniqueOptions('category', 'All Tours'));
+const locationOptions = computed(() => uniqueOptions('location', 'All Locations'));
+const numericPrice = (item) => Number.parseFloat(String(item.priceFrom || '').replace(/[^0-9.]/g, '')) || 0;
+
+const visibleTours = computed(() => {
+    const filtered = (props.tours || []).filter((item) => {
+        const categoryMatch = activeCategory.value === 'all' || normalizeKey(item.category) === activeCategory.value;
+        const locationMatch = activeLocation.value === 'all' || normalizeKey(item.location) === activeLocation.value;
+
+        return categoryMatch && locationMatch;
+    });
+
+    return [...filtered].sort((a, b) => {
+        if (activeSort.value === 'price-low') return numericPrice(a) - numericPrice(b);
+        if (activeSort.value === 'price-high') return numericPrice(b) - numericPrice(a);
+        return 0;
+    });
 });
 </script>
 
@@ -15,37 +60,52 @@ defineProps({
     <SiteMeta :title="seo.title" :description="seo.description" />
 
     <div class="listing-page">
-        <section class="about-hero listing-hero">
-            <div class="container about-hero__grid">
-                <div>
-                    <p class="about-kicker">Tours</p>
-                    <h1 class="about-title">City, cultural, and private tours organized as direct bookable products.</h1>
-                    <p class="about-copy">
-                        Browse guided tour products that support mixed media, clearer itinerary framing,
-                        and direct booking from the detail page.
-                    </p>
+        <section class="section-block listing-section">
+            <div class="container">
+                <div class="navigation-panel">
+                    <div v-if="categoryOptions.length > 2" class="filter-group">
+                        <div class="filter-label">Category</div>
+                        <div class="filter-row" aria-label="Tour category filters">
+                            <button
+                                v-for="option in categoryOptions"
+                                :key="option.key"
+                                class="filter-chip"
+                                :class="{ active: activeCategory === option.key }"
+                                type="button"
+                                @click="activeCategory = option.key"
+                            >
+                                {{ option.label }}
+                            </button>
+                        </div>
+                    </div>
 
-                    <div class="about-actions">
-                        <Link class="button-primary" href="/contact">Contact Acute Tourism</Link>
-                        <Link class="button-secondary" href="/dubai-tours-and-tickets">Browse experiences</Link>
+                    <div v-if="locationOptions.length > 2" class="filter-group">
+                        <div class="filter-label">Location</div>
+                        <div class="filter-row" aria-label="Tour location filters">
+                            <button
+                                v-for="option in locationOptions"
+                                :key="option.key"
+                                class="filter-chip"
+                                :class="{ active: activeLocation === option.key }"
+                                type="button"
+                                @click="activeLocation = option.key"
+                            >
+                                {{ option.label }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="sort-row sort-row--simple">
+                        <select v-model="activeSort" class="select-field" aria-label="Sort tours">
+                            <option value="recommended">Sort by recommended</option>
+                            <option value="price-low">Price: low to high</option>
+                            <option value="price-high">Price: high to low</option>
+                        </select>
                     </div>
                 </div>
 
-                <div class="about-card about-card--primary">
-                    <p class="about-card__label">Tour focus</p>
-                    <ul class="about-list about-list--tight">
-                        <li>City tours and cultural itineraries</li>
-                        <li>Private and guided formats</li>
-                        <li>Direct payment from the detail page</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <section class="section-block listing-section">
-            <div class="container">
                 <div class="card-grid card-grid-three">
-                    <article v-for="item in tours" :key="item.slug" class="info-card package-card">
+                    <article v-for="item in visibleTours" :key="item.slug" class="info-card package-card">
                         <div v-if="item.heroImageUrl" class="card-media">
                             <img :src="item.heroImageUrl" :alt="item.title" />
                         </div>
@@ -56,6 +116,10 @@ defineProps({
                         <p v-if="item.priceFrom" class="price-line">{{ item.priceFrom }}</p>
                         <Link class="button-primary card-button" :href="`/tours/${item.slug}`">View tour</Link>
                     </article>
+                </div>
+
+                <div v-if="!visibleTours.length" class="pricing-note">
+                    No tours match this filter yet. Choose another category or location.
                 </div>
             </div>
         </section>

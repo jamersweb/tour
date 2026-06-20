@@ -10324,6 +10324,10 @@ textarea {
     aspect-ratio: 1.25;
 }
 
+.home-dashboard-card--package-category .home-dashboard-card__media img {
+    object-position: center;
+}
+
 .home-dashboard-card--package-category .home-dashboard-card__meta {
     align-items: start;
     grid-template-columns: 1fr;
@@ -14663,6 +14667,11 @@ textarea {
 
     .home-dashboard-card--package-category .home-dashboard-card__media {
         height: 180px;
+        background: #f6f8fc;
+    }
+
+    .home-dashboard-card--package-category .home-dashboard-card__media img {
+        object-fit: contain;
     }
 
     .home-dashboard-card--package-category .home-dashboard-card__body > p {
@@ -14704,6 +14713,11 @@ textarea {
 
     .home-dashboard-card--package-category .home-dashboard-card__media {
         height: 180px;
+        background: #f6f8fc;
+    }
+
+    .home-dashboard-card--package-category .home-dashboard-card__media img {
+        object-fit: contain;
     }
 
     .home-dashboard-card--package-category .home-dashboard-card__body > p {
