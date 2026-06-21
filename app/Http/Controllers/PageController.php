@@ -2023,17 +2023,6 @@ class PageController extends Controller
                     'priceFrom' => $this->formatMoney($tour->price_from, $tour->currency),
                     'heroImageUrl' => $tour->hero_image_url,
                 ]))
-            ->filter(function (array $experience) use ($locationFilter, $typeFilter) {
-                if ($locationFilter && $this->experienceLocationKey($experience) !== $locationFilter) {
-                    return false;
-                }
-
-                if ($typeFilter && $this->experienceTypeKey($experience) !== $typeFilter) {
-                    return false;
-                }
-
-                return true;
-            })
             ->values();
 
         $pageLabel = $typeFilter

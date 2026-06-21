@@ -213,30 +213,32 @@ watch(() => props.activeType, (value) => {
                     <div class="filter-group">
                         <div class="filter-label">Location</div>
                         <div class="filter-row" aria-label="Location filters">
-                            <Link
+                            <button
                                 v-for="option in locationOptions"
                                 :key="option.key"
                                 class="filter-chip"
                                 :class="{ active: locationFilter === option.key }"
-                                :href="option.href"
+                                type="button"
+                                @click="locationFilter = option.key"
                             >
                                 {{ option.label }}
-                            </Link>
+                            </button>
                         </div>
                     </div>
 
                     <div class="filter-group">
                         <div class="filter-label">Activity Type</div>
                         <div class="filter-row" aria-label="Activity type filters">
-                            <Link
+                            <button
                                 v-for="option in typeOptions"
                                 :key="option.key"
                                 class="filter-chip"
                                 :class="{ active: typeFilter === option.key }"
-                                :href="option.href"
+                                type="button"
+                                @click="typeFilter = option.key"
                             >
                                 {{ option.label }}
-                            </Link>
+                            </button>
                         </div>
                     </div>
 
