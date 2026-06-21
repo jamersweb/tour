@@ -35,7 +35,7 @@ class PackagesTable
         ])->filters([
             SelectFilter::make('collections')
                 ->label('Package category')
-                ->relationship('collections', 'name', fn ($query) => $query->where('collection_group', 'package')->orderBy('sort_order')->orderBy('name'))
+                ->relationship('collections', 'name', fn ($query) => $query->where('collection_group', 'package')->orderBy('collections.sort_order')->orderBy('collections.name'))
                 ->multiple()
                 ->preload(),
             TernaryFilter::make('is_featured'),

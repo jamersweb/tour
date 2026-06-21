@@ -613,7 +613,7 @@ class PageController extends Controller
     {
         $packages = Package::query()
             ->where('is_active', true)
-            ->with(['collections' => fn ($query) => $query->where('collection_group', 'package')->orderBy('sort_order')->orderBy('name')])
+            ->with(['collections' => fn ($query) => $query->where('collection_group', 'package')->orderBy('collections.sort_order')->orderBy('collections.name')])
             ->orderByDesc('is_featured')
             ->orderBy('title')
             ->get()

@@ -79,7 +79,7 @@ class PackageForm
                         ->relationship(
                             'collections',
                             'name',
-                            modifyQueryUsing: fn ($query) => $query->where('collection_group', 'package')->orderBy('sort_order')->orderBy('name'),
+                            modifyQueryUsing: fn ($query) => $query->where('collection_group', 'package')->orderBy('collections.sort_order')->orderBy('collections.name'),
                         )
                         ->multiple()
                         ->preload()
