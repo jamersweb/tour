@@ -9,31 +9,36 @@ defineOptions({ layout: SiteLayout });
 const props = defineProps({
     seo: Object,
     packages: Array,
+    packageFilters: Array,
 });
 
 const activeFilter = ref('all');
 const activeSort = ref('recommended');
 
-const filterOptions = [
-    { key: 'all', label: 'All Packages' },
-    { key: 'family', label: 'Family Holidays' },
-    { key: 'short', label: 'Short Stays' },
-    { key: 'event', label: 'Event Packages' },
-    { key: 'luxury', label: 'Luxury Packages' },
-    { key: 'budget', label: 'Budget Friendly' },
+const fallbackFilterOptions = [
+    { key: 'family-holidays', label: 'Family Holidays' },
+    { key: 'short-stays', label: 'Short Stays' },
+    { key: 'event-packages', label: 'Event Packages' },
+    { key: 'luxury-packages', label: 'Luxury Packages' },
+    { key: 'budget-friendly', label: 'Budget Friendly' },
 ];
+
+const filterOptions = computed(() => [
+    { key: 'all', label: 'All Packages' },
+    ...((props.packageFilters?.length ? props.packageFilters : fallbackFilterOptions)),
+]);
 
 const packageTags = (item) => {
     const haystack = `${item.title} ${item.summary} ${item.duration} ${item.location}`.toLowerCase();
-    const tags = ['all'];
+    const tags = ['all', ...(item.categories || []).map((category) => category.slug).filter(Boolean)];
 
-    if (/family|kids|children|group/.test(haystack)) tags.push('family');
-    if (/event|ufc|fight|concert|weekend/.test(haystack)) tags.push('event');
-    if (/luxury|premium|decadence|private|5 star|five star/.test(haystack)) tags.push('luxury');
-    if (/budget|friendly|value|affordable/.test(haystack)) tags.push('budget');
-    if (/2 days|3 days|4 days|short|weekend/.test(haystack)) tags.push('short');
+    if (/family|kids|children|group/.test(haystack)) tags.push('family-holidays');
+    if (/event|ufc|fight|concert|weekend/.test(haystack)) tags.push('event-packages');
+    if (/luxury|premium|decadence|private|5 star|five star/.test(haystack)) tags.push('luxury-packages');
+    if (/budget|friendly|value|affordable/.test(haystack)) tags.push('budget-friendly');
+    if (/2 days|3 days|4 days|short|weekend/.test(haystack)) tags.push('short-stays');
 
-    return tags;
+    return [...new Set(tags)];
 };
 
 const trustItems = [
@@ -52,7 +57,8 @@ const packageLabel = (item) => {
     if (title.includes('golden escape')) return 'Dubai + Abu Dhabi';
     if (title.includes('ufc')) return 'Event Weekend';
     if (title.includes('happy family')) return 'Family Holiday';
-    if (packageTags(item).includes('short')) return 'Short Break';
+    if (item.categories?.length) return item.categories[0].name;
+    if (packageTags(item).includes('short-stays')) return 'Short Break';
 
     return 'Curated Package';
 };

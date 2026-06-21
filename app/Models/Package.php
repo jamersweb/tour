@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Support\MediaUrl;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Storage;
 
@@ -87,6 +88,13 @@ class Package extends Model
     public function reviews(): MorphMany
     {
         return $this->morphMany(Review::class, 'reviewable');
+    }
+
+    public function collections(): BelongsToMany
+    {
+        return $this->belongsToMany(Collection::class)
+            ->withTimestamps()
+            ->orderByPivot('sort_order');
     }
 
     protected function resolveMediaPath(?string $path): ?string

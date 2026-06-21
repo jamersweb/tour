@@ -14,6 +14,14 @@ class CollectionInfolist
             ->components([
                 TextEntry::make('name'),
                 TextEntry::make('slug'),
+                TextEntry::make('collection_group')
+                    ->label('Parent category')
+                    ->badge()
+                    ->formatStateUsing(fn (?string $state): string => match ($state) {
+                        'location' => 'By Location',
+                        'package' => 'Package Category',
+                        default => 'By Activity Type',
+                    }),
                 TextEntry::make('summary')
                     ->placeholder('-'),
                 TextEntry::make('description')

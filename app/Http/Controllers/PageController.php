@@ -613,9 +613,22 @@ class PageController extends Controller
     {
         $packages = Package::query()
             ->where('is_active', true)
+            ->with(['collections' => fn ($query) => $query->where('collection_group', 'package')->orderBy('sort_order')->orderBy('name')])
             ->orderByDesc('is_featured')
             ->orderBy('title')
             ->get()
+            ->values();
+
+        $packageFilters = Collection::query()
+            ->where('collection_group', 'package')
+            ->where('is_featured', true)
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get(['name', 'slug'])
+            ->map(fn (Collection $collection) => [
+                'key' => $collection->slug,
+                'label' => $collection->name,
+            ])
             ->values();
 
         return Inertia::render('Packages/Index', [
@@ -632,7 +645,14 @@ class PageController extends Controller
                     'location' => $package->location,
                     'priceFrom' => $package->price_from ? "{$package->currency} ".number_format((float) $package->price_from, 0) : null,
                     'heroImageUrl' => $this->packageShowcaseImage($package, $index),
+                    'categories' => $package->collections
+                        ->map(fn (Collection $collection) => [
+                            'name' => $collection->name,
+                            'slug' => $collection->slug,
+                        ])
+                        ->values(),
                 ]),
+            'packageFilters' => $packageFilters,
         ]);
     }
 

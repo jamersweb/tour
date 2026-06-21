@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Packages\Schemas;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -70,6 +71,20 @@ class PackageForm
                     TextInput::make('currency')->required()->maxLength(3)->default('AED'),
                 ])
                 ->columns(3),
+            Section::make('Package Categories')
+                ->description('Assign this package to one or more package filter categories shown on the public packages page.')
+                ->schema([
+                    Select::make('collections')
+                        ->label('Package categories')
+                        ->relationship(
+                            'collections',
+                            'name',
+                            modifyQueryUsing: fn ($query) => $query->where('collection_group', 'package')->orderBy('sort_order')->orderBy('name'),
+                        )
+                        ->multiple()
+                        ->preload()
+                        ->searchable(),
+                ]),
             Section::make('Structured Content')
                 ->schema([
                     TagsInput::make('highlights')->placeholder('Add a highlight'),

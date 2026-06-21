@@ -55,4 +55,11 @@ class Collection extends Model
             ->withTimestamps()
             ->orderByPivot('sort_order');
     }
+
+    public function packages(): BelongsToMany
+    {
+        return $this->belongsToMany(Package::class)
+            ->withTimestamps()
+            ->orderByPivot('sort_order');
+    }
 }

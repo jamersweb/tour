@@ -21,8 +21,8 @@ class CollectionsTable
     {
         return $table
             ->heading('Subcategories')
-            ->description('Create child subcategories under By Location or By Activity Type, assign tours, and control website menu visibility.')
-            ->modifyQueryUsing(fn (Builder $query) => $query->whereIn('collection_group', ['location', 'activity']))
+            ->description('Create child subcategories under By Location, By Activity Type, or Package Category, assign content, and control website visibility.')
+            ->modifyQueryUsing(fn (Builder $query) => $query->whereIn('collection_group', ['location', 'activity', 'package']))
             ->columns([
                 TextColumn::make('name')
                     ->label('Subcategory')
@@ -34,7 +34,11 @@ class CollectionsTable
                 TextColumn::make('collection_group')
                     ->label('Parent category')
                     ->badge()
-                    ->formatStateUsing(fn (?string $state): string => $state === 'location' ? 'By Location' : 'By Activity Type')
+                    ->formatStateUsing(fn (?string $state): string => match ($state) {
+                        'location' => 'By Location',
+                        'package' => 'Package Category',
+                        default => 'By Activity Type',
+                    })
                     ->sortable(),
                 TextColumn::make('summary')
                     ->limit(40)
@@ -42,6 +46,10 @@ class CollectionsTable
                 TextColumn::make('experiences_count')
                     ->counts('experiences')
                     ->label('Experiences')
+                    ->sortable(),
+                TextColumn::make('packages_count')
+                    ->counts('packages')
+                    ->label('Packages')
                     ->sortable(),
                 TextColumn::make('sort_order')
                     ->numeric()
@@ -64,6 +72,7 @@ class CollectionsTable
                     ->options([
                         'location' => 'By Location',
                         'activity' => 'By Activity Type',
+                        'package' => 'Package Category',
                     ]),
                 TernaryFilter::make('is_featured')
                     ->label('Shown on menu'),
@@ -83,6 +92,15 @@ class CollectionsTable
                     ->modalHeading('New Activity Type Subcategory')
                     ->fillForm([
                         'collection_group' => 'activity',
+                        'is_featured' => true,
+                        'sort_order' => 0,
+                    ])
+                    ->createAnother(false),
+                CreateAction::make('createPackageCategory')
+                    ->label('Add Package Category')
+                    ->modalHeading('New Package Category')
+                    ->fillForm([
+                        'collection_group' => 'package',
                         'is_featured' => true,
                         'sort_order' => 0,
                     ])
