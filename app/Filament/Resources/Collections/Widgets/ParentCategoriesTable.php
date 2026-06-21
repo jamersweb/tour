@@ -17,19 +17,18 @@ class ParentCategoriesTable extends TableWidget
     {
         return $table
             ->heading('Parent categories')
-            ->description('Only these parent categories are used on the website menu and public filters. Create and manage their subcategories in the table below.')
+            ->description('Only these parent categories are used on the website menu. Create and manage their subcategories in the table below.')
             ->query(fn (): Builder => Collection::query()
                 ->selectRaw('MIN(id) as id, collection_group')
                 ->selectRaw('COUNT(*) as subcategories_count')
                 ->selectRaw('SUM(CASE WHEN is_featured THEN 1 ELSE 0 END) as visible_subcategories_count')
-                ->whereIn('collection_group', ['location', 'activity', 'package'])
+                ->whereIn('collection_group', ['location', 'activity'])
                 ->groupBy('collection_group'))
             ->columns([
                 TextColumn::make('collection_group')
                     ->label('Parent category')
                     ->formatStateUsing(fn (?string $state): string => match ($state) {
                         'location' => 'By Location',
-                        'package' => 'Package Category',
                         default => 'By Activity Type',
                     })
                     ->badge(),

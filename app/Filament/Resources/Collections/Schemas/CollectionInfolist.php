@@ -19,7 +19,6 @@ class CollectionInfolist
                     ->badge()
                     ->formatStateUsing(fn (?string $state): string => match ($state) {
                         'location' => 'By Location',
-                        'package' => 'Package Category',
                         default => 'By Activity Type',
                     }),
                 TextEntry::make('summary')

@@ -32,7 +32,6 @@ class CollectionForm
                             ->options([
                                 'location' => 'By Location',
                                 'activity' => 'By Activity Type',
-                                'package' => 'Package Category',
                             ])
                             ->default('activity'),
                         TextInput::make('summary')
@@ -66,52 +65,6 @@ class CollectionForm
                             ->multiple()
                             ->preload()
                             ->searchable(),
-                    ])
-                    ->columns(2),
-                Section::make('Packages in this Package Category')
-                    ->description('Choose current packages for this package category, or create a new basic package from this field.')
-                    ->schema([
-                        Select::make('packages')
-                            ->label('Current packages')
-                            ->relationship('packages', 'title')
-                            ->multiple()
-                            ->preload()
-                            ->searchable()
-                            ->createOptionForm([
-                                TextInput::make('title')
-                                    ->required()
-                                    ->maxLength(255),
-                                TextInput::make('slug')
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->unique('packages', 'slug'),
-                                Textarea::make('short_description')
-                                    ->rows(3)
-                                    ->maxLength(280)
-                                    ->columnSpanFull(),
-                                Textarea::make('description')
-                                    ->rows(5)
-                                    ->columnSpanFull(),
-                                TextInput::make('duration')
-                                    ->maxLength(80),
-                                TextInput::make('location')
-                                    ->maxLength(120),
-                                TextInput::make('price_from')
-                                    ->numeric()
-                                    ->prefix('AED'),
-                                TextInput::make('currency')
-                                    ->required()
-                                    ->default('AED')
-                                    ->maxLength(3),
-                                Toggle::make('is_featured')
-                                    ->label('Featured package')
-                                    ->inline(false),
-                                Toggle::make('is_active')
-                                    ->default(true)
-                                    ->required()
-                                    ->inline(false),
-                            ])
-                            ->columnSpanFull(),
                     ])
                     ->columns(2),
                 Section::make('Publishing')
