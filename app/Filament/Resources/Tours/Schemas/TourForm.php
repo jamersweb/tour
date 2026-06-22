@@ -165,7 +165,15 @@ class TourForm
                     Select::make('collections')
                         ->label('Subcategories')
                         ->helperText('Assign this tour to one or more header subcategories.')
-                        ->relationship('collections', 'name')
+                        ->relationship(
+                            'collections',
+                            'name',
+                            modifyQueryUsing: fn ($query) => $query
+                                ->whereIn('collection_group', ['location', 'activity'])
+                                ->orderBy('collections.collection_group')
+                                ->orderBy('collections.sort_order')
+                                ->orderBy('collections.name'),
+                        )
                         ->multiple()
                         ->preload()
                         ->searchable(),

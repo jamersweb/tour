@@ -1991,6 +1991,7 @@ class PageController extends Controller
 
         $allExperiences = Experience::query()
             ->where('is_active', true)
+            ->with('collections:id,name,slug,collection_group')
             ->orderByDesc('is_featured')
             ->orderBy('price_from')
             ->get()
@@ -2005,9 +2006,15 @@ class PageController extends Controller
                 'summary' => $experience->short_description,
                 'priceFrom' => $this->formatMoney($experience->price_from, $experience->currency),
                 'heroImageUrl' => $experience->hero_image_url,
+                'collections' => $experience->collections->map(fn (Collection $collection) => [
+                    'name' => $collection->name,
+                    'slug' => $collection->slug,
+                    'group' => $collection->collection_group,
+                ])->values(),
             ])
             ->merge(Tour::query()
                 ->where('is_active', true)
+                ->with('collections:id,name,slug,collection_group')
                 ->orderByDesc('is_featured')
                 ->orderBy('price_from')
                 ->get()
@@ -2022,6 +2029,11 @@ class PageController extends Controller
                     'summary' => $tour->short_description,
                     'priceFrom' => $this->formatMoney($tour->price_from, $tour->currency),
                     'heroImageUrl' => $tour->hero_image_url,
+                    'collections' => $tour->collections->map(fn (Collection $collection) => [
+                        'name' => $collection->name,
+                        'slug' => $collection->slug,
+                        'group' => $collection->collection_group,
+                    ])->values(),
                 ]))
             ->values();
 

@@ -101,7 +101,17 @@ const faqItems = [
 
 const normalizedText = (item) => `${item.title} ${item.category} ${item.location || ''} ${item.summary || ''}`.toLowerCase();
 
+const collectionSlugs = (item, group) => (item.collections || [])
+    .filter((collection) => !group || collection.group === group)
+    .map((collection) => collection.slug);
+
 const activityLocation = (item) => {
+    const assignedLocations = collectionSlugs(item, 'location');
+
+    if (assignedLocations.includes('dubai')) return 'dubai';
+    if (assignedLocations.includes('abu-dhabi')) return 'abu-dhabi';
+    if (assignedLocations.includes('other-emirates')) return 'other-emirates';
+
     const text = normalizedText(item);
 
     if (text.includes('abu dhabi') || text.includes('ferrari world') || text.includes('yas island')) return 'abu-dhabi';
@@ -111,6 +121,17 @@ const activityLocation = (item) => {
 };
 
 const activityType = (item) => {
+    const assignedTypes = collectionSlugs(item, 'activity');
+
+    if (assignedTypes.includes('entry-tickets')) return 'entry-tickets';
+    if (assignedTypes.includes('desert-safari')) return 'desert-safari';
+    if (assignedTypes.includes('city-tours')) return 'city-tours';
+    if (assignedTypes.includes('water-sports')) return 'water-sports';
+    if (assignedTypes.includes('water-parks')) return 'water-parks';
+    if (assignedTypes.includes('theme-parks')) return 'theme-parks';
+    if (assignedTypes.includes('yacht-cruises')) return 'yacht-cruises';
+    if (assignedTypes.includes('helicopter-sky')) return 'helicopter-sky';
+
     const text = normalizedText(item);
 
     if (text.includes('yacht') || text.includes('cruise') || text.includes('marina')) return 'yacht-cruises';
