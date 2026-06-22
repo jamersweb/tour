@@ -70,9 +70,16 @@ const bestFor = computed(() => (
 const cancellationPolicy = computed(() => (
     props.packageItem.cancellationPolicy || 'For a full refund, cancel at least 24 hours in advance of the start date of the experience.'
 ));
+const groupSizeMin = computed(() => Math.max(1, Number.parseInt(props.packageItem.groupSizeMin, 10) || 1));
+const groupSizeMax = computed(() => Math.max(groupSizeMin.value, Number.parseInt(props.packageItem.groupSizeMax, 10) || 100));
+const normalizedGuestCount = (value) => Math.min(
+    groupSizeMax.value,
+    Math.max(groupSizeMin.value, Number.parseInt(value, 10) || groupSizeMin.value),
+);
 const quickFacts = computed(() => [
     { label: 'Duration', value: props.packageItem.duration || 'Flexible' },
     { label: 'Destinations', value: props.packageItem.location || 'Dubai & UAE' },
+    { label: 'Group Size', value: props.packageItem.groupSize || `${groupSizeMin.value} - ${groupSizeMax.value}` },
     { label: 'Hotel', value: 'With daily breakfast' },
     { label: 'Best For', value: bestFor.value[0] || 'Custom holiday planning' },
 ]);
@@ -130,14 +137,14 @@ let stickyCtaTimer = null;
 
 const form = useForm({
     travel_date: '',
-    guest_count: 2,
+    guest_count: groupSizeMin.value,
 });
 
 const cartForm = useForm({
     type: 'package',
     slug: props.packageItem.slug,
     travel_date: '',
-    guest_count: 2,
+    guest_count: groupSizeMin.value,
 });
 
 const customPackageForm = useForm({
@@ -146,7 +153,7 @@ const customPackageForm = useForm({
     email: '',
     phone: '',
     travel_date: '',
-    guest_count: 2,
+    guest_count: groupSizeMin.value,
     interest: packageInquiryInterest.value,
     hotel_preference: 'Flexible',
     add_ons: 'Not sure yet',
@@ -154,7 +161,7 @@ const customPackageForm = useForm({
 });
 
 const totalAmount = computed(() => {
-    const guestCount = Math.max(2, Number.parseInt(form.guest_count, 10) || 2);
+    const guestCount = normalizedGuestCount(form.guest_count);
     const rawAmount = String(props.packageItem.priceFrom || '0').replace(/[^0-9.]/g, '');
     const unitAmount = Number.parseFloat(rawAmount || '0');
 
@@ -176,7 +183,7 @@ const focusBookingForm = (field = 'date') => {
 };
 
 const addToCart = () => {
-    const guestCount = Math.max(2, Number.parseInt(form.guest_count, 10) || 2);
+    const guestCount = normalizedGuestCount(form.guest_count);
 
     if (!form.travel_date) {
         focusBookingForm('date');
@@ -194,7 +201,7 @@ const addToCart = () => {
 };
 
 const bookNow = () => {
-    const guestCount = Math.max(2, Number.parseInt(form.guest_count, 10) || 2);
+    const guestCount = normalizedGuestCount(form.guest_count);
 
     if (!form.travel_date) {
         focusBookingForm('date');
@@ -215,7 +222,7 @@ const bookNow = () => {
 };
 
 const submitCustomPackageRequest = () => {
-    const guestCount = Math.max(2, Number.parseInt(customPackageForm.guest_count, 10) || 2);
+    const guestCount = normalizedGuestCount(customPackageForm.guest_count);
     const requestNote = customPackageForm.message?.trim() || 'No additional notes provided.';
     const visibleMessage = customPackageForm.message;
 
@@ -243,6 +250,7 @@ const submitCustomPackageRequest = () => {
         },
         onSuccess: () => {
             customPackageForm.reset('name', 'email', 'phone', 'travel_date', 'guest_count', 'message');
+            customPackageForm.guest_count = groupSizeMin.value;
             customPackageForm.hotel_preference = 'Flexible';
             customPackageForm.add_ons = 'Not sure yet';
             customPackageForm.interest = packageInquiryInterest.value;
@@ -385,7 +393,12 @@ onBeforeUnmount(() => {
 
                                     <label class="field">
                                         <span>Guests</span>
-                                        <input v-model="form.guest_count" type="number" min="2" max="100" />
+                                        <input
+                                            v-model="form.guest_count"
+                                            type="number"
+                                            :min="groupSizeMin"
+                                            :max="groupSizeMax"
+                                        />
                                         <small v-if="cartForm.errors.guest_count">{{ cartForm.errors.guest_count }}</small>
                                     </label>
 
@@ -550,7 +563,13 @@ onBeforeUnmount(() => {
                                 </label>
                                 <label>
                                     <span>Travelers</span>
-                                    <input v-model="customPackageForm.guest_count" type="number" min="2" max="100" placeholder="2" />
+                                    <input
+                                        v-model="customPackageForm.guest_count"
+                                        type="number"
+                                        :min="groupSizeMin"
+                                        :max="groupSizeMax"
+                                        :placeholder="String(groupSizeMin)"
+                                    />
                                     <small v-if="customPackageForm.errors.guest_count">{{ customPackageForm.errors.guest_count }}</small>
                                 </label>
                                 <label>

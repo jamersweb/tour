@@ -733,6 +733,8 @@ class PageController extends Controller
                 'days' => $package->days,
                 'nights' => $package->nights,
                 'location' => $package->location,
+                'groupSizeMin' => $package->group_size_min,
+                'groupSizeMax' => $package->group_size_max,
                 'groupSize' => $package->group_size_min && $package->group_size_max
                     ? "{$package->group_size_min} - {$package->group_size_max}"
                     : null,

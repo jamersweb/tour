@@ -63,12 +63,16 @@ class CartController extends Controller
         $guestCount = $adultCount + $childCount;
 
         if ($guestCount < 1) {
-            $guestCount = max($this->minimumGuestsForType($validated['type']), (int) ($validated['guest_count'] ?? ($cart[$key]['guest_count'] ?? 1)));
+            $guestCount = max($this->minimumGuestsForPayable($payable), (int) ($validated['guest_count'] ?? ($cart[$key]['guest_count'] ?? 1)));
             $adultCount = $guestCount;
             $childCount = 0;
         }
 
-        $guestCount = max($this->minimumGuestsForType($validated['type']), $guestCount);
+        $guestCount = $this->clampGuestsForPayable($payable, $guestCount);
+        if ($payable instanceof Package && $adultCount + $childCount !== $guestCount) {
+            $adultCount = $guestCount;
+            $childCount = 0;
+        }
         if ($adultCount + $childCount < $guestCount) {
             $adultCount = $guestCount - $childCount;
         }
@@ -108,7 +112,7 @@ class CartController extends Controller
             ]);
         }
 
-        $cart[$key]['guest_count'] = max($this->minimumGuestsForType((string) ($cart[$key]['type'] ?? 'experience')), (int) $validated['guest_count']);
+        $cart[$key]['guest_count'] = $this->clampGuestsForPayable($payable, (int) $validated['guest_count']);
         $cart[$key]['travel_date'] = $validated['travel_date'] ?? null;
 
         $request->session()->put('cart.items', $cart);
@@ -143,11 +147,15 @@ class CartController extends Controller
                     return null;
                 }
 
-                $guestCount = max($this->minimumGuestsForType($item['type']), (int) ($item['guest_count'] ?? 1));
+                $guestCount = $this->clampGuestsForPayable($payable, (int) ($item['guest_count'] ?? 1));
                 $selectedBookingOption = $this->selectedBookingOption($payable, $item['booking_option'] ?? null);
                 $unitAmount = (float) ($selectedBookingOption['amountValue'] ?? $payable->price_from);
                 $adultCount = max(0, (int) ($item['adult_count'] ?? $guestCount));
                 $childCount = max(0, (int) ($item['child_count'] ?? 0));
+                if ($payable instanceof Package && $adultCount + $childCount !== $guestCount) {
+                    $adultCount = $guestCount;
+                    $childCount = 0;
+                }
                 if ($adultCount + $childCount < $guestCount) {
                     $adultCount = $guestCount - $childCount;
                 }
@@ -192,9 +200,13 @@ class CartController extends Controller
 
                 $selectedBookingOption = $this->selectedBookingOption($payable, $item['booking_option'] ?? null);
                 $unitAmount = (float) ($selectedBookingOption['amountValue'] ?? $payable->price_from);
-                $guestCount = max($this->minimumGuestsForType($item['type']), (int) ($item['guest_count'] ?? 1));
+                $guestCount = $this->clampGuestsForPayable($payable, (int) ($item['guest_count'] ?? 1));
                 $adultCount = max(0, (int) ($item['adult_count'] ?? $guestCount));
                 $childCount = max(0, (int) ($item['child_count'] ?? 0));
+                if ($payable instanceof Package && $adultCount + $childCount !== $guestCount) {
+                    $adultCount = $guestCount;
+                    $childCount = 0;
+                }
                 if ($adultCount + $childCount < $guestCount) {
                     $adultCount = $guestCount - $childCount;
                 }
@@ -228,9 +240,30 @@ class CartController extends Controller
         return $bookingOption ? "{$type}:{$slug}:{$bookingOption}" : "{$type}:{$slug}";
     }
 
-    protected function minimumGuestsForType(string $type): int
+    protected function minimumGuestsForPayable(Model $payable): int
     {
-        return $type === 'package' ? 2 : 1;
+        if ($payable instanceof Package) {
+            return max(1, (int) ($payable->group_size_min ?: 1));
+        }
+
+        return 1;
+    }
+
+    protected function maximumGuestsForPayable(Model $payable): int
+    {
+        if ($payable instanceof Package && $payable->group_size_max) {
+            return max($this->minimumGuestsForPayable($payable), (int) $payable->group_size_max);
+        }
+
+        return 100;
+    }
+
+    protected function clampGuestsForPayable(Model $payable, int $guestCount): int
+    {
+        return min(
+            $this->maximumGuestsForPayable($payable),
+            max($this->minimumGuestsForPayable($payable), $guestCount),
+        );
     }
 
     protected function imageFor(Model $payable): ?string

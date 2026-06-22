@@ -38,6 +38,12 @@ const supportsPickupLocation = computed(() => Boolean(props.checkout.supportsPic
 const preferenceOptions = computed(() => props.checkout.preferenceOptions || {});
 const productDetails = computed(() => props.checkout.productDetails || {});
 const selectedBookingOption = computed(() => props.checkout.selectedBookingOption || null);
+const groupSizeMin = computed(() => Math.max(1, Number.parseInt(productDetails.value.groupSizeMin, 10) || 1));
+const groupSizeMax = computed(() => Math.max(groupSizeMin.value, Number.parseInt(productDetails.value.groupSizeMax, 10) || 100));
+const normalizedGuestCount = (value) => Math.min(
+    groupSizeMax.value,
+    Math.max(groupSizeMin.value, Number.parseInt(value, 10) || groupSizeMin.value),
+);
 
 const tourOptions = computed(() => preferenceOptions.value.tourOptions || []);
 const timeOptions = computed(() => {
@@ -64,7 +70,7 @@ const phoneCountryOptions = [
 const formattedTravelers = computed(() => {
     const adults = Math.max(0, Number.parseInt(form.adult_count, 10) || 0);
     const kids = Math.max(0, Number.parseInt(form.child_count, 10) || 0);
-    const total = Math.max(1, adults + kids || Number.parseInt(form.guest_count, 10) || 1);
+    const total = normalizedGuestCount(adults + kids || form.guest_count);
     const parts = [`${adults || total} adult${(adults || total) === 1 ? '' : 's'}`];
 
     if (kids) {
@@ -83,7 +89,7 @@ const totalAmount = computed(() => {
     const kids = Math.max(0, Number.parseInt(form.child_count, 10) || 0);
     const unitAmount = Number.parseFloat(props.checkout.unitAmountValue || 0);
     const childUnitAmount = Number.parseFloat(props.checkout.childUnitAmountValue ?? unitAmount) || unitAmount;
-    const fallbackGuestCount = Math.max(1, Number.parseInt(form.guest_count, 10) || 1);
+    const fallbackGuestCount = normalizedGuestCount(form.guest_count);
     const total = adults || kids
         ? (unitAmount * adults) + (childUnitAmount * kids)
         : unitAmount * fallbackGuestCount;
@@ -126,7 +132,7 @@ const selectedRows = computed(() => {
 const submit = () => {
     const adultCount = Math.max(0, Number.parseInt(form.adult_count, 10) || 0);
     const childCount = Math.max(0, Number.parseInt(form.child_count, 10) || 0);
-    const guestCount = Math.max(1, adultCount + childCount || Number.parseInt(form.guest_count, 10) || 1);
+    const guestCount = normalizedGuestCount(adultCount + childCount || form.guest_count);
 
     form.guest_count = props.checkout.isCart ? props.checkout.defaults?.guest_count || guestCount : guestCount;
     form.adult_count = props.checkout.isCart ? props.checkout.defaults?.adult_count || adultCount || guestCount : adultCount || guestCount;
