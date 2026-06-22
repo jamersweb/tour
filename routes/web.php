@@ -12,6 +12,10 @@ use App\Http\Controllers\PaymentDocumentController;
 use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/livewire-{hash}/update', fn () => redirect('/admin'))
+    ->where('hash', '[A-Za-z0-9]+')
+    ->name('livewire.update.get-fallback');
+
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/legacy-media/uploads/{path}', [LegacyMediaController::class, 'show'])
     ->where('path', '.*')

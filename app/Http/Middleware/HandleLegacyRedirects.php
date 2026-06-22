@@ -15,6 +15,10 @@ class HandleLegacyRedirects
             return $next($request);
         }
 
+        if ($request->is('admin*') || $request->is('livewire-*')) {
+            return $next($request);
+        }
+
         $path = Redirect::normalizePath($request->path());
 
         $redirect = Redirect::query()

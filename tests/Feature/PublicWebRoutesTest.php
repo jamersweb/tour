@@ -132,6 +132,12 @@ class PublicWebRoutesTest extends TestCase
         $inertiaResponse->assertHeader('Expires', '0');
     }
 
+    public function test_livewire_update_get_requests_redirect_to_admin(): void
+    {
+        $this->get('/livewire-f6ca27fd/update')
+            ->assertRedirect('/admin');
+    }
+
     public function test_tours_and_tickets_menu_uses_featured_admin_collections(): void
     {
         Collection::query()->update(['is_featured' => false]);
