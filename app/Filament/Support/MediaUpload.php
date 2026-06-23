@@ -41,6 +41,7 @@ class MediaUpload
         }
 
         $path = trim($path);
+        $path = str_replace('\\/', '/', $path);
         $parts = parse_url($path);
 
         if (! is_array($parts) || empty($parts['host'])) {
@@ -56,5 +57,18 @@ class MediaUpload
         }
 
         return null;
+    }
+
+    public static function normalizeData(array $data, array $fields): array
+    {
+        foreach ($fields as $field) {
+            if (! array_key_exists($field, $data)) {
+                continue;
+            }
+
+            $data[$field] = self::formatState($data[$field]);
+        }
+
+        return $data;
     }
 }
