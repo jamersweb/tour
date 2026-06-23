@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Articles\Schemas;
 
+use App\Filament\Support\MediaUpload;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
@@ -55,6 +56,8 @@ class ArticleForm
                         ->image()
                         ->disk('uploads')
                         ->directory('journal')
+                        ->formatStateUsing(fn ($state) => MediaUpload::formatState($state))
+                        ->dehydrateStateUsing(fn ($state, $record) => MediaUpload::dehydrateState($state, $record?->hero_image_path))
                         ->imageEditor(),
                 ]),
             Section::make('Publishing')

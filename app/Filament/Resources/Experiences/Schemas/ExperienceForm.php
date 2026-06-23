@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Experiences\Schemas;
 
+use App\Filament\Support\MediaUpload;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Placeholder;
@@ -75,6 +76,8 @@ class ExperienceForm
                             ->image()
                             ->disk('uploads')
                             ->directory('experiences')
+                            ->formatStateUsing(fn ($state) => MediaUpload::formatState($state))
+                            ->dehydrateStateUsing(fn ($state, $record) => MediaUpload::dehydrateState($state, $record?->hero_image_path))
                             ->imageEditor(),
                         TextInput::make('hero_video_url')
                             ->label('Hero video URL')
@@ -88,6 +91,8 @@ class ExperienceForm
                             ->multiple()
                             ->disk('uploads')
                             ->directory('experiences/gallery')
+                            ->formatStateUsing(fn ($state) => MediaUpload::formatState($state))
+                            ->dehydrateStateUsing(fn ($state, $record) => MediaUpload::dehydrateState($state, $record?->gallery_images))
                             ->reorderable(),
                         TagsInput::make('gallery_videos')
                             ->placeholder('Add a video URL'),

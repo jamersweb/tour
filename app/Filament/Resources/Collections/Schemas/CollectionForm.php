@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Collections\Schemas;
 
+use App\Filament\Support\MediaUpload;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -48,6 +49,8 @@ class CollectionForm
                             ->image()
                             ->disk('uploads')
                             ->directory('collections')
+                            ->formatStateUsing(fn ($state) => MediaUpload::formatState($state))
+                            ->dehydrateStateUsing(fn ($state, $record) => MediaUpload::dehydrateState($state, $record?->hero_image_path))
                             ->imageEditor(),
                     ]),
                 Section::make('Tours & Tickets in this Subcategory')

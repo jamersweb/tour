@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Packages\Schemas;
 
+use App\Filament\Support\MediaUpload;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
@@ -38,6 +39,8 @@ class PackageForm
                         ->image()
                         ->disk('uploads')
                         ->directory('packages')
+                        ->formatStateUsing(fn ($state) => MediaUpload::formatState($state))
+                        ->dehydrateStateUsing(fn ($state, $record) => MediaUpload::dehydrateState($state, $record?->hero_image_path))
                         ->imageEditor(),
                     TextInput::make('hero_video_url')
                         ->label('Hero video URL')
@@ -50,6 +53,8 @@ class PackageForm
                         ->multiple()
                         ->disk('uploads')
                         ->directory('packages/gallery')
+                        ->formatStateUsing(fn ($state) => MediaUpload::formatState($state))
+                        ->dehydrateStateUsing(fn ($state, $record) => MediaUpload::dehydrateState($state, $record?->gallery_images))
                         ->reorderable(),
                     TagsInput::make('gallery_videos')
                         ->placeholder('Add a video URL'),

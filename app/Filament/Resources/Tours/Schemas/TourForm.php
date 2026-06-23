@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Tours\Schemas;
 
+use App\Filament\Support\MediaUpload;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Placeholder;
@@ -56,6 +57,8 @@ class TourForm
                         ->image()
                         ->disk('uploads')
                         ->directory('tours')
+                        ->formatStateUsing(fn ($state) => MediaUpload::formatState($state))
+                        ->dehydrateStateUsing(fn ($state, $record) => MediaUpload::dehydrateState($state, $record?->hero_image_path))
                         ->imageEditor(),
                     TextInput::make('hero_video_url')
                         ->label('Hero video URL')
@@ -67,6 +70,8 @@ class TourForm
                         ->multiple()
                         ->disk('uploads')
                         ->directory('tours/gallery')
+                        ->formatStateUsing(fn ($state) => MediaUpload::formatState($state))
+                        ->dehydrateStateUsing(fn ($state, $record) => MediaUpload::dehydrateState($state, $record?->gallery_images))
                         ->reorderable(),
                     TagsInput::make('gallery_videos')
                         ->placeholder('Add a video URL'),
