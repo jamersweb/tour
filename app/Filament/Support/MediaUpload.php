@@ -2,26 +2,24 @@
 
 namespace App\Filament\Support;
 
+use App\Support\UploadPath;
+
 class MediaUpload
 {
     public static function formatState(mixed $state): mixed
     {
         if (is_array($state)) {
-            return collect($state)
-                ->map(fn ($path) => self::toUploadDiskPath($path))
-                ->filter()
-                ->values()
-                ->all();
+            return UploadPath::normalizeArray($state, preserveExternal: false);
         }
 
-        return self::toUploadDiskPath($state);
+        return UploadPath::normalize($state, preserveExternal: false);
     }
 
     public static function dehydrateState(mixed $state, mixed $original): mixed
     {
         if (is_array($state)) {
             $state = collect($state)
-                ->map(fn ($path) => self::toUploadDiskPath($path) ?? $path)
+                ->map(fn ($path) => UploadPath::normalize($path, preserveExternal: false) ?? $path)
                 ->filter()
                 ->values()
                 ->all();
@@ -29,34 +27,9 @@ class MediaUpload
             return $state === [] ? $original : $state;
         }
 
-        $state = self::toUploadDiskPath($state) ?? $state;
+        $state = UploadPath::normalize($state, preserveExternal: false) ?? $state;
 
         return filled($state) ? $state : $original;
-    }
-
-    private static function toUploadDiskPath(mixed $path): ?string
-    {
-        if (! is_string($path) || trim($path) === '') {
-            return null;
-        }
-
-        $path = trim($path);
-        $path = str_replace('\\/', '/', $path);
-        $parts = parse_url($path);
-
-        if (! is_array($parts) || empty($parts['host'])) {
-            return ltrim($path, '/');
-        }
-
-        $host = strtolower($parts['host']);
-        $urlPath = $parts['path'] ?? '';
-
-        if (in_array($host, ['new.acutetourism.org', 'acutetourism.ae', 'www.acutetourism.ae'], true)
-            && str_starts_with($urlPath, '/uploads/')) {
-            return ltrim(substr($urlPath, strlen('/uploads/')), '/');
-        }
-
-        return null;
     }
 
     public static function normalizeData(array $data, array $fields): array

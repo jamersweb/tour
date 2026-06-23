@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\MediaUrl;
+use App\Support\UploadPath;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -79,6 +80,28 @@ class Tour extends Model
     public function getHeroImageUrlAttribute(): ?string
     {
         return $this->resolveMediaPath($this->hero_image_path);
+    }
+
+    public function getHeroImagePathAttribute(?string $value): ?string
+    {
+        return UploadPath::normalize($value);
+    }
+
+    public function setHeroImagePathAttribute(mixed $value): void
+    {
+        $this->attributes['hero_image_path'] = UploadPath::normalize($value);
+    }
+
+    public function getGalleryImagesAttribute(mixed $value): array
+    {
+        return UploadPath::normalizeArray($value);
+    }
+
+    public function setGalleryImagesAttribute(mixed $value): void
+    {
+        $this->attributes['gallery_images'] = $value === null
+            ? null
+            : json_encode(UploadPath::normalizeArray($value));
     }
 
     public function getGalleryImageUrlsAttribute(): array

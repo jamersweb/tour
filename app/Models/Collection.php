@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\MediaUrl;
+use App\Support\UploadPath;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Storage;
@@ -40,6 +41,16 @@ class Collection extends Model
         }
 
         return Storage::disk('uploads')->url($this->hero_image_path);
+    }
+
+    public function getHeroImagePathAttribute(?string $value): ?string
+    {
+        return UploadPath::normalize($value);
+    }
+
+    public function setHeroImagePathAttribute(mixed $value): void
+    {
+        $this->attributes['hero_image_path'] = UploadPath::normalize($value);
     }
 
     public function experiences(): BelongsToMany

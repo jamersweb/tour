@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\MediaUrl;
+use App\Support\UploadPath;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -80,5 +81,15 @@ class Article extends Model
         }
 
         return Storage::disk('uploads')->url($this->hero_image_path);
+    }
+
+    public function getHeroImagePathAttribute(?string $value): ?string
+    {
+        return UploadPath::normalize($value);
+    }
+
+    public function setHeroImagePathAttribute(mixed $value): void
+    {
+        $this->attributes['hero_image_path'] = UploadPath::normalize($value);
     }
 }
