@@ -20,6 +20,10 @@ class MediaUrl
         $host = strtolower($parts['host'] ?? '');
         $path = $parts['path'] ?? '';
 
+        if ($host === 'new.acutetourism.org' && str_starts_with($path, '/uploads/')) {
+            return 'https://acutetourism.ae'.$path;
+        }
+
         if (in_array($host, ['acutetourism.org', 'www.acutetourism.org'], true)
             && str_starts_with($path, '/uploads/')) {
             return '/legacy-media'.$path;

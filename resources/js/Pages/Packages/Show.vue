@@ -54,7 +54,7 @@ const importantNotices = computed(() => (
         : defaultImportantNotices
 ));
 
-const contactPhone = '(+971) 58 516 1554';
+const contactPhone = '(+971) 52 192 6984';
 const contactEmail = 'info@acutetourism.org';
 const defaultBestFor = [
     'First-time visitors who want Dubai highlights arranged in one plan.',

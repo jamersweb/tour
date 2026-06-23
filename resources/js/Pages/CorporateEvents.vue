@@ -77,7 +77,7 @@ const faqs = [
 
                     <div class="about-actions">
                         <Link class="button-primary" href="/contact">Request a corporate proposal</Link>
-                        <a class="button-secondary" href="https://wa.me/971585161554?text=Hi%20Acute%20Tourism%2C%20I%20would%20like%20to%20plan%20a%20corporate%20event%20in%20Dubai." target="_blank" rel="noreferrer">Speak to a consultant</a>
+                        <a class="button-secondary" href="https://wa.me/971521926984?text=Hi%20Acute%20Tourism%2C%20I%20would%20like%20to%20plan%20a%20corporate%20event%20in%20Dubai." target="_blank" rel="noreferrer">Speak to a consultant</a>
                     </div>
                 </div>
 
@@ -198,7 +198,7 @@ const faqs = [
                     <p>For a faster response, share the event date, group size, guest profile, preferred experience type, budget range if available, and whether you need transport, food, venue support, or full coordination.</p>
                     <div class="about-actions">
                         <Link class="button-primary" href="/contact">Send corporate request</Link>
-                        <a class="button-secondary" href="https://wa.me/971585161554?text=Hi%20Acute%20Tourism%2C%20I%20would%20like%20to%20request%20a%20corporate%20event%20proposal." target="_blank" rel="noreferrer">Request on WhatsApp</a>
+                        <a class="button-secondary" href="https://wa.me/971521926984?text=Hi%20Acute%20Tourism%2C%20I%20would%20like%20to%20request%20a%20corporate%20event%20proposal." target="_blank" rel="noreferrer">Request on WhatsApp</a>
                     </div>
                 </div>
                 <div class="contact-cards">

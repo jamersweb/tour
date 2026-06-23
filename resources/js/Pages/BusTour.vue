@@ -555,7 +555,7 @@ onBeforeUnmount(() => {
                     </div>
                     <label class="acute-full-field">Additional Request<textarea v-model="form.message" placeholder="Number of guests, hotel location, preferred route, private group request, or any special occasion." rows="4"></textarea></label>
                     <button class="acute-btn gold acute-submit" type="submit" :disabled="form.processing">{{ form.processing ? 'Sending...' : 'Send Enquiry' }}</button>
-                    <a class="acute-quick-chat" href="https://wa.me/97145654898?text=Hello%20Acute%20Tourism%2C%20I%20want%20to%20check%20availability%20for%20the%20panoramic%20bus%20tour." rel="noopener" target="_blank">Prefer WhatsApp? Speak to our team directly</a>
+                    <a class="acute-quick-chat" href="https://wa.me/971521926984?text=Hello%20Acute%20Tourism%2C%20I%20want%20to%20check%20availability%20for%20the%20panoramic%20bus%20tour." rel="noopener" target="_blank">Prefer WhatsApp? Speak to our team directly</a>
                     <div class="acute-note">Submitting this form does not confirm booking. The team will confirm seat availability, hotel pick-up details, final timing and any supplier-dependent activities before payment.</div>
                 </form>
             </div>

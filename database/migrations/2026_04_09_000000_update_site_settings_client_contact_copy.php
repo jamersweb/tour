@@ -23,11 +23,11 @@ return new class extends Migration
 
         DB::table('site_settings')->where('id', 1)->update([
             'footer_description' => self::FOOTER_COPY,
-            'contact_phone' => '(+971) 58 516 1554',
+            'contact_phone' => '(+971) 52 192 6984',
             'contact_phone_secondary' => null,
             'contact_address' => 'Shop 10, Kempinski Hotel & Residences, Palm Jumeirah, Dubai',
-            'whatsapp_number' => '+971 58 516 1554',
-            'website_url' => 'https://new.acutetourism.org',
+            'whatsapp_number' => '+971 52 192 6984',
+            'website_url' => 'https://acutetourism.ae',
             'updated_at' => now(),
         ]);
     }
@@ -40,9 +40,9 @@ return new class extends Migration
 
         DB::table('site_settings')->where('id', 1)->update([
             'footer_description' => 'Premium Dubai experiences being rebuilt with a focused product architecture, stronger branding, and a concierge-first booking flow.',
-            'contact_phone' => '(+971) 4 409 6751',
+            'contact_phone' => '(+971) 52 192 6984',
             'contact_address' => 'Emaar Square, Boulevard Plaza Tower 2, Dubai',
-            'whatsapp_number' => '+97144096751',
+            'whatsapp_number' => '+971 52 192 6984',
             'updated_at' => now(),
         ]);
 

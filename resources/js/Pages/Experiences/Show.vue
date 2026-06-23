@@ -506,7 +506,7 @@ onBeforeUnmount(() => {
                             </div>
                             <p>
                                 If you have questions about this tour or need help making your booking, we would be happy
-                                to help. Just call <strong>(+971) 58 516 1554</strong> or email info@acutetourism.org.
+                                to help. Just call <strong>(+971) 52 192 6984</strong> or email info@acutetourism.org.
                             </p>
                         </article>
 

@@ -39,7 +39,7 @@ class SiteSettingForm
                     TextInput::make('contact_phone_secondary')->maxLength(100)->label('Secondary phone'),
                     TextInput::make('whatsapp_number')
                         ->maxLength(100)
-                        ->helperText('Used for wa.me links site-wide (digits are normalized automatically). Example: +971 58 516 1554'),
+                        ->helperText('Used for wa.me links site-wide (digits are normalized automatically). Example: +971 52 192 6984'),
                     TextInput::make('license_number')
                         ->maxLength(120)
                         ->label('DTCM / DED license number')

@@ -22,10 +22,10 @@ return new class extends Migration
 
         DB::table('site_settings')->where('id', 1)->update([
             /** Stored with formatting; frontend strips non-digits for wa.me */
-            'whatsapp_number' => '+971 58 516 1554',
-            'contact_phone' => '(+971) 58 516 1554',
+            'whatsapp_number' => '+971 52 192 6984',
+            'contact_phone' => '(+971) 52 192 6984',
             'contact_phone_secondary' => null,
-            'website_url' => 'https://new.acutetourism.org',
+            'website_url' => 'https://acutetourism.ae',
             'social_links' => json_encode([
                 'https://www.instagram.com/acutetourism',
                 'https://www.facebook.com/acutetourism',

@@ -142,7 +142,7 @@ const faqGroups = [
                 <p>Contact Acute Tourism with your travel date, preferred service, number of guests, and any important details so the team can guide you properly.</p>
                 <div class="about-actions">
                     <a class="button-secondary" href="mailto:info@acutetourism.org">info@acutetourism.org</a>
-                    <a class="button-secondary" href="tel:+971585161554">(+971) 58 516 1554</a>
+                    <a class="button-secondary" href="tel:+971521926984">(+971) 52 192 6984</a>
                 </div>
             </div>
         </section>
