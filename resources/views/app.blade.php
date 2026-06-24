@@ -22,6 +22,16 @@
         <meta name="twitter:title" content="{{ $defaultTitle }}">
         <meta name="twitter:description" content="{{ $defaultDescription }}">
         <meta name="twitter:image" content="{{ $defaultImage }}">
+        @if (request()->routeIs('home'))
+            <link
+                rel="preload"
+                as="image"
+                href="https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=1200&q=72"
+                imagesrcset="https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=768&q=68 768w, https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=1200&q=72 1200w, https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=1600&q=72 1600w"
+                imagesizes="(max-width: 768px) 100vw, 775px"
+                fetchpriority="high"
+            >
+        @endif
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @inertiaHead
     </head>

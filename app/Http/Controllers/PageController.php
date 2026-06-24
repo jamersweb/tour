@@ -207,7 +207,7 @@ class PageController extends Controller
                 'title' => 'Travel Planned Around You',
                 'mobileTitle' => 'Tours, Packages & Visa Assistance',
                 'description' => 'Book Dubai experiences, plan holidays, arrange panoramic bus travel, and get outbound visa assistance with expert human support.',
-                'heroImageUrl' => 'https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=2000&q=80',
+                'heroImageUrl' => 'https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=1200&q=72',
                 'videoUrl' => null,
                 'primaryCta' => ['label' => $settings->home_primary_cta_label ?: 'Explore Dubai Experiences', 'href' => route('experiences.index')],
                 'secondaryCta' => ['label' => $settings->home_secondary_cta_label ?: 'View Packages', 'href' => route('packages.index')],

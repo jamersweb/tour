@@ -54,6 +54,29 @@ const serviceCards = computed(() => props.serviceFocus.slice(0, 4).map((item, in
 })));
 const visaCards = computed(() => props.recommendations);
 const cssImageUrl = (url) => `url("${String(url || '').replace(/"/g, '%22')}")`;
+const responsiveImageUrl = (url, width) => {
+    const value = String(url || '');
+
+    if (!value || !value.includes('images.unsplash.com')) {
+        return value;
+    }
+
+    const parsed = new URL(value);
+    parsed.searchParams.set('w', String(width));
+    parsed.searchParams.set('q', width <= 900 ? '68' : '72');
+
+    return parsed.toString();
+};
+const heroImageSrc = computed(() => responsiveImageUrl(props.hero?.heroImageUrl, 1200));
+const heroImageSrcset = computed(() => {
+    if (!props.hero?.heroImageUrl || !String(props.hero.heroImageUrl).includes('images.unsplash.com')) {
+        return null;
+    }
+
+    return [768, 1200, 1600]
+        .map((width) => `${responsiveImageUrl(props.hero.heroImageUrl, width)} ${width}w`)
+        .join(', ');
+});
 const routingBackgroundImage = computed(() => cssImageUrl(
     props.hero?.heroImageUrl
         || props.packages?.[0]?.heroImageUrl
@@ -159,6 +182,7 @@ const activeSlides = ref({
     visa: 0,
 });
 const carouselRefs = {};
+const carouselFrames = {};
 
 function serviceFocusWhatsappUrl(item) {
     const raw = page.props.site?.contact?.whatsappNumber;
@@ -190,21 +214,30 @@ function whyAcuteIconPath(icon) {
 }
 
 function updateCarousel(name, event) {
-    const el = event.currentTarget;
-    const card = el.querySelector('[data-carousel-card]');
-    if (!card) {
+    if (carouselFrames[name]) {
         return;
     }
 
-    const styles = window.getComputedStyle(el);
-    const gap = Number.parseFloat(styles.columnGap || styles.gap || '0') || 0;
-    const step = card.getBoundingClientRect().width + gap;
-    const index = step > 0 ? Math.round(el.scrollLeft / step) : 0;
+    const el = event.currentTarget;
 
-    activeSlides.value = {
-        ...activeSlides.value,
-        [name]: index,
-    };
+    carouselFrames[name] = window.requestAnimationFrame(() => {
+        carouselFrames[name] = null;
+
+        const card = el.querySelector('[data-carousel-card]');
+        if (!card) {
+            return;
+        }
+
+        const styles = window.getComputedStyle(el);
+        const gap = Number.parseFloat(styles.columnGap || styles.gap || '0') || 0;
+        const step = card.getBoundingClientRect().width + gap;
+        const index = step > 0 ? Math.round(el.scrollLeft / step) : 0;
+
+        activeSlides.value = {
+            ...activeSlides.value,
+            [name]: index,
+        };
+    });
 }
 
 function setCarouselRef(name, el) {
@@ -295,10 +328,12 @@ onUnmounted(() => detachMediaListeners());
                 <img
                     v-else-if="hero.heroImageUrl"
                     class="home-hero-video__el home-hero-video__el--img"
-                    :src="hero.heroImageUrl"
+                    :src="heroImageSrc"
+                    :srcset="heroImageSrcset || undefined"
+                    sizes="(max-width: 768px) 100vw, 775px"
                     :alt="hero.title"
-                    width="2000"
-                    height="1325"
+                    width="1200"
+                    height="795"
                     fetchpriority="high"
                     decoding="async"
                 />
