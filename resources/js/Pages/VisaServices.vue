@@ -146,14 +146,14 @@ const codeMap = {
 };
 
 const feeMap = {
-    'schengen-visa': 'From AED 350',
-    'uk-visa': 'From AED 300',
+    'schengen-visa': 'From AED 400',
+    'uk-visa': 'From AED 400',
     'usa-visa': 'From AED 450',
     'canada-visa': 'From AED 400',
-    'japan-visa': 'From AED 280',
-    'australia-visa': 'From AED 380',
-    'turkey-visa': 'From AED 150',
-    'malaysia-visa': 'From AED 120',
+    'japan-visa': 'From AED 400',
+    'australia-visa': 'From AED 400',
+    'turkey-visa': 'From AED 400',
+    'malaysia-visa': 'From AED 400',
     'evisa-assistance': 'On request',
 };
 
