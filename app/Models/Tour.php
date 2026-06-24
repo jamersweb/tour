@@ -7,7 +7,6 @@ use App\Support\UploadPath;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Support\Facades\Storage;
 
 class Tour extends Model
 {
@@ -143,6 +142,6 @@ class Tour extends Model
             return MediaUrl::normalize($path);
         }
 
-        return Storage::disk('uploads')->url($path);
+        return MediaUrl::upload($path);
     }
 }

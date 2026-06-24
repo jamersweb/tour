@@ -50,7 +50,7 @@ return [
         'uploads' => [
             'driver' => 'local',
             'root' => public_path('uploads'),
-            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/uploads',
+            'url' => rtrim(env('UPLOADS_URL', 'https://acutetourism.ae/uploads'), '/'),
             'visibility' => 'public',
             'throw' => false,
             'report' => false,

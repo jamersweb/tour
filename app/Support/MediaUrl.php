@@ -4,6 +4,16 @@ namespace App\Support;
 
 class MediaUrl
 {
+    public static function upload(?string $path): ?string
+    {
+        if (! $path) {
+            return null;
+        }
+
+        return rtrim(config('filesystems.disks.uploads.url', 'https://acutetourism.ae/uploads'), '/')
+            .'/'.ltrim($path, '/');
+    }
+
     public static function normalize(?string $url): ?string
     {
         if (! $url) {

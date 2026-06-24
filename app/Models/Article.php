@@ -7,7 +7,6 @@ use App\Support\UploadPath;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Storage;
 
 class Article extends Model
 {
@@ -80,7 +79,7 @@ class Article extends Model
             return MediaUrl::normalize($this->hero_image_path);
         }
 
-        return Storage::disk('uploads')->url($this->hero_image_path);
+        return MediaUrl::upload($this->hero_image_path);
     }
 
     public function getHeroImagePathAttribute(?string $value): ?string
