@@ -88,29 +88,31 @@ class SitemapController extends Controller
             $this->row('/dubai-tours-and-tickets', $this->sectionLastModified('experiences'), 'daily', '0.9'),
         ];
 
-        Experience::query()
+        foreach (Experience::query()
             ->where('is_active', true)
             ->whereNotNull('slug')
             ->orderBy('slug')
-            ->get(['slug', 'updated_at'])
-            ->each(fn (Experience $experience) => $urls[] = $this->row(
+            ->get(['slug', 'updated_at']) as $experience) {
+            $urls[] = $this->row(
                 "/experiences/{$experience->slug}",
                 $experience->updated_at,
                 'weekly',
                 '0.85',
-            ));
+            );
+        }
 
-        Tour::query()
+        foreach (Tour::query()
             ->where('is_active', true)
             ->whereNotNull('slug')
             ->orderBy('slug')
-            ->get(['slug', 'updated_at'])
-            ->each(fn (Tour $tour) => $urls[] = $this->row(
+            ->get(['slug', 'updated_at']) as $tour) {
+            $urls[] = $this->row(
                 "/tours/{$tour->slug}",
                 $tour->updated_at,
                 'weekly',
                 '0.8',
-            ));
+            );
+        }
 
         return $urls;
     }
@@ -121,17 +123,18 @@ class SitemapController extends Controller
             $this->row('/dubai-holiday-packages', $this->sectionLastModified('packages'), 'daily', '0.9'),
         ];
 
-        Package::query()
+        foreach (Package::query()
             ->where('is_active', true)
             ->whereNotNull('slug')
             ->orderBy('slug')
-            ->get(['slug', 'updated_at'])
-            ->each(fn (Package $package) => $urls[] = $this->row(
+            ->get(['slug', 'updated_at']) as $package) {
+            $urls[] = $this->row(
                 "/packages/{$package->slug}",
                 $package->updated_at,
                 'weekly',
                 '0.85',
-            ));
+            );
+        }
 
         return $urls;
     }
@@ -171,17 +174,18 @@ class SitemapController extends Controller
             $this->row('/blog', $this->sectionLastModified('blog'), 'weekly', '0.7'),
         ];
 
-        Article::query()
+        foreach (Article::query()
             ->published()
             ->whereNotNull('slug')
             ->orderBy('slug')
-            ->get(['slug', 'published_at', 'updated_at'])
-            ->each(fn (Article $article) => $urls[] = $this->row(
+            ->get(['slug', 'published_at', 'updated_at']) as $article) {
+            $urls[] = $this->row(
                 "/blog/{$article->slug}",
                 $article->updated_at ?: $article->published_at,
                 'monthly',
                 '0.65',
-            ));
+            );
+        }
 
         return $urls;
     }
@@ -190,17 +194,17 @@ class SitemapController extends Controller
     {
         $urls = [];
 
-        Collection::query()
+        foreach (Collection::query()
             ->whereNotNull('slug')
-            ->whereHas('experiences', fn ($query) => $query->where('is_active', true))
             ->orderBy('slug')
-            ->get(['slug', 'updated_at'])
-            ->each(fn (Collection $collection) => $urls[] = $this->row(
+            ->get(['slug', 'updated_at']) as $collection) {
+            $urls[] = $this->row(
                 "/collections/{$collection->slug}",
                 $collection->updated_at,
                 'weekly',
                 '0.65',
-            ));
+            );
+        }
 
         return $urls;
     }
@@ -235,7 +239,7 @@ class SitemapController extends Controller
             ])
                 ?? $this->staticLastModified([resource_path('js/Pages/Journal/Index.vue'), resource_path('js/Pages/Journal/Show.vue')]),
             'collections' => $this->latestTimestampFromQueries([
-                Collection::query()->whereHas('experiences', fn ($query) => $query->where('is_active', true)),
+                Collection::query()->whereNotNull('slug'),
             ])
                 ?? $this->staticLastModified([resource_path('js/Pages/Collections/Show.vue')]),
             default => now(),

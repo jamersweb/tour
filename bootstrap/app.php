@@ -4,6 +4,7 @@ use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\HandleLegacyRedirects;
 use App\Http\Middleware\PreventStaleHtmlCache;
+use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -21,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->append([
             HandleLegacyRedirects::class,
+            SecurityHeaders::class,
         ]);
 
         $middleware->validateCsrfTokens(except: [

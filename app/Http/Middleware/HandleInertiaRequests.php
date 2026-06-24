@@ -30,13 +30,13 @@ class HandleInertiaRequests extends Middleware
         $logoUrl = $settings->logo_url;
 
         if (! $logoUrl || str_ends_with($logoUrl, '/logo.png')) {
-            $logoUrl = 'https://acutetourism.org/uploads/0000/6/2025/03/19/5.png';
+            $logoUrl = '/legacy-media/uploads/0000/6/2025/03/19/5.png';
         }
 
         $footerLogoUrl = $settings->footer_logo_url;
 
         if (! $footerLogoUrl || str_ends_with($footerLogoUrl, '/logo.png')) {
-            $footerLogoUrl = 'https://acutetourism.org/uploads/0000/6/2025/03/14/4-2.png';
+            $footerLogoUrl = '/legacy-media/uploads/0000/6/2025/03/14/4-2.png';
         }
 
         $logoUrl = MediaUrl::normalize($logoUrl);
@@ -77,8 +77,8 @@ class HandleInertiaRequests extends Middleware
                 'appUrl' => config('app.url'),
                 'currentUrl' => $request->url(),
                 'defaultMeta' => [
-                    'title' => $settings->site_name,
-                    'description' => 'Exclusively curated holiday experiences in Dubai and the UAE â€” luxury stays, private transfers, and concierge-led planning.',
+                    'title' => 'Acute Tourism | Dubai Tours, Holiday Packages & Visa Assistance',
+                    'description' => 'Book Dubai tours, holiday packages, attraction tickets, panoramic bus experiences, and outbound visa assistance with Acute Tourism in the UAE.',
                     'image' => $logoUrl,
                 ],
                 'organization' => [

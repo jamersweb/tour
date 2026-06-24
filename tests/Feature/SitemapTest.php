@@ -3,6 +3,9 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\Collection;
+use App\Models\Package;
+use App\Http\Controllers\SitemapController;
 use Tests\TestCase;
 
 class SitemapTest extends TestCase
@@ -43,5 +46,29 @@ class SitemapTest extends TestCase
         $packageResponse->assertOk();
         $this->assertStringContainsString(url('/dubai-holiday-packages'), $packageResponse->getContent());
         $this->assertStringNotContainsString(url('/packages').'</loc>', $packageResponse->getContent());
+    }
+
+    public function test_collection_sitemap_includes_collections_with_active_packages(): void
+    {
+        $package = Package::query()->where('is_active', true)->firstOrFail();
+        $collection = Collection::query()->create([
+            'name' => 'Family Packages',
+            'slug' => 'family-packages',
+            'collection_group' => 'activity',
+            'is_featured' => true,
+        ]);
+
+        $collection->packages()->attach($package->id);
+
+        $this->assertGreaterThan(0, Collection::query()->count());
+        $this->assertStringContainsString(
+            url('/collections/family-packages'),
+            app(SitemapController::class)->section('collections')->getContent(),
+        );
+
+        $response = $this->get('/collections-sitemap.xml');
+
+        $response->assertOk();
+        $this->assertStringContainsString(url('/collections/family-packages'), $response->getContent());
     }
 }

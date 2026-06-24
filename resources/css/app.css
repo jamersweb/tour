@@ -1933,7 +1933,7 @@ textarea {
 }
 
 .landing-hero--client {
-    --home-hero-image: url('https://acutetourism.org/uploads/0000/7/2025/03/29/desert-safari-premium-miniatura.png');
+    --home-hero-image: url('/legacy-media/uploads/0000/7/2025/03/29/desert-safari-premium-miniatura.png');
     position: relative;
     isolation: isolate;
     overflow: hidden;
@@ -4213,7 +4213,7 @@ textarea {
         linear-gradient(180deg, rgba(var(--royal-rgb), 0.08), rgba(242, 237, 228, 0)),
         radial-gradient(circle at 10% 18%, rgba(201, 151, 63, 0.16), transparent 30%),
         radial-gradient(circle at 88% 14%, rgba(var(--royal-rgb), 0.14), transparent 34%),
-        url('https://acutetourism.org/uploads/0000/7/2025/04/25/yacht-party-miniatura.png') center/cover;
+        url('/legacy-media/uploads/0000/7/2025/04/25/yacht-party-miniatura.png') center/cover;
     pointer-events: none;
     opacity: 0.88;
 }

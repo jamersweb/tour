@@ -456,20 +456,6 @@ onBeforeUnmount(() => {
                     <div class="footer-tourgrat">
                         <strong>Tourgrat</strong>
                         <span>Acute Tourism's referrer platform Tourgrat lets referrers share Acute Tourism tours and earn rewards on verified bookings.</span>
-                        <div class="footer-store-buttons">
-                        <a class="footer-store-btn" href="#" aria-label="Download Tourgrat on the App Store">
-                            <svg viewBox="0 0 24 24" aria-hidden="true">
-                                <path d="M17.5 12.5c0-2.2 1.8-3.3 1.9-3.4-1-1.5-2.6-1.7-3.2-1.7-1.4-.1-2.6.8-3.3.8-.7 0-1.8-.8-2.9-.8-1.5 0-2.9.9-3.7 2.2-1.6 2.8-.4 6.9 1.1 9.1.8 1.1 1.7 2.3 2.9 2.3 1.1 0 1.6-.7 3-.7s1.8.7 3 .7 2.1-1.1 2.8-2.2c.9-1.3 1.2-2.5 1.3-2.6-.1 0-2.4-.9-2.4-3.7ZM15.3 5.9c.6-.8 1-1.8.9-2.9-.9 0-2 .6-2.7 1.4-.6.7-1.1 1.8-1 2.8 1 .1 2.1-.5 2.8-1.3Z" />
-                            </svg>
-                            <span><small>Download on the</small>App Store</span>
-                        </a>
-                            <a class="footer-store-btn" href="#" aria-label="Get Tourgrat on Google Play">
-                                <svg viewBox="0 0 24 24" aria-hidden="true">
-                                    <path d="m4 3 11 9L4 21V3Zm12.2 7.9 2.5-1.5c.8-.5.8-1.6 0-2.1L6.3.3l9.9 10.6Zm0 2.2L6.3 23.7l12.4-7c.8-.5.8-1.6 0-2.1l-2.5-1.5Z" />
-                                </svg>
-                                <span><small>Get it on</small>Google Play</span>
-                            </a>
-                        </div>
                     </div>
                 </div>
 

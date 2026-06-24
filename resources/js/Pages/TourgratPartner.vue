@@ -201,8 +201,7 @@ function submit() {
                     <p>Use the app to submit referrals, check status, and track rewards from eligible confirmed bookings.</p>
                 </div>
                 <div class="tourgrat-store-buttons">
-                    <a href="#">App Store</a>
-                    <a href="#">Google Play</a>
+                    <a href="#tourgrat-apply">Apply to join</a>
                 </div>
             </div>
         </section>

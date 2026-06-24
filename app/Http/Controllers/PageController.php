@@ -208,7 +208,7 @@ class PageController extends Controller
                 'mobileTitle' => 'Tours, Packages & Visa Assistance',
                 'description' => 'Book Dubai experiences, plan holidays, arrange panoramic bus travel, and get outbound visa assistance with expert human support.',
                 'heroImageUrl' => 'https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=2000&q=80',
-                'videoUrl' => 'https://acutetourism.org/videos/hero-section-intro.mp4',
+                'videoUrl' => null,
                 'primaryCta' => ['label' => $settings->home_primary_cta_label ?: 'Explore Dubai Experiences', 'href' => route('experiences.index')],
                 'secondaryCta' => ['label' => $settings->home_secondary_cta_label ?: 'View Packages', 'href' => route('packages.index')],
                 'tertiaryCta' => ['label' => 'Visa Services', 'href' => route('visa.index')],
@@ -567,6 +567,7 @@ class PageController extends Controller
             ->with([
                 'experiences' => fn ($query) => $query->where('is_active', true)->orderBy('collection_experience.sort_order'),
                 'tours' => fn ($query) => $query->where('is_active', true)->orderBy('collection_tour.sort_order'),
+                'packages' => fn ($query) => $query->where('is_active', true)->orderBy('collection_package.sort_order'),
             ])
             ->firstOrFail();
 
@@ -592,6 +593,17 @@ class PageController extends Controller
             'label' => 'View tour',
         ]);
 
+        $packages = $collection->packages->map(fn (Package $package) => [
+            'title' => $package->title,
+            'slug' => $package->slug,
+            'category' => 'Holiday Package',
+            'priceFrom' => $package->price_from ? "{$package->currency} ".number_format((float) $package->price_from, 0) : null,
+            'duration' => $package->duration,
+            'heroImageUrl' => $this->packageShowcaseImage($package, 0),
+            'href' => route('packages.show', $package->slug),
+            'label' => 'View package',
+        ]);
+
         return Inertia::render('Collections/Show', [
             'seo' => [
                 'title' => $collection->seo_title ?: $collection->name,
@@ -604,7 +616,7 @@ class PageController extends Controller
                 'description' => $collection->description,
                 'summary' => $collection->summary,
                 'heroImageUrl' => $collection->hero_image_url,
-                'experiences' => $experiences->concat($tours)->values(),
+                'experiences' => $experiences->concat($tours)->concat($packages)->values(),
             ],
         ]);
     }
