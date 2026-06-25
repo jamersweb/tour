@@ -27,12 +27,19 @@ class BookingConfirmationService
 
         $transaction->loadMissing('payable', 'travelers');
         $whatsappRecipients = [];
+        $emailFailures = [];
 
         try {
             Mail::to($transaction->customer_email)->send(
                 new BookingConfirmedMail($transaction, $transaction->customer_name)
             );
         } catch (\Throwable $exception) {
+            $emailFailures[] = [
+                'recipient' => $transaction->customer_email,
+                'type' => 'customer',
+                'message' => $exception->getMessage(),
+            ];
+
             Log::warning('Booking confirmation email to customer failed.', [
                 'transaction_id' => $transaction->id,
                 'message' => $exception->getMessage(),
@@ -62,6 +69,13 @@ class BookingConfirmationService
                 $travelerEmailSentAt[$key] = now();
                 $travelerTimestamps[$traveler->id]['email_sent_at'] = $travelerEmailSentAt[$key];
             } catch (\Throwable $exception) {
+                $emailFailures[] = [
+                    'recipient' => $traveler->email,
+                    'type' => 'traveler',
+                    'traveler_id' => $traveler->id,
+                    'message' => $exception->getMessage(),
+                ];
+
                 Log::warning('Booking confirmation email to traveler failed.', [
                     'transaction_id' => $transaction->id,
                     'traveler_id' => $traveler->id,
@@ -98,18 +112,25 @@ class BookingConfirmationService
             $this->adminNotifier->paymentReceived($transaction);
         }
 
-        $transaction->forceFill([
-            'confirmation_sent_at' => now(),
-        ])->save();
+        if ($emailFailures === []) {
+            $transaction->forceFill([
+                'confirmation_sent_at' => now(),
+            ])->save();
+        }
 
         $this->activityLogger->record(
             $transaction->fresh(),
-            $force ? 'booking_confirmation_resent' : 'booking_confirmation_sent',
-            $force
-                ? 'Booking confirmation emails resent to booker and travelers (staff copies skipped if configured).'
-                : 'Booking confirmation emails sent to booker and travelers; staff notifications dispatched when enabled.',
+            $emailFailures === []
+                ? ($force ? 'booking_confirmation_resent' : 'booking_confirmation_sent')
+                : 'booking_confirmation_email_failed',
+            $emailFailures === []
+                ? ($force
+                    ? 'Booking confirmation emails resent to booker and travelers (staff copies skipped if configured).'
+                    : 'Booking confirmation emails sent to booker and travelers; staff notifications dispatched when enabled.')
+                : 'One or more booking confirmation emails failed; confirmation remains pending for retry.',
             [
                 'notify_staff' => $notifyStaff,
+                'email_failures' => $emailFailures,
             ],
             auth()->user(),
         );

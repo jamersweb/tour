@@ -22,8 +22,6 @@ const props = defineProps({
 const locationFilter = ref(props.activeLocation || 'all');
 const typeFilter = ref(props.activeType || 'all');
 const activeSort = ref('recommended');
-const initialVisibleCount = 16;
-const visibleLimit = ref(initialVisibleCount);
 
 const trustItems = [
     { icon: '⭐', label: 'Licensed Dubai operator' },
@@ -176,17 +174,6 @@ const filteredExperiences = computed(() => {
     });
 });
 
-const visibleExperiences = computed(() => filteredExperiences.value.slice(0, visibleLimit.value));
-const canLoadMore = computed(() => visibleExperiences.value.length < filteredExperiences.value.length);
-
-const loadMoreExperiences = () => {
-    visibleLimit.value += initialVisibleCount;
-};
-
-watch([locationFilter, typeFilter, activeSort], () => {
-    visibleLimit.value = initialVisibleCount;
-});
-
 watch(() => props.activeLocation, (value) => {
     locationFilter.value = value || 'all';
 });
@@ -273,7 +260,7 @@ watch(() => props.activeType, (value) => {
                 </div>
 
                 <div class="card-grid card-grid-four">
-                    <article v-for="(experience, index) in visibleExperiences" :key="`${experience.type || 'experience'}-${experience.slug}`" class="activity-card">
+                    <article v-for="(experience, index) in filteredExperiences" :key="`${experience.type || 'experience'}-${experience.slug}`" class="activity-card">
                         <div v-if="experience.heroImageUrl" class="card-media">
                             <img :src="experience.heroImageUrl" :alt="experience.title" />
                             <span
@@ -295,14 +282,8 @@ watch(() => props.activeType, (value) => {
                     </article>
                 </div>
 
-                <div v-if="!visibleExperiences.length" class="pricing-note">
+                <div v-if="!filteredExperiences.length" class="pricing-note">
                     No activities match this filter yet. Choose another location or activity type.
-                </div>
-
-                <div v-if="canLoadMore" class="load-more-row">
-                    <button class="load-more-button" type="button" @click="loadMoreExperiences">
-                        Load More
-                    </button>
                 </div>
             </div>
         </section>
