@@ -2,7 +2,9 @@
 
 namespace App\Filament\Support;
 
+use App\Support\MediaUrl;
 use App\Support\UploadPath;
+use Illuminate\Support\HtmlString;
 
 class MediaUpload
 {
@@ -80,8 +82,25 @@ class MediaUpload
     {
         return collect($record?->gallery_images ?? [])
             ->mapWithKeys(fn ($path, int $index) => [
-                $path => 'Image '.($index + 1).' - '.$path,
+                $path => self::imageRemovalOptionLabel($path, $index + 1),
             ])
             ->all();
+    }
+
+    protected static function imageRemovalOptionLabel(mixed $path, int $position): HtmlString
+    {
+        $path = (string) $path;
+        $url = MediaUrl::upload($path);
+        $name = basename($path);
+
+        return new HtmlString(
+            '<span style="display:block;border:1px solid #3f3f46;border-radius:10px;overflow:hidden;background:#18181b;">'
+            .'<img src="'.e($url).'" alt="" style="display:block;width:100%;height:96px;object-fit:cover;background:#0f0f11;">'
+            .'<span style="display:block;padding:8px 10px;color:#f4f4f5;font-size:12px;font-weight:700;line-height:1.25;">'
+            .'Delete image '.$position
+            .'<span style="display:block;margin-top:3px;color:#a1a1aa;font-size:11px;font-weight:500;word-break:break-all;">'.e($name).'</span>'
+            .'</span>'
+            .'</span>',
+        );
     }
 }

@@ -42,11 +42,12 @@ class PackageForm
                         ->dehydrated(fn (?bool $state): bool => (bool) $state),
                     CheckboxList::make('remove_gallery_images')
                         ->label('Delete current gallery images')
-                        ->helperText('Select specific gallery images to delete, then save.')
+                        ->helperText('Select the image cards you want to delete, then save.')
                         ->options(fn ($record): array => MediaUpload::galleryRemovalOptions($record))
+                        ->allowHtml()
                         ->visible(fn ($record): bool => filled($record?->gallery_images))
                         ->dehydrated(fn (?array $state): bool => filled($state))
-                        ->columns(1),
+                        ->columns(3),
                     FileUpload::make('hero_image_path')
                         ->label('Hero image')
                         ->image()
