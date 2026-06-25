@@ -1,51 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Complete payment</title>
-</head>
-<body style="font-family: Arial, sans-serif; color: #1f2933; line-height: 1.6;">
-    <p>Hello {{ $transaction->customer_name }},</p>
+<x-email.layout
+    title="Complete Payment"
+    eyebrow="Secure payment"
+    :preheader="'Complete payment for '.$transaction->bookingTitle().' with Acute Tourism'"
+>
+    <h1 style="margin:0 0 12px 0;color:#061a63;font-size:28px;line-height:1.18;font-weight:900;letter-spacing:-.02em;">
+        Complete your payment
+    </h1>
 
-    <p>
-        You started checkout for <strong>{{ $transaction->bookingTitle() }}</strong>.
-        Complete your secure card payment using the link below (reference <strong>{{ $transaction->reference }}</strong>).
+    <p style="margin:0 0 16px 0;color:#34405f;font-size:15px;">
+        Hello {{ $transaction->customer_name }}, you started checkout for <strong style="color:#17213f;">{{ $transaction->bookingTitle() }}</strong>.
+        Complete your secure card payment using the link below.
     </p>
 
-    @if ($transaction->isCartCheckout())
-        <table style="width:100%;border-collapse:collapse;margin:16px 0;">
-            <thead>
-                <tr>
-                    <th align="left" style="border-bottom:1px solid #e5e7eb;padding:8px;">Item</th>
-                    <th align="left" style="border-bottom:1px solid #e5e7eb;padding:8px;">Date</th>
-                    <th align="left" style="border-bottom:1px solid #e5e7eb;padding:8px;">Guests</th>
-                    <th align="right" style="border-bottom:1px solid #e5e7eb;padding:8px;">Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($transaction->cart_items as $item)
-                    <tr>
-                        <td style="border-bottom:1px solid #f1f5f9;padding:8px;">{{ $item['title'] ?? 'Cart item' }}</td>
-                        <td style="border-bottom:1px solid #f1f5f9;padding:8px;">{{ $item['travelDate'] ?? 'To be confirmed' }}</td>
-                        <td style="border-bottom:1px solid #f1f5f9;padding:8px;">{{ $item['guestCount'] ?? 1 }}</td>
-                        <td align="right" style="border-bottom:1px solid #f1f5f9;padding:8px;">{{ $item['lineTotalFormatted'] ?? '' }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    @endif
+    <x-email.details title="Payment summary">
+        <x-email.detail-row label="Reference" :value="$transaction->reference" />
+        <x-email.detail-row label="Amount" :value="$transaction->currency.' '.number_format((float) $transaction->amount, 2)" />
+    </x-email.details>
 
-    <p>
-        <a href="{{ $transaction->payment_url }}" style="display:inline-block;padding:12px 20px;background:#0f172a;color:#fff;text-decoration:none;border-radius:6px;">Continue to payment</a>
-    </p>
+    <x-email.cart-items :items="$transaction->cart_items" />
 
-    <p style="font-size: 14px; color: #64748b;">
+    <x-email.button :href="$transaction->payment_url">
+        Continue to payment
+    </x-email.button>
+
+    <p style="margin:12px 0 0 0;color:#6c7286;font-size:13px;line-height:1.6;">
         If the button does not work, copy this URL into your browser:<br>
-        {{ $transaction->payment_url }}
+        <span style="word-break:break-all;color:#061a63;">{{ $transaction->payment_url }}</span>
     </p>
-
-    <p>Amount: <strong>{{ $transaction->currency }} {{ number_format((float) $transaction->amount, 2) }}</strong></p>
-
-    <p>Acute Tourism</p>
-</body>
-</html>
+</x-email.layout>

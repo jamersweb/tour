@@ -1,59 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Booking Confirmed</title>
-</head>
-<body style="font-family: Arial, sans-serif; color: #1f2933; line-height: 1.6;">
-    <p>Hello {{ $recipientName }},</p>
+<x-email.layout
+    title="Booking Confirmed"
+    eyebrow="Booking confirmed"
+    :preheader="'Your Acute Tourism booking is confirmed: '.$transaction->bookingTitle()"
+>
+    <h1 style="margin:0 0 12px 0;color:#061a63;font-size:28px;line-height:1.18;font-weight:900;letter-spacing:-.02em;">
+        Your booking is confirmed
+    </h1>
 
-    <p>
-        Your booking for <strong>{{ $transaction->bookingTitle() }}</strong>
-        has been confirmed.
+    <p style="margin:0 0 16px 0;color:#34405f;font-size:15px;">
+        Hello {{ $recipientName }}, your booking for <strong style="color:#17213f;">{{ $transaction->bookingTitle() }}</strong> has been confirmed.
     </p>
 
-    <p>
-        Reference: <strong>{{ $transaction->reference }}</strong><br>
+    <x-email.details title="Booking details">
+        <x-email.detail-row label="Reference" :value="$transaction->reference" />
         @unless ($transaction->isCartCheckout())
-            Travel date: <strong>{{ $transaction->travel_date?->format('F j, Y') ?? 'To be confirmed' }}</strong><br>
+            <x-email.detail-row label="Travel date" :value="$transaction->travel_date?->format('F j, Y') ?? 'To be confirmed'" />
         @endunless
-        Guests: <strong>{{ $transaction->guest_count ?? 1 }}</strong><br>
-        Amount: <strong>{{ $transaction->currency }} {{ number_format((float) $transaction->amount, 2) }}</strong>
-    </p>
+        <x-email.detail-row label="Guests" :value="$transaction->guest_count ?? 1" />
+        <x-email.detail-row label="Amount" :value="$transaction->currency.' '.number_format((float) $transaction->amount, 2)" />
+    </x-email.details>
 
-    @if ($transaction->isCartCheckout())
-        <table style="width:100%;border-collapse:collapse;margin:16px 0;">
-            <thead>
-                <tr>
-                    <th align="left" style="border-bottom:1px solid #e5e7eb;padding:8px;">Item</th>
-                    <th align="left" style="border-bottom:1px solid #e5e7eb;padding:8px;">Date</th>
-                    <th align="left" style="border-bottom:1px solid #e5e7eb;padding:8px;">Guests</th>
-                    <th align="right" style="border-bottom:1px solid #e5e7eb;padding:8px;">Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($transaction->cart_items as $item)
-                    <tr>
-                        <td style="border-bottom:1px solid #f1f5f9;padding:8px;">{{ $item['title'] ?? 'Cart item' }}</td>
-                        <td style="border-bottom:1px solid #f1f5f9;padding:8px;">{{ $item['travelDate'] ?? 'To be confirmed' }}</td>
-                        <td style="border-bottom:1px solid #f1f5f9;padding:8px;">{{ $item['guestCount'] ?? 1 }}</td>
-                        <td align="right" style="border-bottom:1px solid #f1f5f9;padding:8px;">{{ $item['lineTotalFormatted'] ?? '' }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    @endif
+    <x-email.cart-items :items="$transaction->cart_items" />
 
     @if ($traveler)
-        <p>
+        <x-email.note tone="gold">
             This confirmation was issued for traveler: <strong>{{ $traveler->name }}</strong>.
-        </p>
+        </x-email.note>
     @endif
 
-    <p>
+    <p style="margin:18px 0 0 0;color:#34405f;font-size:15px;">
         Our team will follow up shortly with logistics, pickup details, and any final coordination needed for your trip.
     </p>
-
-    <p>Acute Tourism</p>
-</body>
-</html>
+</x-email.layout>

@@ -1,40 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>New inquiry</title>
-</head>
-<body style="font-family: Arial, sans-serif; color: #1f2933; line-height: 1.6;">
-    <p><strong>New website inquiry</strong> ({{ $inquiry->source }})</p>
+<x-email.layout
+    title="New Inquiry"
+    eyebrow="Staff notification"
+    :preheader="'New website inquiry from '.$inquiry->name.' - '.$inquiry->interest"
+>
+    <h1 style="margin:0 0 12px 0;color:#061a63;font-size:28px;line-height:1.18;font-weight:900;letter-spacing:-.02em;">
+        New website inquiry
+    </h1>
 
-    <p>
-        <strong>Name:</strong> {{ $inquiry->name }}<br>
-        <strong>Email:</strong> {{ $inquiry->email }}<br>
-        @if ($inquiry->phone)
-            <strong>Phone:</strong> {{ $inquiry->phone }}<br>
-        @endif
-        <strong>Interest:</strong> {{ $inquiry->interest }}<br>
-        @if ($inquiry->experience_title)
-            <strong>Experience:</strong> {{ $inquiry->experience_title }}<br>
-        @endif
-        @if ($inquiry->travel_date)
-            <strong>Travel date:</strong> {{ $inquiry->travel_date->format('F j, Y') }}<br>
-        @endif
-        @if ($inquiry->guest_count)
-            <strong>Guests:</strong> {{ $inquiry->guest_count }}<br>
-        @endif
-        @if ($inquiry->source_url)
-            <strong>Source URL:</strong> {{ $inquiry->source_url }}<br>
-        @endif
+    <p style="margin:0 0 16px 0;color:#34405f;font-size:15px;">
+        A new lead was submitted from <strong style="color:#17213f;">{{ $inquiry->source }}</strong>.
     </p>
 
-    <p><strong>Message / trip details (as submitted):</strong></p>
-    <p style="white-space: pre-wrap; margin-top: 0.25rem; padding: 0.75rem 1rem; background: #f4f6f8; border-radius: 6px;">
-        {{ $inquiry->message }}
-    </p>
+    <x-email.details title="Lead details">
+        <x-email.detail-row label="Name" :value="$inquiry->name" />
+        <x-email.detail-row label="Email" :value="$inquiry->email" />
+        <x-email.detail-row label="Phone" :value="$inquiry->phone" />
+        <x-email.detail-row label="Interest" :value="$inquiry->interest" />
+        <x-email.detail-row label="Experience" :value="$inquiry->experience_title" />
+        <x-email.detail-row label="Travel date" :value="$inquiry->travel_date?->format('F j, Y')" />
+        <x-email.detail-row label="Guests" :value="$inquiry->guest_count" />
+        <x-email.detail-row label="Source URL" :value="$inquiry->source_url" />
+    </x-email.details>
 
-    <p>
-        <a href="{{ url('/admin/experience-inquiries/'.$inquiry->id) }}">Open in admin</a>
-    </p>
-</body>
-</html>
+    <x-email.note>
+        <strong style="display:block;color:#061a63;margin-bottom:6px;">Message / trip details</strong>
+        <span style="white-space:pre-wrap;">{{ $inquiry->message }}</span>
+    </x-email.note>
+
+    <x-email.button :href="url('/admin/experience-inquiries/'.$inquiry->id)">
+        Open inquiry in admin
+    </x-email.button>
+</x-email.layout>

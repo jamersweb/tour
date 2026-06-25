@@ -1,52 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Payment received</title>
-</head>
-<body style="font-family: Arial, sans-serif; color: #1f2933; line-height: 1.6;">
-    <p><strong>Payment confirmed</strong> - {{ $transaction->status }}</p>
+<x-email.layout
+    title="Payment Received"
+    eyebrow="Staff notification"
+    :preheader="'Payment received for '.$transaction->bookingTitle().' - '.$transaction->reference"
+>
+    <h1 style="margin:0 0 12px 0;color:#061a63;font-size:28px;line-height:1.18;font-weight:900;letter-spacing:-.02em;">
+        Payment confirmed
+    </h1>
 
-    <p>
-        <strong>Reference:</strong> {{ $transaction->reference }}<br>
-        <strong>Customer:</strong> {{ $transaction->customer_name }} ({{ $transaction->customer_email }})<br>
-        @if ($transaction->customer_phone)
-            <strong>Phone:</strong> {{ $transaction->customer_phone }}<br>
-        @endif
-        <strong>Item:</strong> {{ $transaction->bookingTitle() }}<br>
-        <strong>Amount:</strong> {{ $transaction->currency }} {{ number_format((float) $transaction->amount, 2) }}<br>
-        @if ($transaction->travel_date)
-            <strong>Travel date:</strong> {{ $transaction->travel_date->format('F j, Y') }}<br>
-        @endif
-        @if ($transaction->guest_count)
-            <strong>Guests:</strong> {{ $transaction->guest_count }}<br>
-        @endif
-        @if ($transaction->gateway_payment_ref)
-            <strong>Gateway payment ref:</strong> {{ $transaction->gateway_payment_ref }}<br>
-        @endif
+    <p style="margin:0 0 16px 0;color:#34405f;font-size:15px;">
+        A customer payment has been marked as <strong style="color:#17213f;">{{ $transaction->status }}</strong>.
     </p>
 
-    @if ($transaction->isCartCheckout())
-        <table style="width:100%;border-collapse:collapse;margin:16px 0;">
-            <thead>
-                <tr>
-                    <th align="left" style="border-bottom:1px solid #e5e7eb;padding:8px;">Item</th>
-                    <th align="left" style="border-bottom:1px solid #e5e7eb;padding:8px;">Date</th>
-                    <th align="left" style="border-bottom:1px solid #e5e7eb;padding:8px;">Guests</th>
-                    <th align="right" style="border-bottom:1px solid #e5e7eb;padding:8px;">Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($transaction->cart_items as $item)
-                    <tr>
-                        <td style="border-bottom:1px solid #f1f5f9;padding:8px;">{{ $item['title'] ?? 'Cart item' }}</td>
-                        <td style="border-bottom:1px solid #f1f5f9;padding:8px;">{{ $item['travelDate'] ?? 'To be confirmed' }}</td>
-                        <td style="border-bottom:1px solid #f1f5f9;padding:8px;">{{ $item['guestCount'] ?? 1 }}</td>
-                        <td align="right" style="border-bottom:1px solid #f1f5f9;padding:8px;">{{ $item['lineTotalFormatted'] ?? '' }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    @endif
-</body>
-</html>
+    <x-email.details title="Transaction details">
+        <x-email.detail-row label="Reference" :value="$transaction->reference" />
+        <x-email.detail-row label="Customer" :value="$transaction->customer_name.' ('.$transaction->customer_email.')'" />
+        <x-email.detail-row label="Phone" :value="$transaction->customer_phone" />
+        <x-email.detail-row label="Item" :value="$transaction->bookingTitle()" />
+        <x-email.detail-row label="Amount" :value="$transaction->currency.' '.number_format((float) $transaction->amount, 2)" />
+        <x-email.detail-row label="Travel date" :value="$transaction->travel_date?->format('F j, Y')" />
+        <x-email.detail-row label="Guests" :value="$transaction->guest_count" />
+        <x-email.detail-row label="Gateway payment ref" :value="$transaction->gateway_payment_ref" />
+    </x-email.details>
+
+    <x-email.cart-items :items="$transaction->cart_items" />
+</x-email.layout>
