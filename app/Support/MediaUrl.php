@@ -21,6 +21,11 @@ class MediaUrl
         }
 
         $url = trim($url);
+
+        if (str_starts_with($url, '/legacy_media/uploads/')) {
+            return str_replace('/legacy_media/uploads/', '/legacy-media/uploads/', $url);
+        }
+
         $parts = parse_url($url);
 
         if (! is_array($parts)) {

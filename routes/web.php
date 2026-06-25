@@ -17,6 +17,9 @@ Route::get('/livewire-{hash}/update', fn () => redirect('/admin'))
     ->name('livewire.update.get-fallback');
 
 Route::get('/', [PageController::class, 'home'])->name('home');
+Route::get('/legacy_media/uploads/{path}', fn (string $path) => redirect('/legacy-media/uploads/'.ltrim($path, '/'), 301))
+    ->where('path', '.*')
+    ->name('legacy-media-underscore.redirect');
 Route::get('/legacy-media/uploads/{path}', [LegacyMediaController::class, 'show'])
     ->where('path', '.*')
     ->name('legacy-media.show');
