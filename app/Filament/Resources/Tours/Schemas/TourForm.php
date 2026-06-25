@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Tours\Schemas;
 
 use App\Filament\Support\MediaUpload;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Placeholder;
@@ -52,6 +53,18 @@ class TourForm
                         ->label('Current media')
                         ->content(fn ($record) => new HtmlString(self::mediaPreviewHtml($record)))
                         ->columnSpanFull(),
+                    Toggle::make('remove_hero_image')
+                        ->label('Remove current hero image')
+                        ->helperText('Turn this on and save to delete the existing hero image.')
+                        ->visible(fn ($record): bool => filled($record?->hero_image_path))
+                        ->dehydrated(fn (?bool $state): bool => (bool) $state),
+                    CheckboxList::make('remove_gallery_images')
+                        ->label('Delete current gallery images')
+                        ->helperText('Select specific gallery images to delete, then save.')
+                        ->options(fn ($record): array => MediaUpload::galleryRemovalOptions($record))
+                        ->visible(fn ($record): bool => filled($record?->gallery_images))
+                        ->dehydrated(fn (?array $state): bool => filled($state))
+                        ->columns(1),
                     FileUpload::make('hero_image_path')
                         ->label('Hero image')
                         ->image()

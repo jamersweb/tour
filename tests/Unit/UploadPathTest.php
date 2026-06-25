@@ -37,4 +37,46 @@ class UploadPathTest extends TestCase
         $this->assertSame(['packages/gallery/01KVCY3V9XESFMC2P1VHJN31JP.jpg'], $serialized['gallery_images']);
         $this->assertSame($serialized['gallery_images'], MediaUpload::formatState($serialized['gallery_images']));
     }
+
+    public function test_media_removal_controls_clear_hero_and_selected_gallery_images(): void
+    {
+        $package = new Package([
+            'hero_image_path' => 'packages/current-hero.jpg',
+            'gallery_images' => [
+                'packages/gallery/keep.jpg',
+                'packages/gallery/remove.jpg',
+            ],
+        ]);
+
+        $data = MediaUpload::applyRemovalControls([
+            'hero_image_path' => 'packages/current-hero.jpg',
+            'gallery_images' => [
+                'packages/gallery/keep.jpg',
+                'packages/gallery/remove.jpg',
+            ],
+            'remove_hero_image' => true,
+            'remove_gallery_images' => ['packages/gallery/remove.jpg'],
+        ], $package);
+
+        $this->assertArrayNotHasKey('remove_hero_image', $data);
+        $this->assertArrayNotHasKey('remove_gallery_images', $data);
+        $this->assertNull($data['hero_image_path']);
+        $this->assertSame(['packages/gallery/keep.jpg'], $data['gallery_images']);
+    }
+
+    public function test_media_removal_controls_can_filter_existing_record_gallery_when_upload_field_is_missing(): void
+    {
+        $package = new Package([
+            'gallery_images' => [
+                'packages/gallery/keep.jpg',
+                'packages/gallery/remove.jpg',
+            ],
+        ]);
+
+        $data = MediaUpload::applyRemovalControls([
+            'remove_gallery_images' => ['packages/gallery/remove.jpg'],
+        ], $package);
+
+        $this->assertSame(['packages/gallery/keep.jpg'], $data['gallery_images']);
+    }
 }
