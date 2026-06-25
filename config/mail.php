@@ -123,13 +123,14 @@ return [
     | Dedicated inbox for staff copies (inquiries, checkout started, payment received).
     | If empty, the site contact email from Site Settings is used.
     |
-    | Admin users (is_admin) also receive the same alerts; addresses are deduplicated
-    | against this inbox so one email is not sent twice.
+    | Admin panel notifications are always written to the Filament bell. Emailing every
+    | admin user is opt-in so stale admin login addresses cannot generate bounces.
     |
     */
 
     'bookings' => [
         'notify_address' => env('BOOKING_NOTIFICATIONS_EMAIL'),
+        'notify_admin_users' => env('BOOKING_NOTIFY_ADMIN_USERS', false),
     ],
 
 ];

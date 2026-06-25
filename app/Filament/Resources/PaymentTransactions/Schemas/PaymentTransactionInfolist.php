@@ -50,17 +50,28 @@ class PaymentTransactionInfolist
                 ->schema([
                     TextEntry::make('created_at')->dateTime()->label('When'),
                     TextEntry::make('action')->label('Action')->badge(),
-                    TextEntry::make('description')->placeholder('—')->columnSpanFull(),
+                    TextEntry::make('description')->placeholder('-')->columnSpanFull(),
                     TextEntry::make('user.name')->label('By')->placeholder('System / gateway'),
                     TextEntry::make('properties')
                         ->label('Details')
-                        ->formatStateUsing(fn (?array $state): string => $state
-                            ? (string) json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
-                            : '—')
+                        ->formatStateUsing(fn (mixed $state): string => self::formatProperties($state))
                         ->columnSpanFull(),
                 ])
                 ->columnSpanFull(),
             TextEntry::make('notes')->placeholder('-')->columnSpanFull(),
         ]);
+    }
+
+    protected static function formatProperties(mixed $state): string
+    {
+        if ($state === null || $state === '' || $state === []) {
+            return '-';
+        }
+
+        if (is_array($state) || is_object($state)) {
+            return (string) json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        }
+
+        return (string) $state;
     }
 }

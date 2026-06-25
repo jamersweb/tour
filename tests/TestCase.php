@@ -10,7 +10,7 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        // Match seeded admin so staff alerts are not duplicated (operations inbox vs. admin users).
+        // Stable operations inbox for staff alert assertions.
         config(['mail.bookings.notify_address' => 'admin@acutetourism.org']);
     }
 

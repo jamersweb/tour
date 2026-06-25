@@ -49,13 +49,11 @@ class ExperienceInquiryInfolist
                     ->schema([
                         TextEntry::make('created_at')->dateTime()->label('When'),
                         TextEntry::make('action')->label('Action')->badge(),
-                        TextEntry::make('description')->placeholder('—')->columnSpanFull(),
+                        TextEntry::make('description')->placeholder('-')->columnSpanFull(),
                         TextEntry::make('user.name')->label('By')->placeholder('Website visitor'),
                         TextEntry::make('properties')
                             ->label('Details')
-                            ->formatStateUsing(fn (?array $state): string => $state
-                                ? (string) json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
-                                : '—')
+                            ->formatStateUsing(fn (mixed $state): string => self::formatProperties($state))
                             ->columnSpanFull(),
                     ])
                     ->columnSpanFull(),
@@ -66,5 +64,18 @@ class ExperienceInquiryInfolist
                     ->dateTime()
                     ->placeholder('-'),
             ]);
+    }
+
+    protected static function formatProperties(mixed $state): string
+    {
+        if ($state === null || $state === '' || $state === []) {
+            return '-';
+        }
+
+        if (is_array($state) || is_object($state)) {
+            return (string) json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        }
+
+        return (string) $state;
     }
 }

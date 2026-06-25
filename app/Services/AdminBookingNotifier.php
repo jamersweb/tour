@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 /**
- * Sends staff-facing mailables to the operations inbox plus each user with {@see User::$is_admin},
+ * Sends staff-facing mailables to the operations inbox and, when enabled, admin users,
  * deduplicating by email address so the same inbox is not emailed twice.
  * Also writes Filament database notifications for admin users (panel bell).
  */
@@ -41,20 +41,22 @@ class AdminBookingNotifier
             }
         }
 
-        foreach (User::query()->where('is_admin', true)->cursor() as $admin) {
-            $key = mb_strtolower(trim((string) $admin->email));
-            if ($key === '' || isset($sentTo[$key])) {
-                continue;
-            }
+        if ((bool) config('mail.bookings.notify_admin_users', false)) {
+            foreach (User::query()->where('is_admin', true)->cursor() as $admin) {
+                $key = mb_strtolower(trim((string) $admin->email));
+                if ($key === '' || isset($sentTo[$key])) {
+                    continue;
+                }
 
-            try {
-                Mail::to($admin->email)->send($mailableFactory());
-                $sentTo[$key] = true;
-            } catch (\Throwable $exception) {
-                Log::warning('Admin booking email failed.', [
-                    'admin_id' => $admin->id,
-                    'message' => $exception->getMessage(),
-                ]);
+                try {
+                    Mail::to($admin->email)->send($mailableFactory());
+                    $sentTo[$key] = true;
+                } catch (\Throwable $exception) {
+                    Log::warning('Admin booking email failed.', [
+                        'admin_id' => $admin->id,
+                        'message' => $exception->getMessage(),
+                    ]);
+                }
             }
         }
     }
