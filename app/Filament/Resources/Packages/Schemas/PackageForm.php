@@ -3,9 +3,7 @@
 namespace App\Filament\Resources\Packages\Schemas;
 
 use App\Filament\Support\MediaUpload;
-use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
@@ -14,7 +12,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Illuminate\Support\HtmlString;
 
 class PackageForm
 {
@@ -31,23 +28,6 @@ class PackageForm
                 ->columns(2),
             Section::make('Media')
                 ->schema([
-                    Placeholder::make('current_media_preview')
-                        ->label('Current media')
-                        ->content(fn ($record) => new HtmlString(self::mediaPreviewHtml($record)))
-                        ->columnSpanFull(),
-                    Toggle::make('remove_hero_image')
-                        ->label('Remove current hero image')
-                        ->helperText('Turn this on and save to delete the existing hero image.')
-                        ->visible(fn ($record): bool => filled($record?->hero_image_path))
-                        ->dehydrated(fn (?bool $state): bool => (bool) $state),
-                    CheckboxList::make('remove_gallery_images')
-                        ->label('Delete current gallery images')
-                        ->helperText('Select the image cards you want to delete, then save.')
-                        ->options(fn ($record): array => MediaUpload::galleryRemovalOptions($record))
-                        ->allowHtml()
-                        ->visible(fn ($record): bool => filled($record?->gallery_images))
-                        ->dehydrated(fn (?array $state): bool => filled($state))
-                        ->columns(3),
                     FileUpload::make('hero_image_path')
                         ->label('Hero image')
                         ->image()
@@ -156,41 +136,6 @@ class PackageForm
                 ])
                 ->columns(2),
         ]);
-    }
-
-    protected static function mediaPreviewHtml($record): string
-    {
-        if (! $record) {
-            return '<span style="opacity:.7;">No saved media yet.</span>';
-        }
-
-        $parts = [];
-
-        if ($record->hero_image_url) {
-            $parts[] = '<div><div style="margin-bottom:8px;font-weight:600;">Hero image</div><img src="'.$record->hero_image_url.'" style="max-width:220px;border-radius:12px;display:block;" /></div>';
-        }
-
-        if ($record->hero_video_url) {
-            $parts[] = '<div><div style="margin-bottom:8px;font-weight:600;">Hero video</div><video src="'.$record->hero_video_url.'" controls style="max-width:260px;border-radius:12px;display:block;"></video></div>';
-        }
-
-        foreach (array_slice($record->gallery_image_urls ?? [], 0, 6) as $url) {
-            $galleryImages[] = '<img src="'.$url.'" style="width:96px;height:72px;object-fit:cover;border-radius:10px;" />';
-        }
-
-        if (! empty($galleryImages ?? [])) {
-            $parts[] = '<div><div style="margin-bottom:8px;font-weight:600;">Gallery images</div><div style="display:flex;gap:8px;flex-wrap:wrap;">'.implode('', $galleryImages).'</div></div>';
-        }
-
-        foreach (array_slice($record->gallery_video_urls ?? [], 0, 4) as $url) {
-            $galleryVideos[] = '<video src="'.$url.'" controls style="width:140px;border-radius:10px;"></video>';
-        }
-
-        if (! empty($galleryVideos ?? [])) {
-            $parts[] = '<div><div style="margin-bottom:8px;font-weight:600;">Gallery videos</div><div style="display:flex;gap:8px;flex-wrap:wrap;">'.implode('', $galleryVideos).'</div></div>';
-        }
-
-        return implode('<div style="margin-bottom:16px;"></div>', $parts) ?: '<span style="opacity:.7;">No saved media yet.</span>';
     }
 
     protected static function textareaState($state): ?string

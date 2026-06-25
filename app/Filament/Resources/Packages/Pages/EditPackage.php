@@ -25,9 +25,6 @@ class EditPackage extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        return MediaUpload::applyRemovalControls(
-            MediaUpload::normalizeData($data, ['hero_image_path', 'gallery_images']),
-            $this->record,
-        );
+        return MediaUpload::normalizeData($data, ['hero_image_path', 'gallery_images']);
     }
 }
