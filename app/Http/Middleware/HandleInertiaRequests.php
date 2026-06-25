@@ -36,7 +36,7 @@ class HandleInertiaRequests extends Middleware
         $footerLogoUrl = $settings->footer_logo_url;
 
         if (! $footerLogoUrl || str_ends_with($footerLogoUrl, '/logo.png')) {
-            $footerLogoUrl = '/images/acute-tourism-logo.png';
+            $footerLogoUrl = '/images/acute-tourism-logo-white.webp';
         }
 
         $logoUrl = MediaUrl::normalize($logoUrl);
