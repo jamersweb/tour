@@ -31,7 +31,7 @@ class MediaUrlTest extends TestCase
     public function test_dead_legacy_logo_urls_use_local_logo_asset(): void
     {
         $this->assertSame(
-            '/images/acute-tourism-logo.svg',
+            '/images/acute-tourism-logo.png',
             MediaUrl::normalize('/legacy_media/uploads/0000/6/2025/03/19/5.png'),
         );
     }

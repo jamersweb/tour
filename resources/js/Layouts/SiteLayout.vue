@@ -249,8 +249,8 @@ onBeforeUnmount(() => {
                         class="brand-logo"
                         :src="page.props.site.logoUrl"
                         alt=""
-                        width="112"
-                        height="45"
+                        width="160"
+                        height="70"
                         fetchpriority="high"
                         decoding="async"
                     />
@@ -454,8 +454,8 @@ onBeforeUnmount(() => {
                             class="brand-logo footer-logo"
                             :src="page.props.site.footerLogoUrl"
                             alt=""
-                            width="112"
-                            height="45"
+                            width="160"
+                            height="70"
                             loading="lazy"
                             decoding="async"
                         />

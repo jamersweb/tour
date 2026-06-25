@@ -4,8 +4,9 @@ namespace App\Support;
 
 class MediaUrl
 {
-    private const LOCAL_LOGO = '/images/acute-tourism-logo.svg';
+    private const LOCAL_LOGO = '/images/acute-tourism-logo.png';
     private const DEAD_LEGACY_LOGOS = [
+        '/images/acute-tourism-logo.svg',
         '/legacy_media/uploads/0000/6/2025/03/19/5.png',
         '/legacy-media/uploads/0000/6/2025/03/19/5.png',
         '/legacy_media/uploads/0000/6/2025/03/14/4-2.png',
