@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="224" height="90" viewBox="0 0 224 90" role="img" aria-labelledby="title">
+  <title id="title">Acute Tourism</title>
+  <rect width="224" height="90" fill="none"/>
+  <g transform="translate(12 11)">
+    <path d="M34 0 68 68H52L44.9 52H23.1L16 68H0L34 0Zm0 27.5L27.9 41h12.2L34 27.5Z" fill="#caa46a"/>
+    <path d="M76 10h8.2v48H76z" fill="#0f3f64"/>
+    <path d="M95 58V10h15.6c14.1 0 24.2 10.1 24.2 24s-10.1 24-24.2 24H95Zm8.4-7.9h7.2c9.2 0 15.8-6.6 15.8-16.1s-6.6-16.1-15.8-16.1h-7.2v32.2Z" fill="#0f3f64"/>
+    <path d="M141.5 58V10h30v7.8h-21.6v12h19.4v7.6h-19.4v12.8h22.3V58h-30.7Z" fill="#0f3f64"/>
+    <path d="M179.5 58V10h8.4v40.1H209V58h-29.5Z" fill="#0f3f64"/>
+    <text x="76" y="74" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="700" letter-spacing="3" fill="#caa46a">TOURISM</text>
+  </g>
+</svg>

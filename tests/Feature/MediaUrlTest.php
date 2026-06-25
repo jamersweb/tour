@@ -23,8 +23,16 @@ class MediaUrlTest extends TestCase
     public function test_legacy_media_underscore_paths_are_normalized(): void
     {
         $this->assertSame(
-            '/legacy-media/uploads/0000/6/2025/03/14/4-2.png',
-            MediaUrl::normalize('/legacy_media/uploads/0000/6/2025/03/14/4-2.png'),
+            '/legacy-media/uploads/0000/7/2025/03/14/example.png',
+            MediaUrl::normalize('/legacy_media/uploads/0000/7/2025/03/14/example.png'),
+        );
+    }
+
+    public function test_dead_legacy_logo_urls_use_local_logo_asset(): void
+    {
+        $this->assertSame(
+            '/images/acute-tourism-logo.svg',
+            MediaUrl::normalize('/legacy_media/uploads/0000/6/2025/03/19/5.png'),
         );
     }
 }

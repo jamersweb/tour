@@ -5,7 +5,7 @@
             $defaultTitle = 'Acute Tourism | Dubai Tours, Holiday Packages & Visa Assistance';
             $defaultDescription = 'Book Dubai tours, holiday packages, attraction tickets, panoramic bus experiences, and outbound visa assistance with Acute Tourism in the UAE.';
             $defaultUrl = url()->current();
-            $defaultImage = url('/legacy-media/uploads/0000/6/2025/03/19/5.png');
+            $defaultImage = url('/images/acute-tourism-logo.svg');
         @endphp
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
