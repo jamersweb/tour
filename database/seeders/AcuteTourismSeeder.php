@@ -48,7 +48,7 @@ class AcuteTourismSeeder extends Seeder
                 'is_featured' => true,
             ],
         ])->mapWithKeys(function (array $collection) {
-            $model = Collection::updateOrCreate(
+            $model = Collection::firstOrCreate(
                 ['slug' => $collection['slug']],
                 $collection,
             );
@@ -249,7 +249,7 @@ class AcuteTourismSeeder extends Seeder
                 ])
                 ->all();
 
-            $model->collections()->sync($sync);
+            $model->collections()->syncWithoutDetaching($sync);
         });
     }
 }
