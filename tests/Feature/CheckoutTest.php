@@ -9,6 +9,7 @@ use App\Mail\StaffNewPaymentTransactionMail;
 use App\Models\Experience;
 use App\Models\Package;
 use App\Models\PaymentTransaction;
+use App\Services\AdminBookingNotifier;
 use App\Services\Messaging\WhatsappNotificationService;
 use App\Services\Payments\NetworkNgeniusGateway;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -365,6 +366,39 @@ class CheckoutTest extends TestCase
             'payment_transaction_id' => $transaction->id,
             'email' => 'ayesha@example.com',
         ]);
+    }
+
+    public function test_staff_payment_email_is_not_sent_to_customer_address(): void
+    {
+        config(['mail.bookings.notify_address' => 'sara@example.com']);
+
+        $experience = Experience::query()->where('slug', 'private-heritage-desert-safari')->firstOrFail();
+
+        $transaction = PaymentTransaction::query()->create([
+            'payable_type' => $experience::class,
+            'payable_id' => $experience->id,
+            'gateway' => 'network-ngenius',
+            'reference' => 'internal-ref-customer-email',
+            'status' => 'paid',
+            'customer_name' => 'Sara Khan',
+            'customer_email' => 'sara@example.com',
+            'amount' => $experience->price_from,
+            'amount_minor' => 95000,
+            'currency' => 'AED',
+            'gateway_order_ref' => 'gateway-order-customer-email',
+            'gateway_payment_ref' => 'gateway-payment-customer-email',
+        ]);
+
+        Mail::fake();
+
+        app(AdminBookingNotifier::class)->paymentReceived($transaction);
+
+        Mail::assertNotSent(StaffBookingPaidMail::class);
+
+        $html = (new StaffBookingPaidMail($transaction->fresh(['payable'])))->render();
+
+        $this->assertStringNotContainsString('Open transaction in admin', $html);
+        $this->assertStringNotContainsString('/admin/payment-transactions/', $html);
     }
 
     public function test_checkout_start_requires_traveler_contacts_to_match_guest_count(): void

@@ -48,9 +48,5 @@
             </tbody>
         </table>
     @endif
-
-    <p>
-        <a href="{{ url('/admin/payment-transactions/'.$transaction->id) }}">Open transaction in admin</a>
-    </p>
 </body>
 </html>
