@@ -5,7 +5,7 @@
             $defaultTitle = 'Acute Tourism | Dubai Tours, Holiday Packages & Visa Assistance';
             $defaultDescription = 'Book Dubai tours, holiday packages, attraction tickets, panoramic bus experiences, and outbound visa assistance with Acute Tourism in the UAE.';
             $defaultUrl = url()->current();
-            $defaultImage = url('/images/acute-tourism-logo.png');
+            $defaultImage = url('/images/acute-tourism-social-preview.png');
         @endphp
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,10 +18,14 @@
         <meta property="og:description" content="{{ $defaultDescription }}">
         <meta property="og:url" content="{{ $defaultUrl }}">
         <meta property="og:image" content="{{ $defaultImage }}">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
+        <meta property="og:image:alt" content="Acute Tourism logo">
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:title" content="{{ $defaultTitle }}">
         <meta name="twitter:description" content="{{ $defaultDescription }}">
         <meta name="twitter:image" content="{{ $defaultImage }}">
+        <meta name="twitter:image:alt" content="Acute Tourism logo">
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-HC9SWHE1X2"></script>
         <script>
             window.dataLayer = window.dataLayer || [];

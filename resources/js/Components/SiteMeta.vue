@@ -26,6 +26,19 @@ const organization = computed(() => page.props.site.organization);
 const resolvedTitle = computed(() => props.title || defaultMeta.value.title);
 const resolvedDescription = computed(() => props.description || defaultMeta.value.description);
 const resolvedImage = computed(() => props.image || defaultMeta.value.image);
+const resolvedSocialImage = computed(() => {
+    if (!resolvedImage.value) {
+        return null;
+    }
+
+    try {
+        const canonicalOrigin = new URL(canonicalUrl.value).origin;
+
+        return new URL(resolvedImage.value, canonicalOrigin).toString();
+    } catch (error) {
+        return new URL(resolvedImage.value, page.props.site.appUrl).toString();
+    }
+});
 const fullTitle = computed(() => (
     resolvedTitle.value === siteName.value ? siteName.value : `${resolvedTitle.value} | ${siteName.value}`
 ));
@@ -158,11 +171,15 @@ const structuredData = computed(() => JSON.stringify([
         <meta property="og:title" :content="fullTitle" />
         <meta property="og:description" :content="resolvedDescription" />
         <meta property="og:url" :content="canonicalUrl" />
-        <meta v-if="resolvedImage" property="og:image" :content="resolvedImage" />
-        <meta name="twitter:card" :content="resolvedImage ? 'summary_large_image' : 'summary'" />
+        <meta v-if="resolvedSocialImage" property="og:image" :content="resolvedSocialImage" />
+        <meta v-if="resolvedSocialImage" property="og:image:width" content="1200" />
+        <meta v-if="resolvedSocialImage" property="og:image:height" content="630" />
+        <meta v-if="resolvedSocialImage" property="og:image:alt" content="Acute Tourism logo" />
+        <meta name="twitter:card" :content="resolvedSocialImage ? 'summary_large_image' : 'summary'" />
         <meta name="twitter:title" :content="fullTitle" />
         <meta name="twitter:description" :content="resolvedDescription" />
-        <meta v-if="resolvedImage" name="twitter:image" :content="resolvedImage" />
+        <meta v-if="resolvedSocialImage" name="twitter:image" :content="resolvedSocialImage" />
+        <meta v-if="resolvedSocialImage" name="twitter:image:alt" content="Acute Tourism logo" />
         <script type="application/ld+json" v-text="structuredData"></script>
     </Head>
 </template>

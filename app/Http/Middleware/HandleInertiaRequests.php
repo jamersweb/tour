@@ -41,6 +41,7 @@ class HandleInertiaRequests extends Middleware
 
         $logoUrl = MediaUrl::normalize($logoUrl);
         $footerLogoUrl = MediaUrl::normalize($footerLogoUrl);
+        $defaultSocialImageUrl = url('/images/acute-tourism-social-preview.png');
         $socialUrls = $this->socialUrls($settings->social_links ?? []);
         $footerSocialLinks = $this->footerSocialLinks($socialUrls);
 
@@ -79,7 +80,7 @@ class HandleInertiaRequests extends Middleware
                 'defaultMeta' => [
                     'title' => 'Acute Tourism | Dubai Tours, Holiday Packages & Visa Assistance',
                     'description' => 'Book Dubai tours, holiday packages, attraction tickets, panoramic bus experiences, and outbound visa assistance with Acute Tourism in the UAE.',
-                    'image' => $logoUrl,
+                    'image' => $defaultSocialImageUrl,
                 ],
                 'organization' => [
                     'name' => $settings->site_name,
