@@ -165,12 +165,12 @@ class PublicWebRoutesTest extends TestCase
         );
 
         Collection::query()->create([
-            'name' => 'Hidden Test Collection',
-            'slug' => 'hidden-test-collection',
+            'name' => 'Unfeatured Test Collection',
+            'slug' => 'unfeatured-test-collection',
             'collection_group' => 'activity',
             'summary' => 'Should not appear in the menu.',
             'sort_order' => 1,
-            'is_featured' => true,
+            'is_featured' => false,
         ]);
 
         $response = $this->get('/');
@@ -183,6 +183,51 @@ class PublicWebRoutesTest extends TestCase
             ->where('site.primaryNavigation.0.children.2.label', 'By Activity Type')
             ->where('site.primaryNavigation.0.children.2.children.0.label', 'Theme Parks')
             ->where('site.primaryNavigation.0.children.2.children.0.href', route('experiences.category', 'theme-parks'))
+        );
+    }
+
+    public function test_tours_page_filters_use_featured_admin_collections(): void
+    {
+        Collection::query()->update(['is_featured' => false]);
+
+        Collection::query()->create([
+            'name' => 'Custom Location',
+            'slug' => 'custom-location',
+            'collection_group' => 'location',
+            'summary' => 'Custom location tours.',
+            'sort_order' => 10,
+            'is_featured' => true,
+        ]);
+
+        Collection::query()->create([
+            'name' => 'Custom Activity',
+            'slug' => 'custom-activity',
+            'collection_group' => 'activity',
+            'summary' => 'Custom activity tours.',
+            'sort_order' => 20,
+            'is_featured' => true,
+        ]);
+
+        Collection::query()->create([
+            'name' => 'Hidden Activity',
+            'slug' => 'hidden-activity',
+            'collection_group' => 'activity',
+            'summary' => 'Should not appear in filters.',
+            'sort_order' => 1,
+            'is_featured' => false,
+        ]);
+
+        $response = $this->get('/dubai-tours-and-tickets');
+
+        $response->assertOk();
+        $response->assertInertia(fn (Assert $page) => $page
+            ->where('locationFilters.0.key', 'all')
+            ->where('locationFilters.1.key', 'custom-location')
+            ->where('locationFilters.1.label', 'Custom Location')
+            ->where('typeFilters.0.key', 'all')
+            ->where('typeFilters.1.key', 'custom-activity')
+            ->where('typeFilters.1.label', 'Custom Activity')
+            ->missing('typeFilters.2')
         );
     }
 

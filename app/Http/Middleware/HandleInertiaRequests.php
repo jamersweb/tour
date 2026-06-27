@@ -2,8 +2,8 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Collection;
 use App\Models\SiteSetting;
+use App\Support\ExperienceCollectionFilters;
 use App\Support\MediaUrl;
 use App\Support\NetworkPayments;
 use Illuminate\Http\Request;
@@ -191,41 +191,25 @@ class HandleInertiaRequests extends Middleware
      */
     private function toursAndTicketsNavigation(): array
     {
-        $menuSlugs = $this->toursAndTicketsMenuSlugs();
-
-        $groups = Collection::query()
-            ->where('is_featured', true)
-            ->where(function ($query) use ($menuSlugs): void {
-                $query
-                    ->where(fn ($locationQuery) => $locationQuery
-                        ->where('collection_group', 'location')
-                        ->whereIn('slug', $menuSlugs['location']))
-                    ->orWhere(fn ($activityQuery) => $activityQuery
-                        ->where('collection_group', 'activity')
-                        ->whereIn('slug', $menuSlugs['activity']));
-            })
-            ->orderBy('sort_order')
-            ->orderBy('name')
-            ->get(['name', 'slug', 'collection_group'])
-            ->groupBy('collection_group');
+        $groups = ExperienceCollectionFilters::grouped();
 
         $navigation = [
             ['label' => 'All Tours & Tickets', 'href' => route('experiences.index')],
         ];
 
-        if ($groups->has('location')) {
+        if ($groups['location'] !== []) {
             $navigation[] = [
                 'label' => 'By Location',
                 'href' => route('experiences.index'),
-                'children' => $this->collectionNavigationItems($groups->get('location'), 'location'),
+                'children' => $this->collectionNavigationItems($groups['location'], 'location'),
             ];
         }
 
-        if ($groups->has('activity')) {
+        if ($groups['activity'] !== []) {
             $navigation[] = [
                 'label' => 'By Activity Type',
                 'href' => route('experiences.index'),
-                'children' => $this->collectionNavigationItems($groups->get('activity'), 'activity'),
+                'children' => $this->collectionNavigationItems($groups['activity'], 'activity'),
             ];
         }
 
@@ -233,31 +217,20 @@ class HandleInertiaRequests extends Middleware
     }
 
     /**
-     * @param  \Illuminate\Support\Collection<int, Collection>  $collections
+     * @param  array<string, string>  $collections
      * @return array<int, array{label: string, href: string}>
      */
-    private function collectionNavigationItems($collections, string $group): array
+    private function collectionNavigationItems(array $collections, string $group): array
     {
-        return $collections
-            ->map(fn (Collection $collection): array => [
-                'label' => $collection->name,
+        return collect($collections)
+            ->map(fn (string $name, string $slug): array => [
+                'label' => $name,
                 'href' => $group === 'location'
-                    ? route('experiences.location', $collection->slug)
-                    : route('experiences.category', $collection->slug),
+                    ? route('experiences.location', $slug)
+                    : route('experiences.category', $slug),
             ])
             ->values()
             ->all();
-    }
-
-    /**
-     * @return array{location: array<int, string>, activity: array<int, string>}
-     */
-    private function toursAndTicketsMenuSlugs(): array
-    {
-        return [
-            'location' => ['dubai', 'abu-dhabi', 'other-emirates'],
-            'activity' => ['entry-tickets', 'desert-safari', 'city-tours', 'water-sports', 'water-parks', 'theme-parks', 'yacht-cruises'],
-        ];
     }
 
     /**

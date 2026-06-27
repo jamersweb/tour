@@ -10,6 +10,7 @@ use App\Models\Faq;
 use App\Models\Package;
 use App\Models\SiteSetting;
 use App\Models\Tour;
+use App\Support\ExperienceCollectionFilters;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -2097,26 +2098,16 @@ class PageController extends Controller
 
     private function experienceLocationFilters(): array
     {
-        return [
+        return array_merge([
             'all' => 'All Locations',
-            'dubai' => 'Dubai',
-            'abu-dhabi' => 'Abu Dhabi',
-            'other-emirates' => 'Other Emirates',
-        ];
+        ], ExperienceCollectionFilters::locations());
     }
 
     private function experienceTypeFilters(): array
     {
-        return [
+        return array_merge([
             'all' => 'All Activities',
-            'entry-tickets' => 'Entry Tickets',
-            'desert-safari' => 'Desert Safari',
-            'city-tours' => 'City Tours',
-            'water-sports' => 'Water Sports',
-            'water-parks' => 'Water Parks',
-            'theme-parks' => 'Theme Parks',
-            'yacht-cruises' => 'Yacht & Cruises',
-        ];
+        ], ExperienceCollectionFilters::activities());
     }
 
     private function normalizedExperienceText(array $experience): string

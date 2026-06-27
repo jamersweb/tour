@@ -109,6 +109,7 @@ const activityLocation = (item) => {
     if (assignedLocations.includes('dubai')) return 'dubai';
     if (assignedLocations.includes('abu-dhabi')) return 'abu-dhabi';
     if (assignedLocations.includes('other-emirates')) return 'other-emirates';
+    if (assignedLocations.length) return assignedLocations[0];
 
     const text = normalizedText(item);
 
@@ -129,6 +130,7 @@ const activityType = (item) => {
     if (assignedTypes.includes('theme-parks')) return 'theme-parks';
     if (assignedTypes.includes('yacht-cruises')) return 'yacht-cruises';
     if (assignedTypes.includes('helicopter-sky')) return 'helicopter-sky';
+    if (assignedTypes.length) return assignedTypes[0];
 
     const text = normalizedText(item);
 
