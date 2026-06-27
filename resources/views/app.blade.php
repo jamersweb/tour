@@ -22,6 +22,13 @@
         <meta name="twitter:title" content="{{ $defaultTitle }}">
         <meta name="twitter:description" content="{{ $defaultDescription }}">
         <meta name="twitter:image" content="{{ $defaultImage }}">
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-HC9SWHE1X2"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-HC9SWHE1X2');
+        </script>
         @if (request()->routeIs('home'))
             <link
                 rel="preload"
