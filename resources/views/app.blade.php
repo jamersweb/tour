@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <!-- Google Tag Manager -->
+        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-K9SBVBVH');</script>
+        <!-- End Google Tag Manager -->
         @php
             $defaultTitle = 'Acute Tourism | Dubai Tours, Holiday Packages & Visa Assistance';
             $defaultDescription = 'Book Dubai tours, holiday packages, attraction tickets, panoramic bus experiences, and outbound visa assistance with Acute Tourism in the UAE.';
@@ -26,13 +33,6 @@
         <meta name="twitter:description" content="{{ $defaultDescription }}">
         <meta name="twitter:image" content="{{ $defaultImage }}">
         <meta name="twitter:image:alt" content="Acute Tourism logo">
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-HC9SWHE1X2"></script>
-        <script>
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-HC9SWHE1X2');
-        </script>
         @if (request()->routeIs('home'))
             <link
                 rel="preload"
@@ -47,6 +47,10 @@
         @inertiaHead
     </head>
     <body>
+        <!-- Google Tag Manager (noscript) -->
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K9SBVBVH"
+        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+        <!-- End Google Tag Manager (noscript) -->
         @inertia
     </body>
 </html>
