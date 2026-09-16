@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Article;
+use App\Models\BusTourPage;
 use App\Models\Collection;
 use App\Models\Experience;
 use App\Models\Package;
@@ -130,6 +131,39 @@ class PublicWebRoutesTest extends TestCase
         $this->assertNoStoreAppShellHeaders($inertiaResponse);
         $inertiaResponse->assertHeader('Pragma', 'no-cache');
         $inertiaResponse->assertHeader('Expires', '0');
+    }
+
+    public function test_bus_tour_page_uses_admin_editable_content(): void
+    {
+        $page = BusTourPage::current();
+        $page->update([
+            'hero_title' => 'Editable Panoramic Bus Heading',
+            'routes' => [
+                [
+                    'key' => 'custom',
+                    'title' => 'Editable Admin Bus Route',
+                    'day' => 'Custom route',
+                    'price' => 'AED 123 per person',
+                    'panelPrice' => 'AED 123 / person',
+                    'label' => 'Custom admin label',
+                    'copy' => 'Custom admin package copy.',
+                    'bestFor' => 'Custom best-fit copy.',
+                    'tags' => ['Admin tag'],
+                    'highlights' => ['Admin highlight'],
+                    'included' => ['Admin inclusion'],
+                ],
+            ],
+        ]);
+
+        $response = $this->get('/luxury-bus-tour-dubai');
+
+        $response->assertOk();
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('BusTour')
+            ->where('pageContent.hero.title', 'Editable Panoramic Bus Heading')
+            ->where('pageContent.routesSection.items.0.title', 'Editable Admin Bus Route')
+            ->where('pageContent.routesSection.items.0.price', 'AED 123 per person')
+        );
     }
 
     public function test_livewire_update_get_requests_redirect_to_admin(): void

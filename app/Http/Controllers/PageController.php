@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use App\Models\BlogCategory;
+use App\Models\BusTourPage;
 use App\Models\Collection;
 use App\Models\Experience;
 use App\Models\Faq;
@@ -430,11 +431,14 @@ class PageController extends Controller
 
     public function busTour(): Response
     {
+        $page = BusTourPage::current();
+
         return Inertia::render('BusTour', [
             'seo' => [
-                'title' => 'Luxury Bus Tour Dubai | Panoramic UAE Bus Trips',
-                'description' => "Join Acute Tourism's luxury bus tour Dubai experience with panoramic views, exclusive seats, curated UAE day trips, hotel pick-up, sightseeing, meals, and guided support.",
+                'title' => $page->seo_title ?: 'Luxury Bus Tour Dubai | Panoramic UAE Bus Trips',
+                'description' => $page->seo_description ?: "Join Acute Tourism's luxury bus tour Dubai experience with panoramic views, exclusive seats, curated UAE day trips, hotel pick-up, sightseeing, meals, and guided support.",
             ],
+            'pageContent' => $page->publicPayload(),
         ]);
     }
 

@@ -6,11 +6,13 @@ import SiteLayout from '../Layouts/SiteLayout.vue';
 
 defineOptions({ layout: SiteLayout });
 
-defineProps({
+const props = defineProps({
     seo: Object,
+    pageContent: Object,
 });
 
 const page = usePage();
+const content = computed(() => props.pageContent || {});
 
 const routes = [
     {
@@ -66,6 +68,10 @@ const routes = [
         included: ['Hotel pick-up and drop-off', 'Professional guide', 'Lunch', 'Water and soft drinks', 'Admission ticket to Ferrari World Theme Park'],
     },
 ];
+
+const editableRoutes = computed(() => (
+    content.value.routesSection?.items?.length ? content.value.routesSection.items : routes
+));
 
 const galleryFolders = [
     {
@@ -192,7 +198,10 @@ const galleryFolders = [
 ];
 
 const galleryTrackRef = ref(null);
-const busGalleryMedia = computed(() => galleryFolders.flatMap((folder) => [
+const editableGalleryFolders = computed(() => (
+    content.value.gallery?.items?.length ? content.value.gallery.items : galleryFolders
+));
+const busGalleryMedia = computed(() => editableGalleryFolders.value.flatMap((folder) => [
     ...(folder.images || []).map((url, index) => ({
         type: 'image',
         url,
@@ -258,6 +267,12 @@ const audiences = [
     ['Private occasions', 'For birthdays, corporate outings, school groups, social clubs and travel agencies that want a ready-made group journey.'],
 ];
 
+const editableAudiences = computed(() => (
+    content.value.audience?.items?.length
+        ? content.value.audience.items
+        : audiences.map(([title, copy]) => ({ title, copy }))
+));
+
 const faqs = [
     ['Are hotel pick-up and drop-off included?', 'Yes. Hotel pick-up and drop-off are included across the four panoramic bus tour options. Exact pick-up time and coverage will be confirmed by the Acute Tourism team after your enquiry.'],
     ['Are lunch and drinks included?', 'Yes. Lunch, water and soft drinks are included across the routes. The Dubai route also includes food tasting and a sundowner at The Palm.'],
@@ -268,6 +283,12 @@ const faqs = [
     ['How do I confirm my booking?', 'Submit the enquiry form or contact the team on WhatsApp. Acute Tourism will confirm availability, hotel pick-up timing, final route flow, attraction access and payment details before your booking is confirmed.'],
     ['How do I choose the right route?', 'Choose Dubai for food and city highlights, Al Ain for family and wildlife, Fujairah for coastal and marine experiences, and Abu Dhabi for Grand Mosque and Ferrari World.'],
 ];
+
+const editableFaqs = computed(() => (
+    content.value.faq?.items?.length
+        ? content.value.faq.items
+        : faqs.map(([question, answer]) => ({ question, answer }))
+));
 
 const form = useForm({
     source: 'bus-tour-page',
@@ -337,21 +358,20 @@ onBeforeUnmount(() => {
     <main class="acute-bus-page">
         <section id="top" class="acute-hero">
             <div class="acute-hero-inner">
-                <div class="acute-eyebrow">Panoramic Bus Dubai</div>
-                <h1>Luxury Bus Tour Dubai</h1>
+                <div class="acute-eyebrow">{{ content.hero?.eyebrow || 'Panoramic Bus Dubai' }}</div>
+                <h1>{{ content.hero?.title || 'Luxury Bus Tour Dubai' }}</h1>
                 <p>
-                    Travel through Dubai, Al Ain, Fujairah or Abu Dhabi in a more comfortable and curated way. Acute Tourism's luxury bus tour Dubai experience is designed for premium guests who prefer hotel pick-up, guided sightseeing, included meals or tastings, selected attractions and a smoother day out without the feel of a crowded group tour.
+                    {{ content.hero?.description || "Travel through Dubai, Al Ain, Fujairah or Abu Dhabi in a more comfortable and curated way. Acute Tourism's luxury bus tour Dubai experience is designed for premium guests who prefer hotel pick-up, guided sightseeing, included meals or tastings, selected attractions and a smoother day out without the feel of a crowded group tour." }}
                 </p>
                 <div class="acute-hero-actions">
-                    <a class="acute-btn gold" href="#tours">View Packages</a>
-                    <a class="acute-btn light" href="#enquiry">Request Availability</a>
+                    <a class="acute-btn gold" href="#tours">{{ content.hero?.primaryCtaLabel || 'View Packages' }}</a>
+                    <a class="acute-btn light" href="#enquiry">{{ content.hero?.secondaryCtaLabel || 'Request Availability' }}</a>
                 </div>
-                <div class="acute-fomo-line"><span class="acute-fomo-dot"></span> Limited seats per scheduled tour - Early enquiry recommended</div>
+                <div class="acute-fomo-line"><span class="acute-fomo-dot"></span> {{ content.hero?.fomoLine || 'Limited seats per scheduled tour - Early enquiry recommended' }}</div>
                 <div class="acute-hero-facts">
-                    <div class="acute-hero-fact"><strong>12 Guests Only</strong><span>Intentionally limited per departure</span></div>
-                    <div class="acute-hero-fact"><strong>18 Seats</strong><span>More room on board</span></div>
-                    <div class="acute-hero-fact"><strong>Hotel Pick-up</strong><span>Included with every route</span></div>
-                    <div class="acute-hero-fact"><strong>High-demand Dates</strong><span>Availability confirmed on request</span></div>
+                    <div v-for="fact in content.hero?.facts || []" :key="`${fact.value}-${fact.label}`" class="acute-hero-fact">
+                        <strong>{{ fact.value }}</strong><span>{{ fact.label }}</span>
+                    </div>
                 </div>
             </div>
         </section>
@@ -359,30 +379,30 @@ onBeforeUnmount(() => {
         <section id="highlights" class="acute-section acute-highlights reference-inspired">
             <div class="acute-container">
                 <div class="acute-refined-intro">
-                    <div class="acute-intro-mark">Come<br />on<br />board</div>
+                    <div class="acute-intro-mark">
+                        <template v-for="line in (content.intro?.mark || 'Come\non\nboard').split('\n')" :key="line">
+                            {{ line }}<br />
+                        </template>
+                    </div>
                     <div>
-                        <div class="acute-eyebrow">Why guests choose it</div>
-                        <h2 class="acute-heading">A hosted UAE day experience with comfort, access and a premium pace</h2>
-                        <p class="acute-copy">The experience is built for guests who want the day arranged properly: hotel pick-up, a comfortable panoramic bus, a professional guide, selected route highlights, lunch or tasting value, refreshments and return drop-off.</p>
+                        <div class="acute-eyebrow">{{ content.intro?.eyebrow || 'Why guests choose it' }}</div>
+                        <h2 class="acute-heading">{{ content.intro?.title || 'A hosted UAE day experience with comfort, access and a premium pace' }}</h2>
+                        <p class="acute-copy">{{ content.intro?.copy || 'The experience is built for guests who want the day arranged properly: hotel pick-up, a comfortable panoramic bus, a professional guide, selected route highlights, lunch or tasting value, refreshments and return drop-off.' }}</p>
                     </div>
                 </div>
                 <div class="acute-choice-stage">
-                    <div class="acute-choice-media" role="img" aria-label="Luxury panoramic bus tour media area">
+                    <div class="acute-choice-media" role="img" :aria-label="content.choice?.mediaLabel || 'Luxury panoramic bus tour media area'">
                         <div class="acute-video-card">
                             <div class="acute-play-icon" aria-hidden="true"></div>
-                            <strong>Watch the experience</strong>
-                            <span>Experience video area: bus interior, guest welcome, route moments and destination highlights.</span>
+                            <strong>{{ content.choice?.mediaTitle || 'Watch the experience' }}</strong>
+                            <span>{{ content.choice?.mediaCopy || 'Experience video area: bus interior, guest welcome, route moments and destination highlights.' }}</span>
                         </div>
                     </div>
                     <div class="acute-choice-panel">
-                        <div class="acute-choice-line"><span>01</span><div><strong>Limited scheduled capacity</strong><p>Each scheduled tour is intentionally limited to 12 guests, creating a more exclusive, spacious and personal experience.</p></div></div>
-                        <div class="acute-choice-line"><span>02</span><div><strong>Hotel pick-up and return</strong><p>Start and end from your hotel, making the tour easier for tourists, families and visiting guests.</p></div></div>
-                        <div class="acute-choice-line"><span>03</span><div><strong>Professional guided route</strong><p>Enjoy guided sightseeing, landmark context and assistance throughout the journey.</p></div></div>
-                        <div class="acute-choice-line"><span>04</span><div><strong>Lunch, tastings or attraction value</strong><p>Each tour includes food, drinks and route-specific value such as Al Ain Zoo or Ferrari World where applicable.</p></div></div>
-                        <div class="acute-choice-line"><span>05</span><div><strong>Private group option</strong><p>Reserve the bus for family outings, birthdays, corporate groups, travel agencies or special occasions.</p></div></div>
+                        <div v-for="line in content.choice?.lines || []" :key="line.number + line.title" class="acute-choice-line"><span>{{ line.number }}</span><div><strong>{{ line.title }}</strong><p>{{ line.copy }}</p></div></div>
                         <div class="acute-choice-actions">
-                            <a class="acute-btn gold" href="#tours">Compare Tours</a>
-                            <a class="acute-btn outline" href="#private">Private Group Enquiry</a>
+                            <a class="acute-btn gold" href="#tours">{{ content.choice?.primaryCtaLabel || 'Compare Tours' }}</a>
+                            <a class="acute-btn outline" href="#private">{{ content.choice?.secondaryCtaLabel || 'Private Group Enquiry' }}</a>
                         </div>
                     </div>
                 </div>
@@ -392,12 +412,12 @@ onBeforeUnmount(() => {
         <section id="tours" class="acute-section">
             <div class="acute-container">
                 <div class="acute-section-head">
-                    <div class="acute-eyebrow">Packages and prices</div>
-                    <h2 class="acute-heading">Choose your panoramic bus tour</h2>
-                    <p class="acute-copy">Four curated routes from Dubai, each with hotel pick-up and drop-off, a professional guide, lunch or tasting value, water and soft drinks.</p>
+                    <div class="acute-eyebrow">{{ content.routesSection?.eyebrow || 'Packages and prices' }}</div>
+                    <h2 class="acute-heading">{{ content.routesSection?.title || 'Choose your panoramic bus tour' }}</h2>
+                    <p class="acute-copy">{{ content.routesSection?.copy || 'Four curated routes from Dubai, each with hotel pick-up and drop-off, a professional guide, lunch or tasting value, water and soft drinks.' }}</p>
                 </div>
                 <div class="acute-tours-grid">
-                    <article v-for="route in routes" :key="route.key" class="acute-tour-card" :class="route.key">
+                    <article v-for="route in editableRoutes" :key="route.key" class="acute-tour-card" :class="route.key">
                         <div class="acute-tour-body">
                             <span class="acute-tour-day">{{ route.day }}</span>
                             <h3>{{ route.title }}</h3>
@@ -407,19 +427,19 @@ onBeforeUnmount(() => {
                         </div>
                     </article>
                 </div>
-                <div class="acute-availability-note"><strong>Availability note:</strong> Scheduled seats are limited and preferred dates may close once capacity is reached. For families, celebrations, corporate groups or travel agencies, private bus requests are recommended for better date control.</div>
+                <div class="acute-availability-note"><strong>Availability note:</strong> {{ content.routesSection?.availabilityNote || 'Scheduled seats are limited and preferred dates may close once capacity is reached. For families, celebrations, corporate groups or travel agencies, private bus requests are recommended for better date control.' }}</div>
             </div>
         </section>
 
         <section id="details" class="acute-section alt">
             <div class="acute-container">
                 <div class="acute-section-head">
-                    <div class="acute-eyebrow">Tour details</div>
-                    <h2 class="acute-heading">What each tour includes</h2>
-                    <p class="acute-copy">Each route is structured around a clear experience theme, arranged transport, guided sightseeing, and included food or attraction value.</p>
+                    <div class="acute-eyebrow">{{ content.details?.eyebrow || 'Tour details' }}</div>
+                    <h2 class="acute-heading">{{ content.details?.title || 'What each tour includes' }}</h2>
+                    <p class="acute-copy">{{ content.details?.copy || 'Each route is structured around a clear experience theme, arranged transport, guided sightseeing, and included food or attraction value.' }}</p>
                 </div>
                 <div class="acute-details-list">
-                    <article v-for="route in routes" :key="`${route.key}-details`" class="acute-tour-panel">
+                    <article v-for="route in editableRoutes" :key="`${route.key}-details`" class="acute-tour-panel">
                         <div class="acute-panel-image" :class="route.key"></div>
                         <div class="acute-panel-content">
                             <div class="acute-panel-top">
@@ -446,11 +466,9 @@ onBeforeUnmount(() => {
 
         <section id="know-before" class="acute-section">
             <div class="acute-container">
-                <div class="acute-section-head"><div class="acute-eyebrow">Before you book</div><h2 class="acute-heading">Clear answers for confident booking</h2><p class="acute-copy">Essential details to help you understand what is included, what may depend on availability and how your booking is confirmed.</p></div>
+                <div class="acute-section-head"><div class="acute-eyebrow">{{ content.beforeBooking?.eyebrow || 'Before you book' }}</div><h2 class="acute-heading">{{ content.beforeBooking?.title || 'Clear answers for confident booking' }}</h2><p class="acute-copy">{{ content.beforeBooking?.copy || 'Essential details to help you understand what is included, what may depend on availability and how your booking is confirmed.' }}</p></div>
                 <div class="acute-safety-grid">
-                    <div class="acute-safety-card"><h3>Pick-up and timing</h3><p>Hotel pick-up and drop-off are included. Exact pick-up timing, route order and return timing are confirmed after availability is checked.</p></div>
-                    <div class="acute-safety-card"><h3>Fujairah marine activities</h3><p>Swimming with turtles, shark sessions, beach access and oyster farm visits are confirmed subject to supplier availability, weather, sea conditions and guest safety requirements.</p></div>
-                    <div class="acute-safety-card"><h3>Attraction access</h3><p>Al Ain Zoo and Ferrari World admission are included in their respective tours. Attraction operating hours, ride availability and entry rules may apply.</p></div>
+                    <div v-for="card in content.beforeBooking?.cards || []" :key="card.title" class="acute-safety-card"><h3>{{ card.title }}</h3><p>{{ card.copy }}</p></div>
                 </div>
             </div>
         </section>
@@ -458,11 +476,11 @@ onBeforeUnmount(() => {
         <section id="private" class="acute-section acute-private">
             <div class="acute-container acute-private-grid">
                 <div>
-                    <div class="acute-eyebrow">Private bus enquiry</div>
-                    <h2 class="acute-heading">Reserve the bus for your own group</h2>
-                    <p class="acute-copy">The panoramic bus can also be requested for private groups, families, friends, corporate teams, celebrations, school groups, travel agencies and custom UAE experiences.</p>
-                    <div class="acute-line-list"><div><span>Best for</span><strong>Families, companies, groups and occasions</strong></div><div><span>Route options</span><strong>Dubai, Al Ain, Fujairah, Abu Dhabi or custom</strong></div><div><span>Add-ons</span><strong>Shopping, photography and videography</strong></div></div>
-                    <a class="acute-btn gold" href="#enquiry">Request Private Bus</a>
+                    <div class="acute-eyebrow">{{ content.privateSection?.eyebrow || 'Private bus enquiry' }}</div>
+                    <h2 class="acute-heading">{{ content.privateSection?.title || 'Reserve the bus for your own group' }}</h2>
+                    <p class="acute-copy">{{ content.privateSection?.copy || 'The panoramic bus can also be requested for private groups, families, friends, corporate teams, celebrations, school groups, travel agencies and custom UAE experiences.' }}</p>
+                    <div class="acute-line-list"><div v-for="line in content.privateSection?.lines || []" :key="line.label"><span>{{ line.label }}</span><strong>{{ line.value }}</strong></div></div>
+                    <a class="acute-btn gold" href="#enquiry">{{ content.privateSection?.ctaLabel || 'Request Private Bus' }}</a>
                 </div>
                 <div class="acute-private-image"></div>
             </div>
@@ -471,12 +489,12 @@ onBeforeUnmount(() => {
         <section class="acute-section alt acute-audience">
             <div class="acute-container">
                 <div class="acute-section-head">
-                    <div class="acute-eyebrow">Best for</div>
-                    <h2 class="acute-heading">Designed for guests who value ease and exclusivity</h2>
-                    <p class="acute-copy">The panoramic bus format is especially useful when you want a premium day out arranged for you.</p>
+                    <div class="acute-eyebrow">{{ content.audience?.eyebrow || 'Best for' }}</div>
+                    <h2 class="acute-heading">{{ content.audience?.title || 'Designed for guests who value ease and exclusivity' }}</h2>
+                    <p class="acute-copy">{{ content.audience?.copy || 'The panoramic bus format is especially useful when you want a premium day out arranged for you.' }}</p>
                 </div>
                 <div class="acute-audience-grid">
-                    <div v-for="[title, copy] in audiences" :key="title" class="acute-audience-card"><h3>{{ title }}</h3><p>{{ copy }}</p></div>
+                    <div v-for="item in editableAudiences" :key="item.title" class="acute-audience-card"><h3>{{ item.title }}</h3><p>{{ item.copy }}</p></div>
                 </div>
             </div>
         </section>
@@ -484,9 +502,9 @@ onBeforeUnmount(() => {
         <section id="media-gallery" class="acute-section acute-media-showcase">
             <div class="acute-container">
                 <div class="acute-section-head">
-                    <div class="acute-eyebrow">Experience media</div>
-                    <h2 class="acute-heading">A closer look at the journey</h2>
-                    <p class="acute-copy">See the bus, onboard comfort, hosted moments and route highlights before you request availability.</p>
+                    <div class="acute-eyebrow">{{ content.gallery?.eyebrow || 'Experience media' }}</div>
+                    <h2 class="acute-heading">{{ content.gallery?.title || 'A closer look at the journey' }}</h2>
+                    <p class="acute-copy">{{ content.gallery?.copy || 'See the bus, onboard comfort, hosted moments and route highlights before you request availability.' }}</p>
                 </div>
                 <div class="acute-gallery-carousel" aria-label="Bus tour media carousel">
                     <div class="acute-gallery-carousel__controls">
@@ -538,41 +556,41 @@ onBeforeUnmount(() => {
                         </button>
                     </div>
                 </div>
-                <div class="acute-proof-note">Browse the bus setup, seating, destination highlights and onboard hospitality before requesting availability.</div>
+                <div class="acute-proof-note">{{ content.gallery?.note || 'Browse the bus setup, seating, destination highlights and onboard hospitality before requesting availability.' }}</div>
             </div>
         </section>
 
         <section id="enquiry" class="acute-section acute-lead">
             <div class="acute-container acute-lead-grid">
-                <div class="acute-lead-copy"><div class="acute-eyebrow">Check availability</div><h2 class="acute-heading">Request your panoramic bus experience</h2><p class="acute-copy">Share your preferred route, date and group details. The Acute Tourism team will confirm availability, hotel pick-up timing, route flow, attraction access and private bus options before payment.</p></div>
+                <div class="acute-lead-copy"><div class="acute-eyebrow">{{ content.enquiry?.eyebrow || 'Check availability' }}</div><h2 class="acute-heading">{{ content.enquiry?.title || 'Request your panoramic bus experience' }}</h2><p class="acute-copy">{{ content.enquiry?.copy || 'Share your preferred route, date and group details. The Acute Tourism team will confirm availability, hotel pick-up timing, route flow, attraction access and private bus options before payment.' }}</p></div>
                 <form class="acute-lead-form" @submit.prevent="submit">
                     <div v-if="page.props.flash.success" class="success-banner acute-full-field">{{ page.props.flash.success }}</div>
                     <div class="acute-form-grid">
                         <label>Full Name<input v-model="form.name" placeholder="Enter your name" required type="text" autocomplete="name" /></label>
                         <label>WhatsApp Number<input v-model="form.phone" placeholder="+971 5X XXX XXXX" required type="tel" autocomplete="tel" /></label>
-                        <label>Preferred Tour<select v-model="form.route" required><option value="">Select tour</option><option v-for="route in routes" :key="route.title" :value="route.title">{{ route.title }}</option><option value="Private Bus Enquiry">Private Bus Enquiry</option></select></label>
+                        <label>Preferred Tour<select v-model="form.route" required><option value="">Select tour</option><option v-for="route in editableRoutes" :key="route.title" :value="route.title">{{ route.title }}</option><option value="Private Bus Enquiry">Private Bus Enquiry</option></select></label>
                         <label>Preferred Date<input v-model="form.travel_date" type="date" /></label>
                     </div>
                     <label class="acute-full-field">Additional Request<textarea v-model="form.message" placeholder="Number of guests, hotel location, preferred route, private group request, or any special occasion." rows="4"></textarea></label>
-                    <button class="acute-btn gold acute-submit" type="submit" :disabled="form.processing">{{ form.processing ? 'Sending...' : 'Send Enquiry' }}</button>
-                    <a class="acute-quick-chat" href="https://wa.me/971521926984?text=Hello%20Acute%20Tourism%2C%20I%20want%20to%20check%20availability%20for%20the%20panoramic%20bus%20tour." rel="noopener" target="_blank">Prefer WhatsApp? Speak to our team directly</a>
-                    <div class="acute-note">Submitting this form does not confirm booking. The team will confirm seat availability, hotel pick-up details, final timing and any supplier-dependent activities before payment.</div>
+                    <button class="acute-btn gold acute-submit" type="submit" :disabled="form.processing">{{ form.processing ? (content.enquiry?.processingLabel || 'Sending...') : (content.enquiry?.submitLabel || 'Send Enquiry') }}</button>
+                    <a class="acute-quick-chat" :href="content.enquiry?.whatsappUrl || 'https://wa.me/971521926984?text=Hello%20Acute%20Tourism%2C%20I%20want%20to%20check%20availability%20for%20the%20panoramic%20bus%20tour.'" rel="noopener" target="_blank">{{ content.enquiry?.whatsappLabel || 'Prefer WhatsApp? Speak to our team directly' }}</a>
+                    <div class="acute-note">{{ content.enquiry?.note || 'Submitting this form does not confirm booking. The team will confirm seat availability, hotel pick-up details, final timing and any supplier-dependent activities before payment.' }}</div>
                 </form>
             </div>
         </section>
 
         <section class="acute-section cream">
             <div class="acute-container">
-                <div class="acute-section-head"><div class="acute-eyebrow">Questions guests may ask</div><h2 class="acute-heading">Frequently asked questions</h2></div>
+                <div class="acute-section-head"><div class="acute-eyebrow">{{ content.faq?.eyebrow || 'Questions guests may ask' }}</div><h2 class="acute-heading">{{ content.faq?.title || 'Frequently asked questions' }}</h2></div>
                 <div class="acute-faq-accordion">
-                    <details v-for="[question, answer] in faqs" :key="question" class="acute-faq-item"><summary>{{ question }}</summary><div class="acute-faq-answer">{{ answer }}</div></details>
+                    <details v-for="item in editableFaqs" :key="item.question" class="acute-faq-item"><summary>{{ item.question }}</summary><div class="acute-faq-answer">{{ item.answer }}</div></details>
                 </div>
             </div>
         </section>
 
         <div v-if="showStickyCta" class="acute-sticky-cta" aria-label="Request panoramic bus tour availability">
-            <span><strong>Limited seats</strong> on scheduled departures</span>
-            <a class="acute-btn gold" href="#enquiry">Request Availability</a>
+            <span><strong>{{ content.sticky?.label || 'Limited seats' }}</strong> {{ content.sticky?.text || 'on scheduled departures' }}</span>
+            <a class="acute-btn gold" href="#enquiry">{{ content.sticky?.ctaLabel || 'Request Availability' }}</a>
         </div>
 
         <div v-if="activeMedia" class="experience-lightbox acute-gallery-lightbox" @click.self="closeMedia">
