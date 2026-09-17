@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Support\MediaUrl;
+use App\Support\UploadPath;
 use Illuminate\Database\Eloquent\Model;
 
 class BusTourPage extends Model
@@ -44,6 +46,7 @@ class BusTourPage extends Model
         'private_lines',
         'private_cta_label',
         'private_image_url',
+        'private_image_path',
         'audience_eyebrow',
         'audience_title',
         'audience_copy',
@@ -86,6 +89,25 @@ class BusTourPage extends Model
     public static function current(): self
     {
         return static::query()->firstOrCreate(['id' => 1], static::defaults());
+    }
+
+    public function getPrivateImagePathAttribute(?string $value): ?string
+    {
+        return UploadPath::normalize($value);
+    }
+
+    public function setPrivateImagePathAttribute(mixed $value): void
+    {
+        $this->attributes['private_image_path'] = UploadPath::normalize($value);
+    }
+
+    public function getPrivateImageResolvedUrlAttribute(): ?string
+    {
+        if ($this->private_image_path) {
+            return MediaUrl::upload($this->private_image_path);
+        }
+
+        return MediaUrl::normalize($this->private_image_url);
     }
 
     public function publicPayload(): array
@@ -138,7 +160,7 @@ class BusTourPage extends Model
                 'copy' => $this->private_copy,
                 'lines' => $this->private_lines ?? [],
                 'ctaLabel' => $this->private_cta_label,
-                'imageUrl' => $this->private_image_url,
+                'imageUrl' => $this->private_image_resolved_url,
             ],
             'audience' => [
                 'eyebrow' => $this->audience_eyebrow,

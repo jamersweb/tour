@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\BusTourPages\Schemas;
 
+use App\Filament\Support\MediaUpload;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
@@ -90,7 +92,18 @@ class BusTourPageForm
                     TextInput::make('private_cta_label')->maxLength(80),
                     Textarea::make('private_title')->rows(2)->columnSpanFull(),
                     Textarea::make('private_copy')->rows(3)->columnSpanFull(),
-                    TextInput::make('private_image_url')->url()->maxLength(255)->columnSpanFull(),
+                    FileUpload::make('private_image_path')
+                        ->label('Private image upload')
+                        ->image()
+                        ->disk('uploads')
+                        ->directory('bus-tour-page/private')
+                        ->formatStateUsing(fn ($state) => MediaUpload::formatState($state))
+                        ->dehydrateStateUsing(fn ($state, $record) => MediaUpload::dehydrateState($state, $record?->private_image_path))
+                        ->imageEditor(),
+                    TextInput::make('private_image_url')
+                        ->label('Private image URL fallback')
+                        ->url()
+                        ->maxLength(255),
                     Repeater::make('private_lines')
                         ->schema([
                             TextInput::make('label')->required()->maxLength(120),

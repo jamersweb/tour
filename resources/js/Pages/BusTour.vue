@@ -240,6 +240,16 @@ function imageBackgroundStyle(url) {
     };
 }
 
+function plainBackgroundStyle(url) {
+    if (!url) {
+        return {};
+    }
+
+    return {
+        backgroundImage: `linear-gradient(to top, rgba(6, 26, 99, 0.46), transparent 48%), url('${url}')`,
+    };
+}
+
 function openMedia(index) {
     activeMediaIndex.value = index;
 }
@@ -493,7 +503,7 @@ onBeforeUnmount(() => {
                     <div class="acute-line-list"><div v-for="line in content.privateSection?.lines || []" :key="line.label"><span>{{ line.label }}</span><strong>{{ line.value }}</strong></div></div>
                     <a class="acute-btn gold" href="#enquiry">{{ content.privateSection?.ctaLabel || 'Request Private Bus' }}</a>
                 </div>
-                <div class="acute-private-image"></div>
+                <div class="acute-private-image" :style="plainBackgroundStyle(content.privateSection?.imageUrl)"></div>
             </div>
         </section>
 

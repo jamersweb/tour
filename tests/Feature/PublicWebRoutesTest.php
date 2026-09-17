@@ -141,6 +141,7 @@ class PublicWebRoutesTest extends TestCase
         $page = BusTourPage::current();
         $page->update([
             'hero_title' => 'Editable Panoramic Bus Heading',
+            'private_image_path' => 'bus-tour-page/private/admin-private-bus.jpg',
         ]);
 
         $response = $this->get('/luxury-bus-tour-dubai');
@@ -149,6 +150,7 @@ class PublicWebRoutesTest extends TestCase
         $response->assertInertia(fn (Assert $page) => $page
             ->component('BusTour')
             ->where('pageContent.hero.title', 'Editable Panoramic Bus Heading')
+            ->where('pageContent.privateSection.imageUrl', 'https://acutetourism.ae/uploads/bus-tour-page/private/admin-private-bus.jpg')
         );
     }
 
