@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\SiteSetting;
+use App\Models\BusTourListing;
 use App\Support\ExperienceCollectionFilters;
 use App\Support\MediaUrl;
 use App\Support\NetworkPayments;
@@ -145,7 +146,11 @@ class HandleInertiaRequests extends Middleware
                     ],
                     ['label' => 'Holiday Packages', 'href' => route('packages.index')],
                     ['label' => 'Visa Services', 'href' => route('visa.index')],
-                    ['label' => 'Panoramic Bus', 'href' => route('bus-tour')],
+                    [
+                        'label' => 'Panoramic Bus',
+                        'href' => route('bus-tour'),
+                        'children' => $this->panoramicBusNavigation(),
+                    ],
                     ['label' => 'Contact', 'href' => route('contact')],
                 ],
                 'mobileNavigation' => [
@@ -156,7 +161,11 @@ class HandleInertiaRequests extends Middleware
                     ],
                     ['label' => 'Holiday Packages', 'href' => route('packages.index')],
                     ['label' => 'Visa Services', 'href' => route('visa.index')],
-                    ['label' => 'Panoramic Bus', 'href' => route('bus-tour')],
+                    [
+                        'label' => 'Panoramic Bus',
+                        'href' => route('bus-tour'),
+                        'children' => $this->panoramicBusNavigation(),
+                    ],
                     ['label' => 'Contact', 'href' => route('contact')],
                 ],
             ],
@@ -215,6 +224,26 @@ class HandleInertiaRequests extends Middleware
         }
 
         return $navigation;
+    }
+
+    /**
+     * @return array<int, array{label: string, href: string}>
+     */
+    private function panoramicBusNavigation(): array
+    {
+        return collect([
+            ['label' => 'All Panoramic Bus Tours', 'href' => route('bus-tour')],
+        ])
+            ->merge(
+                BusTourListing::query()
+                    ->where('is_active', true)
+                    ->orderBy('sort_order')
+                    ->orderBy('title')
+                    ->get()
+                    ->map(fn (BusTourListing $listing) => $listing->navigationPayload())
+            )
+            ->values()
+            ->all();
     }
 
     /**

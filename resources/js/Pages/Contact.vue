@@ -1,4 +1,5 @@
 <script setup>
+import { computed } from 'vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 import SiteMeta from '../Components/SiteMeta.vue';
 import SiteLayout from '../Layouts/SiteLayout.vue';
@@ -7,6 +8,7 @@ defineOptions({ layout: SiteLayout });
 
 const props = defineProps({
     seo: Object,
+    staticPage: Object,
     contact: Object,
     interestOptions: Array,
 });
@@ -29,6 +31,10 @@ const submit = () => {
         onSuccess: () => form.reset('name', 'email', 'phone', 'travel_date', 'guest_count', 'interest', 'message'),
     });
 };
+
+const hero = computed(() => props.staticPage?.hero ?? {});
+const sidebar = computed(() => props.staticPage?.sidebar ?? {});
+const formIntro = computed(() => props.staticPage?.sections?.[0] ?? {});
 </script>
 
 <template>
@@ -38,19 +44,18 @@ const submit = () => {
         <section class="about-hero contact-hero">
             <div class="container about-hero__grid">
                 <div class="about-hero__content">
-                    <p class="about-kicker">Contact Acute Tourism</p>
-                    <h1 class="about-title">Contact Acute Tourism</h1>
+                    <p class="about-kicker">{{ hero.eyebrow || 'Contact Acute Tourism' }}</p>
+                    <h1 class="about-title">{{ hero.title || 'Contact Acute Tourism' }}</h1>
                     <p class="about-copy">
-                        Contact us for a new travel enquiry or support with an existing booking. Our team can assist
-                        with tours, holiday packages, visa assistance, Panoramic Bus, corporate events, and general travel planning support.
+                        {{ hero.description || 'Contact us for a new travel enquiry or support with an existing booking. Our team can assist with tours, holiday packages, visa assistance, Panoramic Bus, corporate events, and general travel planning support.' }}
                     </p>
                 </div>
 
                 <div class="contact-cards">
                     <article class="about-card">
-                        <p class="about-card__label">Contact details</p>
-                        <h2>Reach us directly</h2>
-                        <p>For faster support, include your booking reference if you are an existing customer, or your travel date and service needed if you are making a new enquiry.</p>
+                        <p class="about-card__label">{{ sidebar.label || 'Contact details' }}</p>
+                        <h2>{{ sidebar.title || 'Reach us directly' }}</h2>
+                        <p>{{ sidebar.body || 'For faster support, include your booking reference if you are an existing customer, or your travel date and service needed if you are making a new enquiry.' }}</p>
                     </article>
                     <article class="about-card">
                         <p class="about-card__label">Company email</p>
@@ -72,11 +77,10 @@ const submit = () => {
         <section class="section-block contact-section">
             <div class="container contact-layout">
                 <div class="about-card about-card--primary">
-                    <p class="eyebrow">Enquiry form</p>
-                    <h2>Send your enquiry or support request.</h2>
+                    <p class="eyebrow">{{ formIntro.eyebrow || 'Enquiry form' }}</p>
+                    <h2>{{ formIntro.title || 'Send your enquiry or support request.' }}</h2>
                     <p>
-                        Share your trip timing, guest count, booking reference if available, and the type of support you want.
-                        This is the clearest route for tours, packages, visa assistance, Panoramic Bus, corporate requests, and existing booking support.
+                        {{ formIntro.body || 'Share your trip timing, guest count, booking reference if available, and the type of support you want. This is the clearest route for tours, packages, visa assistance, Panoramic Bus, corporate requests, and existing booking support.' }}
                     </p>
                 </div>
 

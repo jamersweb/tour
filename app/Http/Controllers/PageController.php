@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use App\Models\BlogCategory;
+use App\Models\BusTourListing;
 use App\Models\BusTourPage;
 use App\Models\Collection;
 use App\Models\Experience;
 use App\Models\Faq;
 use App\Models\Package;
 use App\Models\SiteSetting;
+use App\Models\StaticPage;
 use App\Models\Tour;
 use App\Support\ExperienceCollectionFilters;
 use Illuminate\Http\Request;
@@ -432,13 +434,46 @@ class PageController extends Controller
     public function busTour(): Response
     {
         $page = BusTourPage::current();
+        $content = $page->publicPayload();
+        $listings = BusTourListing::query()
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('title')
+            ->get();
+
+        if ($listings->isNotEmpty()) {
+            $content['routesSection']['items'] = $listings
+                ->map(fn (BusTourListing $listing) => $listing->cardPayload())
+                ->values()
+                ->all();
+        }
 
         return Inertia::render('BusTour', [
             'seo' => [
                 'title' => $page->seo_title ?: 'Luxury Bus Tour Dubai | Panoramic UAE Bus Trips',
                 'description' => $page->seo_description ?: "Join Acute Tourism's luxury bus tour Dubai experience with panoramic views, exclusive seats, curated UAE day trips, hotel pick-up, sightseeing, meals, and guided support.",
             ],
-            'pageContent' => $page->publicPayload(),
+            'pageContent' => $content,
+        ]);
+    }
+
+    public function busTourListing(string $slug): Response
+    {
+        $listing = BusTourListing::query()
+            ->where('slug', $slug)
+            ->where('is_active', true)
+            ->firstOrFail();
+
+        return Inertia::render('BusTours/Show', [
+            'seo' => [
+                'title' => $listing->seo_title ?: "{$listing->title} | Acute Tourism",
+                'description' => $listing->seo_description ?: $listing->short_description,
+                'image' => $listing->detail_image_resolved_url,
+            ],
+            'listing' => [
+                ...$listing->cardPayload(),
+                'galleryImageUrls' => $listing->gallery_resolved_urls,
+            ],
         ]);
     }
 
@@ -1546,11 +1581,44 @@ class PageController extends Controller
 
     public function about(): Response
     {
-        return Inertia::render('About', [
+        $staticPage = $this->editableStaticPage('about', [
+            'admin_title' => 'About',
+            'route_uri' => '/about',
             'seo' => [
                 'title' => 'Travel Planning Agency in Dubai | About Acute Tourism',
                 'description' => 'Learn about Acute Tourism, a Dubai travel planning agency helping customers book tours, holiday packages, visa assistance, and curated travel experiences with human support.',
             ],
+            'hero' => [
+                'eyebrow' => 'About Acute Tourism',
+                'title' => 'About Acute Tourism',
+                'description' => 'Acute Tourism LLC is a Dubai-based travel planning agency helping customers with Dubai tours, holiday packages, international visa assistance, corporate events, and Panoramic Bus experiences.',
+            ],
+            'primaryCta' => ['label' => 'Speak with our team', 'url' => '/contact'],
+            'secondaryCta' => ['label' => 'View holiday packages', 'url' => '/dubai-holiday-packages'],
+            'sidebar' => [
+                'label' => 'Why customers choose us',
+                'title' => 'One Dubai team for the important travel decisions.',
+                'items' => [
+                    'Real support before you book, not only automated product listings.',
+                    'Clear guidance across tours, packages, transfers, activities, and visa documents.',
+                    'Dubai-based coordination with office presence and direct WhatsApp assistance.',
+                    'Secure payment support and confirmation handled by the Acute Tourism team.',
+                ],
+            ],
+            'metrics' => [
+                ['value' => '12+', 'label' => 'Years of Dubai travel experience'],
+                ['value' => '2,500+', 'label' => 'Travelers assisted across trips and visas'],
+                ['value' => 'Licensed', 'label' => 'Dubai operator, license details available on request'],
+                ['value' => '2 hrs', 'label' => 'Typical WhatsApp response time'],
+            ],
+        ]);
+
+        return Inertia::render('About', [
+            'seo' => $this->staticPageSeo($staticPage, [
+                'title' => 'Travel Planning Agency in Dubai | About Acute Tourism',
+                'description' => 'Learn about Acute Tourism, a Dubai travel planning agency helping customers book tours, holiday packages, visa assistance, and curated travel experiences with human support.',
+            ]),
+            'staticPage' => $staticPage->publicPayload(),
             'pillars' => [
                 'Dubai-based team with local travel and supplier knowledge.',
                 'Support across planning, booking, confirmation, and follow-up.',
@@ -1561,11 +1629,37 @@ class PageController extends Controller
 
     public function cancellationPolicy(): Response
     {
-        return Inertia::render('CancellationPolicy', [
+        $staticPage = $this->editableStaticPage('cancellation-policy', [
+            'admin_title' => 'Cancellation Policy',
+            'route_uri' => '/cancellation-policy',
             'seo' => [
                 'title' => 'Cancellation Policy | Acute Tourism',
                 'description' => "Review Acute Tourism's cancellation policy for tours, tickets, holiday packages, visa assistance, panoramic bus experiences, and selected travel bookings.",
             ],
+            'hero' => [
+                'eyebrow' => 'Acute Tourism Policy',
+                'title' => 'Cancellation Policy',
+                'description' => 'This page explains how cancellations, amendments, no-shows, and refunds are handled for tours, entry tickets, holiday packages, and other travel services arranged through Acute Tourism.',
+            ],
+            'primaryCta' => ['label' => 'Contact Acute Tourism', 'url' => '/contact'],
+            'secondaryCta' => ['label' => 'View FAQ', 'url' => '/faq'],
+            'sidebar' => [
+                'label' => 'Before you cancel',
+                'items' => [
+                    'Have your booking reference ready',
+                    'Check the service date and supplier terms',
+                    'Note that package components may carry separate rules',
+                    'Wait for written confirmation before assuming a cancellation is complete',
+                ],
+            ],
+        ]);
+
+        return Inertia::render('CancellationPolicy', [
+            'seo' => $this->staticPageSeo($staticPage, [
+                'title' => 'Cancellation Policy | Acute Tourism',
+                'description' => "Review Acute Tourism's cancellation policy for tours, tickets, holiday packages, visa assistance, panoramic bus experiences, and selected travel bookings.",
+            ]),
+            'staticPage' => $staticPage->publicPayload(),
             'policySections' => [
                 [
                     'title' => 'General Booking Policy',
@@ -1641,11 +1735,37 @@ class PageController extends Controller
 
     public function termsAndConditions(): Response
     {
-        return Inertia::render('TermsAndConditions', [
+        $staticPage = $this->editableStaticPage('terms-and-conditions', [
+            'admin_title' => 'Terms and Conditions',
+            'route_uri' => '/terms-and-conditions',
             'seo' => [
                 'title' => 'Terms and Conditions | Acute Tourism',
                 'description' => 'Read the terms and conditions for using Acute Tourism services, including tours, packages, visa assistance, payments, cancellations, and bookings.',
             ],
+            'hero' => [
+                'eyebrow' => 'Acute Tourism Policy',
+                'title' => 'Terms and Conditions',
+                'description' => 'These Terms & Conditions explain the general rules for using the Acute Tourism website, making enquiries, confirming bookings, paying for services, requesting changes, and using travel-related services arranged by Acute Tourism.',
+            ],
+            'primaryCta' => ['label' => 'Contact Acute Tourism', 'url' => '/contact'],
+            'secondaryCta' => ['label' => 'Cancellation Policy', 'url' => '/cancellation-policy'],
+            'sidebar' => [
+                'label' => 'Important',
+                'items' => [
+                    'Availability is not final until confirmed',
+                    'Supplier terms may affect the booking outcome',
+                    'Customer-submitted details must be accurate',
+                    'Policy updates may be made as operations evolve',
+                ],
+            ],
+        ]);
+
+        return Inertia::render('TermsAndConditions', [
+            'seo' => $this->staticPageSeo($staticPage, [
+                'title' => 'Terms and Conditions | Acute Tourism',
+                'description' => 'Read the terms and conditions for using Acute Tourism services, including tours, packages, visa assistance, payments, cancellations, and bookings.',
+            ]),
+            'staticPage' => $staticPage->publicPayload(),
             'termsSections' => [
                 [
                     'title' => 'Use of the Website',
@@ -1730,11 +1850,37 @@ class PageController extends Controller
 
     public function privacyPolicy(): Response
     {
-        return Inertia::render('PrivacyPolicy', [
+        $staticPage = $this->editableStaticPage('privacy-policy', [
+            'admin_title' => 'Privacy Policy',
+            'route_uri' => '/privacy-policy',
             'seo' => [
                 'title' => 'Privacy Policy | Acute Tourism',
                 'description' => 'Learn how Acute Tourism collects, uses, and protects customer information for travel bookings, inquiries, payments, and support services.',
             ],
+            'hero' => [
+                'eyebrow' => 'Acute Tourism Policy',
+                'title' => 'Privacy Policy',
+                'description' => 'This Privacy Policy explains how Acute Tourism may collect, use, share, protect, and retain customer information when providing tours, holiday packages, visa assistance, corporate events, and related travel services.',
+            ],
+            'primaryCta' => ['label' => 'Contact Acute Tourism', 'url' => '/contact'],
+            'secondaryCta' => ['label' => 'Terms & Conditions', 'url' => '/terms-and-conditions'],
+            'sidebar' => [
+                'label' => 'At a glance',
+                'items' => [
+                    'Inquiry and booking details may be stored for service handling',
+                    'Relevant information may be shared with suppliers when needed',
+                    'Payment and booking data may be retained for operational records',
+                    'Policy updates may happen as systems and requirements evolve',
+                ],
+            ],
+        ]);
+
+        return Inertia::render('PrivacyPolicy', [
+            'seo' => $this->staticPageSeo($staticPage, [
+                'title' => 'Privacy Policy | Acute Tourism',
+                'description' => 'Learn how Acute Tourism collects, uses, and protects customer information for travel bookings, inquiries, payments, and support services.',
+            ]),
+            'staticPage' => $staticPage->publicPayload(),
             'privacySections' => [
                 [
                     'title' => 'Information We Collect',
@@ -1814,11 +1960,44 @@ class PageController extends Controller
 
     public function corporateEvents(): Response
     {
-        return Inertia::render('CorporateEvents', [
+        $staticPage = $this->editableStaticPage('corporate-events', [
+            'admin_title' => 'Corporate Events',
+            'route_uri' => '/corporate-travel-event-planning-dubai',
             'seo' => [
                 'title' => 'Corporate Travel and Event Planning Dubai | Acute Tourism',
                 'description' => 'Plan corporate travel and event experiences in Dubai with Acute Tourism, including group tours, transfers, team activities, event travel support, and dedicated coordination.',
             ],
+            'hero' => [
+                'eyebrow' => 'Corporate events in Dubai',
+                'title' => 'Corporate Travel and Event Planning Dubai',
+                'description' => 'Acute Tourism helps companies, executives, HR teams, travel managers, and event organizers plan Dubai corporate experiences with prompt response, clear scope, human support, and reliable event-day coordination.',
+            ],
+            'primaryCta' => ['label' => 'Request a corporate proposal', 'url' => '/contact'],
+            'secondaryCta' => ['label' => 'Speak to a consultant', 'url' => 'https://wa.me/971521926984?text=Hi%20Acute%20Tourism%2C%20I%20would%20like%20to%20plan%20a%20corporate%20event%20in%20Dubai.'],
+            'sidebar' => [
+                'label' => 'Service promise',
+                'title' => 'Premium service, without slow back-and-forth.',
+                'items' => [
+                    'Human consultation before pricing or proposal recommendations.',
+                    'Prompt response through WhatsApp, phone, or email.',
+                    'Clear event scope, inclusions, timing, and responsibilities.',
+                    'Coordination for transport, activities, guest flow, and suppliers.',
+                ],
+            ],
+            'metrics' => [
+                ['value' => 'Human-first', 'label' => 'Consultation before proposal'],
+                ['value' => '2 hrs', 'label' => 'Typical WhatsApp response time'],
+                ['value' => 'Dubai-based', 'label' => 'Local supplier and operations access'],
+                ['value' => 'Service-led', 'label' => 'Clear coordination standard'],
+            ],
+        ]);
+
+        return Inertia::render('CorporateEvents', [
+            'seo' => $this->staticPageSeo($staticPage, [
+                'title' => 'Corporate Travel and Event Planning Dubai | Acute Tourism',
+                'description' => 'Plan corporate travel and event experiences in Dubai with Acute Tourism, including group tours, transfers, team activities, event travel support, and dedicated coordination.',
+            ]),
+            'staticPage' => $staticPage->publicPayload(),
             'services' => [
                 'Executive desert experiences',
                 'Private yacht hosting',
@@ -1831,12 +2010,38 @@ class PageController extends Controller
     public function contact(): Response
     {
         $settings = SiteSetting::current();
-
-        return Inertia::render('Contact', [
+        $staticPage = $this->editableStaticPage('contact', [
+            'admin_title' => 'Contact',
+            'route_uri' => '/contact',
             'seo' => [
                 'title' => 'Contact Acute Tourism | Travel Planning Support in Dubai',
                 'description' => 'Contact Acute Tourism for Dubai tours, holiday packages, panoramic bus experiences, outbound visa assistance, corporate travel, and custom travel planning support.',
             ],
+            'hero' => [
+                'eyebrow' => 'Contact Acute Tourism',
+                'title' => 'Contact Acute Tourism',
+                'description' => 'Contact us for a new travel enquiry or support with an existing booking. Our team can assist with tours, holiday packages, visa assistance, Panoramic Bus, corporate events, and general travel planning support.',
+            ],
+            'sidebar' => [
+                'label' => 'Contact details',
+                'title' => 'Reach us directly',
+                'body' => 'For faster support, include your booking reference if you are an existing customer, or your travel date and service needed if you are making a new enquiry.',
+            ],
+            'sections' => [
+                [
+                    'eyebrow' => 'Enquiry form',
+                    'title' => 'Send your enquiry or support request.',
+                    'body' => 'Share your trip timing, guest count, booking reference if available, and the type of support you want. This is the clearest route for tours, packages, visa assistance, Panoramic Bus, corporate requests, and existing booking support.',
+                ],
+            ],
+        ]);
+
+        return Inertia::render('Contact', [
+            'seo' => $this->staticPageSeo($staticPage, [
+                'title' => 'Contact Acute Tourism | Travel Planning Support in Dubai',
+                'description' => 'Contact Acute Tourism for Dubai tours, holiday packages, panoramic bus experiences, outbound visa assistance, corporate travel, and custom travel planning support.',
+            ]),
+            'staticPage' => $staticPage->publicPayload(),
             'contact' => [
                 'email' => $settings->contact_email,
                 'phone' => $settings->contact_phone,
@@ -1971,11 +2176,35 @@ class PageController extends Controller
 
     public function faq(): Response
     {
-        return Inertia::render('Faq', [
+        $staticPage = $this->editableStaticPage('faq', [
+            'admin_title' => 'FAQ',
+            'route_uri' => '/faq',
             'seo' => [
                 'title' => 'FAQs | Acute Tourism',
                 'description' => 'Find answers to common questions about Acute Tourism tours, tickets, holiday packages, visa assistance, Panoramic Bus, corporate events, bookings, payments, cancellations, and refunds.',
             ],
+            'hero' => [
+                'eyebrow' => 'Acute Tourism FAQs',
+                'title' => 'Frequently Asked Questions',
+                'description' => 'Find clear answers about Acute Tourism services, including tours and tickets, holiday packages, international visa assistance, Panoramic Bus, corporate events, bookings, payments, cancellations, and customer support.',
+            ],
+            'sidebar' => [
+                'label' => 'What this covers',
+                'items' => [
+                    'Tours, tickets, and private bookings',
+                    'Holiday packages and visa assistance',
+                    'Panoramic Bus and corporate events',
+                    'Payments, cancellations, and refunds',
+                ],
+            ],
+        ]);
+
+        return Inertia::render('Faq', [
+            'seo' => $this->staticPageSeo($staticPage, [
+                'title' => 'FAQs | Acute Tourism',
+                'description' => 'Find answers to common questions about Acute Tourism tours, tickets, holiday packages, visa assistance, Panoramic Bus, corporate events, bookings, payments, cancellations, and refunds.',
+            ]),
+            'staticPage' => $staticPage->publicPayload(),
             'featuredFaqs' => Faq::query()
                 ->published()
                 ->where('is_featured', true)
@@ -2001,6 +2230,40 @@ class PageController extends Controller
                 ])
                 ->values(),
         ]);
+    }
+
+    private function editableStaticPage(string $key, array $defaults): StaticPage
+    {
+        $page = StaticPage::forKey($key, $defaults);
+        $defaultAttributes = StaticPage::recordDefaults($key, $defaults);
+        $updates = [];
+
+        foreach ($defaultAttributes as $attribute => $value) {
+            if ($value === null || $attribute === 'is_active') {
+                continue;
+            }
+
+            $current = $page->getAttribute($attribute);
+            if ($current === null || $current === [] || $current === '') {
+                $updates[$attribute] = $value;
+            }
+        }
+
+        if ($updates !== []) {
+            $page->fill($updates);
+            $page->saveQuietly();
+            $page->refresh();
+        }
+
+        return $page;
+    }
+
+    private function staticPageSeo(StaticPage $page, array $fallback): array
+    {
+        return [
+            'title' => $page->seo_title ?: $fallback['title'],
+            'description' => $page->seo_description ?: $fallback['description'],
+        ];
     }
 
     private function renderExperiencesIndex(?string $locationFilter = null, ?string $typeFilter = null): Response

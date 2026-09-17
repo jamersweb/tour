@@ -36,6 +36,7 @@ Route::get('/tours/{slug}', [PageController::class, 'tour'])->name('tours.show')
 Route::redirect('/bus-tour', '/luxury-bus-tour-dubai', 301);
 Route::redirect('/panoramic-bus-tour-dubai', '/luxury-bus-tour-dubai', 301);
 Route::get('/luxury-bus-tour-dubai', [PageController::class, 'busTour'])->name('bus-tour');
+Route::get('/luxury-bus-tour-dubai/{slug}', [PageController::class, 'busTourListing'])->name('bus-tour.listings.show');
 Route::redirect('/packages', '/dubai-holiday-packages', 301);
 Route::get('/dubai-holiday-packages', [PageController::class, 'packages'])->name('packages.index');
 Route::get('/packages/{slug}', [PageController::class, 'package'])->name('packages.show');

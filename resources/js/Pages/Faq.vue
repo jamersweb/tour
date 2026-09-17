@@ -1,14 +1,17 @@
 <script setup>
+import { computed } from 'vue';
 import SiteMeta from '../Components/SiteMeta.vue';
 import SiteLayout from '../Layouts/SiteLayout.vue';
 
 defineOptions({ layout: SiteLayout });
 
-defineProps({
+const props = defineProps({
     seo: Object,
+    staticPage: Object,
+    faqGroups: Array,
 });
 
-const faqGroups = [
+const defaultFaqGroups = [
     {
         category: 'About Acute Tourism',
         items: [
@@ -86,6 +89,13 @@ const faqGroups = [
         ],
     },
 ];
+
+const hero = computed(() => props.staticPage?.hero ?? {});
+const sidebar = computed(() => props.staticPage?.sidebar ?? {});
+const displayFaqGroups = computed(() => props.faqGroups?.length ? props.faqGroups : defaultFaqGroups.map((group) => ({
+    category: group.category,
+    items: group.items.map(([question, answer]) => ({ question, answer })),
+})));
 </script>
 
 <template>
@@ -95,11 +105,10 @@ const faqGroups = [
         <section class="faq-hero">
             <div class="container faq-hero__grid">
                 <div class="home-hero-motion">
-                    <p class="about-kicker">Acute Tourism FAQs</p>
-                    <h1 class="about-title">Frequently Asked Questions</h1>
+                    <p class="about-kicker">{{ hero.eyebrow || 'Acute Tourism FAQs' }}</p>
+                    <h1 class="about-title">{{ hero.title || 'Frequently Asked Questions' }}</h1>
                     <p class="about-copy">
-                        Find clear answers about Acute Tourism services, including tours and tickets, holiday packages,
-                        international visa assistance, Panoramic Bus, corporate events, bookings, payments, cancellations, and customer support.
+                        {{ hero.description || 'Find clear answers about Acute Tourism services, including tours and tickets, holiday packages, international visa assistance, Panoramic Bus, corporate events, bookings, payments, cancellations, and customer support.' }}
                     </p>
                     <div class="faq-meta">
                         <span class="filter-chip active">Acute Tourism LLC</span>
@@ -108,12 +117,11 @@ const faqGroups = [
                 </div>
 
                 <div class="about-card about-card--primary home-hero-motion">
-                    <p class="about-card__label">What this covers</p>
+                    <p class="about-card__label">{{ sidebar.label || 'What this covers' }}</p>
+                    <h2 v-if="sidebar.title">{{ sidebar.title }}</h2>
+                    <p v-if="sidebar.body">{{ sidebar.body }}</p>
                     <ul class="about-list about-list--tight">
-                        <li>Tours, tickets, and private bookings</li>
-                        <li>Holiday packages and visa assistance</li>
-                        <li>Panoramic Bus and corporate events</li>
-                        <li>Payments, cancellations, and refunds</li>
+                        <li v-for="item in sidebar.items || []" :key="item">{{ item }}</li>
                     </ul>
                 </div>
             </div>
@@ -121,15 +129,15 @@ const faqGroups = [
 
         <section class="section-block faq-groups" data-reveal>
             <div class="container faq-groups__stack">
-                <section v-for="group in faqGroups" :key="group.category" class="faq-group-panel">
+                <section v-for="group in displayFaqGroups" :key="group.category" class="faq-group-panel">
                     <div class="faq-group-panel__head">
                         <p class="about-kicker">{{ group.category }}</p>
                     </div>
 
                     <div class="content-faq-list">
-                        <details v-for="(faq, index) in group.items" :key="faq[0]" :open="index === 0" class="content-faq-item">
-                            <summary>{{ faq[0] }}</summary>
-                            <p>{{ faq[1] }}</p>
+                        <details v-for="(faq, index) in group.items" :key="faq.question" :open="index === 0" class="content-faq-item">
+                            <summary>{{ faq.question }}</summary>
+                            <p>{{ faq.answer }}</p>
                         </details>
                     </div>
                 </section>

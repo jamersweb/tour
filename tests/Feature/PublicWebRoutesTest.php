@@ -3,10 +3,12 @@
 namespace Tests\Feature;
 
 use App\Models\Article;
+use App\Models\BusTourListing;
 use App\Models\BusTourPage;
 use App\Models\Collection;
 use App\Models\Experience;
 use App\Models\Package;
+use App\Models\StaticPage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -43,6 +45,7 @@ class PublicWebRoutesTest extends TestCase
             '/evisa-assistance',
             '/tourist-visa-assistance',
             '/luxury-bus-tour-dubai',
+            '/luxury-bus-tour-dubai/dubai-panoramic-bus-food-tasting',
             '/about',
             '/corporate-travel-event-planning-dubai',
             '/contact',
@@ -138,21 +141,6 @@ class PublicWebRoutesTest extends TestCase
         $page = BusTourPage::current();
         $page->update([
             'hero_title' => 'Editable Panoramic Bus Heading',
-            'routes' => [
-                [
-                    'key' => 'custom',
-                    'title' => 'Editable Admin Bus Route',
-                    'day' => 'Custom route',
-                    'price' => 'AED 123 per person',
-                    'panelPrice' => 'AED 123 / person',
-                    'label' => 'Custom admin label',
-                    'copy' => 'Custom admin package copy.',
-                    'bestFor' => 'Custom best-fit copy.',
-                    'tags' => ['Admin tag'],
-                    'highlights' => ['Admin highlight'],
-                    'included' => ['Admin inclusion'],
-                ],
-            ],
         ]);
 
         $response = $this->get('/luxury-bus-tour-dubai');
@@ -161,8 +149,83 @@ class PublicWebRoutesTest extends TestCase
         $response->assertInertia(fn (Assert $page) => $page
             ->component('BusTour')
             ->where('pageContent.hero.title', 'Editable Panoramic Bus Heading')
+        );
+    }
+
+    public function test_bus_tour_listings_are_admin_managed_visible_and_have_detail_pages(): void
+    {
+        BusTourListing::query()->create([
+            'title' => 'Editable Admin Bus Route',
+            'slug' => 'editable-admin-bus-route',
+            'route_label' => 'Custom route',
+            'price' => 'AED 123 per person',
+            'panel_price' => 'AED 123 / person',
+            'category_label' => 'Custom admin label',
+            'short_description' => 'Custom admin package copy.',
+            'best_for' => 'Custom best-fit copy.',
+            'card_image_url' => 'https://example.com/card.jpg',
+            'detail_image_url' => 'https://example.com/detail.jpg',
+            'tags' => ['Admin tag'],
+            'highlights' => ['Admin highlight'],
+            'included' => ['Admin inclusion'],
+            'is_active' => true,
+            'sort_order' => 1,
+        ]);
+
+        $landingResponse = $this->get('/luxury-bus-tour-dubai');
+
+        $landingResponse->assertOk();
+        $landingResponse->assertInertia(fn (Assert $page) => $page
+            ->component('BusTour')
             ->where('pageContent.routesSection.items.0.title', 'Editable Admin Bus Route')
             ->where('pageContent.routesSection.items.0.price', 'AED 123 per person')
+            ->where('pageContent.routesSection.items.0.cardImageUrl', 'https://example.com/card.jpg')
+            ->where('site.primaryNavigation.3.children.0.label', 'All Panoramic Bus Tours')
+            ->where('site.primaryNavigation.3.children.1.label', 'Editable Admin Bus Route')
+            ->where('site.primaryNavigation.3.children.1.href', route('bus-tour.listings.show', 'editable-admin-bus-route'))
+        );
+
+        $detailResponse = $this->get('/luxury-bus-tour-dubai/editable-admin-bus-route');
+
+        $detailResponse->assertOk();
+        $detailResponse->assertInertia(fn (Assert $page) => $page
+            ->component('BusTours/Show')
+            ->where('listing.title', 'Editable Admin Bus Route')
+            ->where('listing.detailImageUrl', 'https://example.com/detail.jpg')
+        );
+    }
+
+    public function test_static_pages_use_admin_editable_content(): void
+    {
+        StaticPage::query()->create([
+            'page_key' => 'about',
+            'admin_title' => 'About',
+            'route_uri' => '/about',
+            'seo_title' => 'Admin SEO About',
+            'seo_description' => 'Admin SEO description for about page.',
+            'hero_eyebrow' => 'Admin eyebrow',
+            'hero_title' => 'Admin editable about heading',
+            'hero_description' => 'Admin editable about copy.',
+            'primary_cta_label' => 'Admin CTA',
+            'primary_cta_url' => '/contact',
+            'sidebar_label' => 'Admin sidebar label',
+            'sidebar_title' => 'Admin sidebar title',
+            'sidebar_items' => ['Admin sidebar item'],
+            'metrics' => [
+                ['value' => '99', 'label' => 'Admin metric'],
+            ],
+            'is_active' => true,
+        ]);
+
+        $response = $this->get('/about');
+
+        $response->assertOk();
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('About')
+            ->where('seo.title', 'Admin SEO About')
+            ->where('staticPage.hero.title', 'Admin editable about heading')
+            ->where('staticPage.sidebar.items.0', 'Admin sidebar item')
+            ->where('staticPage.metrics.0.value', '99')
         );
     }
 

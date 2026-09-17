@@ -1,16 +1,26 @@
 <script setup>
+import { computed } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import SiteMeta from '../Components/SiteMeta.vue';
 import SiteLayout from '../Layouts/SiteLayout.vue';
 
 defineOptions({ layout: SiteLayout });
 
-defineProps({
+const props = defineProps({
     seo: Object,
+    staticPage: Object,
     services: Array,
 });
 
 const page = usePage();
+const editable = computed(() => props.staticPage ?? {});
+const hero = computed(() => editable.value.hero ?? {});
+const sidebar = computed(() => editable.value.sidebar ?? {});
+const pageStats = computed(() => editable.value.metrics?.length ? editable.value.metrics : stats);
+const promisesList = computed(() => sidebar.value.items?.length ? sidebar.value.items : promises);
+const primaryCta = computed(() => editable.value.primaryCta ?? {});
+const secondaryCta = computed(() => editable.value.secondaryCta ?? {});
+const isExternal = (url) => /^https?:\/\//i.test(url || '');
 
 const promises = [
     'Human consultation before pricing or proposal recommendations.',
@@ -68,24 +78,31 @@ const faqs = [
         <section class="about-hero corporate-hero">
             <div class="container about-hero__grid">
                 <div class="about-hero__content home-hero-motion">
-                    <p class="about-kicker">Corporate events in Dubai</p>
-                    <h1 class="about-title">Corporate Travel and Event Planning Dubai</h1>
+                    <p class="about-kicker">{{ hero.eyebrow || 'Corporate events in Dubai' }}</p>
+                    <h1 class="about-title">{{ hero.title || 'Corporate Travel and Event Planning Dubai' }}</h1>
                     <p class="about-copy">
-                        Acute Tourism helps companies, executives, HR teams, travel managers, and event organizers plan Dubai corporate
-                        experiences with prompt response, clear scope, human support, and reliable event-day coordination.
+                        {{ hero.description || 'Acute Tourism helps companies, executives, HR teams, travel managers, and event organizers plan Dubai corporate experiences with prompt response, clear scope, human support, and reliable event-day coordination.' }}
                     </p>
 
                     <div class="about-actions">
-                        <Link class="button-primary" href="/contact">Request a corporate proposal</Link>
-                        <a class="button-secondary" href="https://wa.me/971521926984?text=Hi%20Acute%20Tourism%2C%20I%20would%20like%20to%20plan%20a%20corporate%20event%20in%20Dubai." target="_blank" rel="noreferrer">Speak to a consultant</a>
+                        <Link class="button-primary" :href="primaryCta.url || '/contact'">{{ primaryCta.label || 'Request a corporate proposal' }}</Link>
+                        <a
+                            v-if="isExternal(secondaryCta.url)"
+                            class="button-secondary"
+                            :href="secondaryCta.url"
+                            target="_blank"
+                            rel="noreferrer"
+                        >{{ secondaryCta.label || 'Speak to a consultant' }}</a>
+                        <Link v-else class="button-secondary" :href="secondaryCta.url || '/contact'">{{ secondaryCta.label || 'Speak to a consultant' }}</Link>
                     </div>
                 </div>
 
                 <div class="about-card about-card--primary home-hero-motion">
-                    <p class="about-card__label">Service promise</p>
-                    <h2>Premium service, without slow back-and-forth.</h2>
+                    <p class="about-card__label">{{ sidebar.label || 'Service promise' }}</p>
+                    <h2>{{ sidebar.title || 'Premium service, without slow back-and-forth.' }}</h2>
+                    <p v-if="sidebar.body">{{ sidebar.body }}</p>
                     <ul class="about-list about-list--tight">
-                        <li v-for="item in promises" :key="item">{{ item }}</li>
+                        <li v-for="item in promisesList" :key="item">{{ item }}</li>
                     </ul>
                 </div>
             </div>
@@ -93,7 +110,7 @@ const faqs = [
 
         <section class="trust-strip-section" data-reveal>
             <div class="container about-stats">
-                <article v-for="stat in stats" :key="stat.label" class="about-stat">
+                <article v-for="stat in pageStats" :key="stat.label" class="about-stat">
                     <strong>{{ stat.value }}</strong>
                     <span>{{ stat.label }}</span>
                 </article>

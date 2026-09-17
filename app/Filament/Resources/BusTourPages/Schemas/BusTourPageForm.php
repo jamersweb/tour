@@ -59,27 +59,11 @@ class BusTourPageForm
                 ])
                 ->columns(2),
             Section::make('Tour Packages')
-                ->description('The key controls the visual style. Existing keys are dubai, alain, fujairah, and abudhabi.')
+                ->description('Controls the heading around the listing cards. Create, edit, sort, and upload images for actual tours in Content > Panoramic Bus Listings.')
                 ->schema([
                     TextInput::make('routes_eyebrow')->maxLength(120),
                     Textarea::make('routes_title')->rows(2)->columnSpanFull(),
                     Textarea::make('routes_copy')->rows(3)->columnSpanFull(),
-                    Repeater::make('routes')
-                        ->schema([
-                            TextInput::make('key')->required()->maxLength(80),
-                            TextInput::make('title')->required()->maxLength(255),
-                            TextInput::make('day')->maxLength(120),
-                            TextInput::make('price')->maxLength(120),
-                            TextInput::make('panelPrice')->label('Panel price')->maxLength(120),
-                            TextInput::make('label')->maxLength(160),
-                            Textarea::make('copy')->rows(3)->required()->columnSpanFull(),
-                            Textarea::make('bestFor')->label('Best for')->rows(3)->columnSpanFull(),
-                            TagsInput::make('tags')->placeholder('Add tag')->columnSpanFull(),
-                            TagsInput::make('highlights')->placeholder('Add route highlight')->columnSpanFull(),
-                            TagsInput::make('included')->placeholder('Add included item')->columnSpanFull(),
-                        ])
-                        ->columns(2)
-                        ->columnSpanFull(),
                     Textarea::make('availability_note')->rows(3)->columnSpanFull(),
                 ])
                 ->columns(2),

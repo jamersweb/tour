@@ -6,8 +6,9 @@ import SiteLayout from '../Layouts/SiteLayout.vue';
 
 defineOptions({ layout: SiteLayout });
 
-defineProps({
+const props = defineProps({
     seo: Object,
+    staticPage: Object,
     pillars: Array,
 });
 
@@ -94,6 +95,13 @@ const aboutFaqs = [
 ];
 
 const companyContact = computed(() => page.props.site?.contact ?? {});
+const editable = computed(() => props.staticPage ?? {});
+const hero = computed(() => editable.value.hero ?? {});
+const sidebar = computed(() => editable.value.sidebar ?? {});
+const pageStats = computed(() => editable.value.metrics?.length ? editable.value.metrics : stats);
+const sidebarItems = computed(() => sidebar.value.items?.length ? sidebar.value.items : serviceRows);
+const primaryCta = computed(() => editable.value.primaryCta ?? {});
+const secondaryCta = computed(() => editable.value.secondaryCta ?? {});
 </script>
 
 <template>
@@ -103,26 +111,26 @@ const companyContact = computed(() => page.props.site?.contact ?? {});
         <section class="about-hero">
             <div class="container about-hero__grid">
                 <div class="about-hero__content home-hero-motion">
-                    <p class="about-kicker">About Acute Tourism</p>
-                    <h1 class="about-title">About Acute Tourism</h1>
+                    <p class="about-kicker">{{ hero.eyebrow || 'About Acute Tourism' }}</p>
+                    <h1 class="about-title">{{ hero.title || 'About Acute Tourism' }}</h1>
                     <p class="about-copy">
-                        Acute Tourism LLC is a Dubai-based travel planning agency helping customers with Dubai tours,
-                        holiday packages, international visa assistance, corporate events, and Panoramic Bus experiences.
+                        {{ hero.description || 'Acute Tourism LLC is a Dubai-based travel planning agency helping customers with Dubai tours, holiday packages, international visa assistance, corporate events, and Panoramic Bus experiences.' }}
                     </p>
 
                     <div class="about-actions">
-                        <Link class="button-primary" href="/contact">Speak with our team</Link>
-                        <Link class="button-secondary" href="/dubai-holiday-packages">View holiday packages</Link>
+                        <Link class="button-primary" :href="primaryCta.url || '/contact'">{{ primaryCta.label || 'Speak with our team' }}</Link>
+                        <Link class="button-secondary" :href="secondaryCta.url || '/dubai-holiday-packages'">{{ secondaryCta.label || 'View holiday packages' }}</Link>
                         <Link class="button-secondary" href="/tourist-visa-assistance-uae-residents">Get visa assistance</Link>
                     </div>
                 </div>
 
                 <div class="about-hero__panel home-hero-motion">
                     <div class="about-card about-card--primary">
-                        <p class="about-card__label">Why customers choose us</p>
-                        <h2>One Dubai team for the important travel decisions.</h2>
+                        <p class="about-card__label">{{ sidebar.label || 'Why customers choose us' }}</p>
+                        <h2>{{ sidebar.title || 'One Dubai team for the important travel decisions.' }}</h2>
+                        <p v-if="sidebar.body">{{ sidebar.body }}</p>
                         <ul class="about-list about-list--tight">
-                            <li v-for="item in serviceRows" :key="item">{{ item }}</li>
+                            <li v-for="item in sidebarItems" :key="item">{{ item }}</li>
                         </ul>
                     </div>
                 </div>
@@ -131,7 +139,7 @@ const companyContact = computed(() => page.props.site?.contact ?? {});
 
         <section class="trust-strip-section" data-reveal>
             <div class="container about-stats">
-                <article v-for="stat in stats" :key="stat.label" class="about-stat">
+                <article v-for="stat in pageStats" :key="stat.label" class="about-stat">
                     <strong>{{ stat.value }}</strong>
                     <span>{{ stat.label }}</span>
                 </article>

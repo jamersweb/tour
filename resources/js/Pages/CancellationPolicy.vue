@@ -1,16 +1,23 @@
 <script setup>
+import { computed } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import SiteMeta from '../Components/SiteMeta.vue';
 import SiteLayout from '../Layouts/SiteLayout.vue';
 
 defineOptions({ layout: SiteLayout });
 
-defineProps({
+const props = defineProps({
     seo: Object,
+    staticPage: Object,
     policySections: Array,
 });
 
 const page = usePage();
+const hero = computed(() => props.staticPage?.hero ?? {});
+const sidebar = computed(() => props.staticPage?.sidebar ?? {});
+const displaySections = computed(() => props.staticPage?.sections?.length ? props.staticPage.sections : props.policySections);
+const primaryCta = computed(() => props.staticPage?.primaryCta ?? {});
+const secondaryCta = computed(() => props.staticPage?.secondaryCta ?? {});
 </script>
 
 <template>
@@ -20,11 +27,10 @@ const page = usePage();
         <section class="about-hero policy-hero">
             <div class="container about-hero__grid">
                 <div class="about-hero__content">
-                    <p class="about-kicker">Acute Tourism Policy</p>
-                    <h1 class="about-title">Cancellation Policy</h1>
+                    <p class="about-kicker">{{ hero.eyebrow || 'Acute Tourism Policy' }}</p>
+                    <h1 class="about-title">{{ hero.title || 'Cancellation Policy' }}</h1>
                     <p class="about-copy">
-                        This page explains how cancellations, amendments, no-shows, and refunds are handled for tours, entry tickets,
-                        holiday packages, and other travel services arranged through Acute Tourism.
+                        {{ hero.description || 'This page explains how cancellations, amendments, no-shows, and refunds are handled for tours, entry tickets, holiday packages, and other travel services arranged through Acute Tourism.' }}
                     </p>
                     <div class="faq-meta policy-meta">
                         <span class="filter-chip active">Acute Tourism LLC</span>
@@ -32,18 +38,17 @@ const page = usePage();
                     </div>
 
                     <div class="about-actions">
-                        <Link class="button-primary" href="/contact">Contact Acute Tourism</Link>
-                        <Link class="button-secondary" href="/faq">View FAQ</Link>
+                        <Link class="button-primary" :href="primaryCta.url || '/contact'">{{ primaryCta.label || 'Contact Acute Tourism' }}</Link>
+                        <Link class="button-secondary" :href="secondaryCta.url || '/faq'">{{ secondaryCta.label || 'View FAQ' }}</Link>
                     </div>
                 </div>
 
                 <div class="about-card about-card--primary">
-                    <p class="about-card__label">Before you cancel</p>
+                    <p class="about-card__label">{{ sidebar.label || 'Before you cancel' }}</p>
+                    <h2 v-if="sidebar.title">{{ sidebar.title }}</h2>
+                    <p v-if="sidebar.body">{{ sidebar.body }}</p>
                     <ul class="about-list about-list--tight">
-                        <li>Have your booking reference ready</li>
-                        <li>Check the service date and supplier terms</li>
-                        <li>Note that package components may carry separate rules</li>
-                        <li>Wait for written confirmation before assuming a cancellation is complete</li>
+                        <li v-for="item in sidebar.items || []" :key="item">{{ item }}</li>
                     </ul>
                 </div>
             </div>
@@ -51,7 +56,7 @@ const page = usePage();
 
         <section class="section-block policy-sections">
             <div class="container policy-sections__stack">
-                <article v-for="section in policySections" :key="section.title" class="about-card policy-section-card">
+                <article v-for="section in displaySections" :key="section.title" class="about-card policy-section-card">
                     <p class="about-card__label">Policy section</p>
                     <h2>{{ section.title }}</h2>
                     <ul v-if="section.items" class="about-list">

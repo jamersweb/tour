@@ -1,5 +1,5 @@
 <script setup>
-import { useForm, usePage } from '@inertiajs/vue3';
+import { Link, useForm, usePage } from '@inertiajs/vue3';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import SiteMeta from '../Components/SiteMeta.vue';
 import SiteLayout from '../Layouts/SiteLayout.vue';
@@ -230,6 +230,16 @@ function galleryCoverStyle(url) {
     };
 }
 
+function imageBackgroundStyle(url) {
+    if (!url) {
+        return {};
+    }
+
+    return {
+        backgroundImage: `linear-gradient(to top, rgba(6, 26, 99, 0.88), rgba(6, 26, 99, 0.18) 58%, rgba(6, 26, 99, 0.08)), url('${url}')`,
+    };
+}
+
 function openMedia(index) {
     activeMediaIndex.value = index;
 }
@@ -417,7 +427,7 @@ onBeforeUnmount(() => {
                     <p class="acute-copy">{{ content.routesSection?.copy || 'Four curated routes from Dubai, each with hotel pick-up and drop-off, a professional guide, lunch or tasting value, water and soft drinks.' }}</p>
                 </div>
                 <div class="acute-tours-grid">
-                    <article v-for="route in editableRoutes" :key="route.key" class="acute-tour-card" :class="route.key">
+                    <Link v-for="route in editableRoutes" :key="route.key" :href="route.href || '#details'" class="acute-tour-card" :class="route.key" :style="imageBackgroundStyle(route.cardImageUrl)">
                         <div class="acute-tour-body">
                             <span class="acute-tour-day">{{ route.day }}</span>
                             <h3>{{ route.title }}</h3>
@@ -425,7 +435,7 @@ onBeforeUnmount(() => {
                             <p>{{ route.copy }}</p>
                             <div class="acute-tags"><span v-for="tag in route.tags" :key="tag">{{ tag }}</span></div>
                         </div>
-                    </article>
+                    </Link>
                 </div>
                 <div class="acute-availability-note"><strong>Availability note:</strong> {{ content.routesSection?.availabilityNote || 'Scheduled seats are limited and preferred dates may close once capacity is reached. For families, celebrations, corporate groups or travel agencies, private bus requests are recommended for better date control.' }}</div>
             </div>
@@ -440,7 +450,7 @@ onBeforeUnmount(() => {
                 </div>
                 <div class="acute-details-list">
                     <article v-for="route in editableRoutes" :key="`${route.key}-details`" class="acute-tour-panel">
-                        <div class="acute-panel-image" :class="route.key"></div>
+                        <div class="acute-panel-image" :class="route.key" :style="imageBackgroundStyle(route.detailImageUrl || route.cardImageUrl)"></div>
                         <div class="acute-panel-content">
                             <div class="acute-panel-top">
                                 <span class="acute-panel-label">{{ route.label }}</span>
@@ -458,6 +468,7 @@ onBeforeUnmount(() => {
                                     <ul><li v-for="item in route.included" :key="item">{{ item }}</li></ul>
                                 </div>
                             </div>
+                            <Link v-if="route.href" class="acute-btn gold" :href="route.href">View Details</Link>
                         </div>
                     </article>
                 </div>

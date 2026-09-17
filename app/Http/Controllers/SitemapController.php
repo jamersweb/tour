@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use App\Models\BusTourListing;
 use App\Models\Collection;
 use App\Models\Experience;
 use App\Models\Package;
@@ -68,7 +69,7 @@ class SitemapController extends Controller
             resource_path('js/Pages/TourgratPartner.vue'),
         ]);
 
-        return [
+        $urls = [
             $this->row('/', $lastmod, 'daily', '1.0'),
             $this->row('/about', $lastmod, 'monthly', '0.7'),
             $this->row('/earn-with-tourgrat', $lastmod, 'monthly', '0.65'),
@@ -80,6 +81,21 @@ class SitemapController extends Controller
             $this->row('/terms-and-conditions', $lastmod, 'yearly', '0.35'),
             $this->row('/privacy-policy', $lastmod, 'yearly', '0.35'),
         ];
+
+        foreach (BusTourListing::query()
+            ->where('is_active', true)
+            ->whereNotNull('slug')
+            ->orderBy('slug')
+            ->get(['slug', 'updated_at']) as $listing) {
+            $urls[] = $this->row(
+                "/luxury-bus-tour-dubai/{$listing->slug}",
+                $listing->updated_at,
+                'weekly',
+                '0.72',
+            );
+        }
+
+        return $urls;
     }
 
     protected function experienceUrls(): array
@@ -212,13 +228,17 @@ class SitemapController extends Controller
     protected function sectionLastModified(string $section): Carbon
     {
         return match ($section) {
-            'pages' => $this->staticLastModified([
-                app_path('Http/Controllers/PageController.php'),
-                resource_path('js/Pages/Home.vue'),
-                resource_path('js/Pages/About.vue'),
-                resource_path('js/Pages/BusTour.vue'),
-                resource_path('js/Pages/TourgratPartner.vue'),
-            ]),
+            'pages' => $this->latestTimestampFromQueries([
+                BusTourListing::query()->where('is_active', true),
+            ])
+                ?? $this->staticLastModified([
+                    app_path('Http/Controllers/PageController.php'),
+                    resource_path('js/Pages/Home.vue'),
+                    resource_path('js/Pages/About.vue'),
+                    resource_path('js/Pages/BusTour.vue'),
+                    resource_path('js/Pages/BusTours/Show.vue'),
+                    resource_path('js/Pages/TourgratPartner.vue'),
+                ]),
             'experiences' => $this->latestTimestampFromQueries([
                 Experience::query()->where('is_active', true),
                 Tour::query()->where('is_active', true),

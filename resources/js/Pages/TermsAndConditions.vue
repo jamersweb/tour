@@ -1,16 +1,23 @@
 <script setup>
+import { computed } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import SiteMeta from '../Components/SiteMeta.vue';
 import SiteLayout from '../Layouts/SiteLayout.vue';
 
 defineOptions({ layout: SiteLayout });
 
-defineProps({
+const props = defineProps({
     seo: Object,
+    staticPage: Object,
     termsSections: Array,
 });
 
 const page = usePage();
+const hero = computed(() => props.staticPage?.hero ?? {});
+const sidebar = computed(() => props.staticPage?.sidebar ?? {});
+const displaySections = computed(() => props.staticPage?.sections?.length ? props.staticPage.sections : props.termsSections);
+const primaryCta = computed(() => props.staticPage?.primaryCta ?? {});
+const secondaryCta = computed(() => props.staticPage?.secondaryCta ?? {});
 </script>
 
 <template>
@@ -20,11 +27,10 @@ const page = usePage();
         <section class="about-hero policy-hero">
             <div class="container about-hero__grid">
                 <div class="about-hero__content">
-                    <p class="about-kicker">Acute Tourism Policy</p>
-                    <h1 class="about-title">Terms and Conditions</h1>
+                    <p class="about-kicker">{{ hero.eyebrow || 'Acute Tourism Policy' }}</p>
+                    <h1 class="about-title">{{ hero.title || 'Terms and Conditions' }}</h1>
                     <p class="about-copy">
-                        These Terms & Conditions explain the general rules for using the Acute Tourism website, making enquiries,
-                        confirming bookings, paying for services, requesting changes, and using travel-related services arranged by Acute Tourism.
+                        {{ hero.description || 'These Terms & Conditions explain the general rules for using the Acute Tourism website, making enquiries, confirming bookings, paying for services, requesting changes, and using travel-related services arranged by Acute Tourism.' }}
                     </p>
                     <div class="faq-meta policy-meta">
                         <span class="filter-chip active">Acute Tourism LLC</span>
@@ -32,18 +38,17 @@ const page = usePage();
                     </div>
 
                     <div class="about-actions">
-                        <Link class="button-primary" href="/contact">Contact Acute Tourism</Link>
-                        <Link class="button-secondary" href="/cancellation-policy">Cancellation Policy</Link>
+                        <Link class="button-primary" :href="primaryCta.url || '/contact'">{{ primaryCta.label || 'Contact Acute Tourism' }}</Link>
+                        <Link class="button-secondary" :href="secondaryCta.url || '/cancellation-policy'">{{ secondaryCta.label || 'Cancellation Policy' }}</Link>
                     </div>
                 </div>
 
                 <div class="about-card about-card--primary">
-                    <p class="about-card__label">Important</p>
+                    <p class="about-card__label">{{ sidebar.label || 'Important' }}</p>
+                    <h2 v-if="sidebar.title">{{ sidebar.title }}</h2>
+                    <p v-if="sidebar.body">{{ sidebar.body }}</p>
                     <ul class="about-list about-list--tight">
-                        <li>Availability is not final until confirmed</li>
-                        <li>Supplier terms may affect the booking outcome</li>
-                        <li>Customer-submitted details must be accurate</li>
-                        <li>Policy updates may be made as operations evolve</li>
+                        <li v-for="item in sidebar.items || []" :key="item">{{ item }}</li>
                     </ul>
                 </div>
             </div>
@@ -51,7 +56,7 @@ const page = usePage();
 
         <section class="section-block policy-sections">
             <div class="container policy-sections__stack">
-                <article v-for="section in termsSections" :key="section.title" class="about-card policy-section-card">
+                <article v-for="section in displaySections" :key="section.title" class="about-card policy-section-card">
                     <p class="about-card__label">Terms section</p>
                     <h2>{{ section.title }}</h2>
                     <ul v-if="section.items" class="about-list">

@@ -1,16 +1,23 @@
 <script setup>
+import { computed } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import SiteMeta from '../Components/SiteMeta.vue';
 import SiteLayout from '../Layouts/SiteLayout.vue';
 
 defineOptions({ layout: SiteLayout });
 
-defineProps({
+const props = defineProps({
     seo: Object,
+    staticPage: Object,
     privacySections: Array,
 });
 
 const page = usePage();
+const hero = computed(() => props.staticPage?.hero ?? {});
+const sidebar = computed(() => props.staticPage?.sidebar ?? {});
+const displaySections = computed(() => props.staticPage?.sections?.length ? props.staticPage.sections : props.privacySections);
+const primaryCta = computed(() => props.staticPage?.primaryCta ?? {});
+const secondaryCta = computed(() => props.staticPage?.secondaryCta ?? {});
 </script>
 
 <template>
@@ -20,11 +27,10 @@ const page = usePage();
         <section class="about-hero policy-hero">
             <div class="container about-hero__grid">
                 <div class="about-hero__content">
-                    <p class="about-kicker">Acute Tourism Policy</p>
-                    <h1 class="about-title">Privacy Policy</h1>
+                    <p class="about-kicker">{{ hero.eyebrow || 'Acute Tourism Policy' }}</p>
+                    <h1 class="about-title">{{ hero.title || 'Privacy Policy' }}</h1>
                     <p class="about-copy">
-                        This Privacy Policy explains how Acute Tourism may collect, use, share, protect, and retain customer information
-                        when providing tours, holiday packages, visa assistance, corporate events, and related travel services.
+                        {{ hero.description || 'This Privacy Policy explains how Acute Tourism may collect, use, share, protect, and retain customer information when providing tours, holiday packages, visa assistance, corporate events, and related travel services.' }}
                     </p>
                     <div class="faq-meta policy-meta">
                         <span class="filter-chip active">Acute Tourism LLC</span>
@@ -32,18 +38,17 @@ const page = usePage();
                     </div>
 
                     <div class="about-actions">
-                        <Link class="button-primary" href="/contact">Contact Acute Tourism</Link>
-                        <Link class="button-secondary" href="/terms-and-conditions">Terms & Conditions</Link>
+                        <Link class="button-primary" :href="primaryCta.url || '/contact'">{{ primaryCta.label || 'Contact Acute Tourism' }}</Link>
+                        <Link class="button-secondary" :href="secondaryCta.url || '/terms-and-conditions'">{{ secondaryCta.label || 'Terms & Conditions' }}</Link>
                     </div>
                 </div>
 
                 <div class="about-card about-card--primary">
-                    <p class="about-card__label">At a glance</p>
+                    <p class="about-card__label">{{ sidebar.label || 'At a glance' }}</p>
+                    <h2 v-if="sidebar.title">{{ sidebar.title }}</h2>
+                    <p v-if="sidebar.body">{{ sidebar.body }}</p>
                     <ul class="about-list about-list--tight">
-                        <li>Inquiry and booking details may be stored for service handling</li>
-                        <li>Relevant information may be shared with suppliers when needed</li>
-                        <li>Payment and booking data may be retained for operational records</li>
-                        <li>Policy updates may happen as systems and requirements evolve</li>
+                        <li v-for="item in sidebar.items || []" :key="item">{{ item }}</li>
                     </ul>
                 </div>
             </div>
@@ -51,7 +56,7 @@ const page = usePage();
 
         <section class="section-block policy-sections">
             <div class="container policy-sections__stack">
-                <article v-for="section in privacySections" :key="section.title" class="about-card policy-section-card">
+                <article v-for="section in displaySections" :key="section.title" class="about-card policy-section-card">
                     <p class="about-card__label">Privacy section</p>
                     <h2>{{ section.title }}</h2>
                     <ul v-if="section.items" class="about-list">
