@@ -24,6 +24,7 @@ class PageController extends Controller
     public function home(): Response
     {
         $settings = SiteSetting::current();
+        $busTourPage = BusTourPage::current();
 
         $featuredCollections = Collection::query()
             ->where('is_featured', true)
@@ -292,6 +293,7 @@ class PageController extends Controller
                     'href' => route('bus-tour'),
                     'cta' => 'View Panoramic Bus',
                     'tag' => 'Exclusive',
+                    'imageUrl' => $busTourPage->choice_media_image_resolved_url ?: $busTourPage->private_image_resolved_url,
                 ],
             ],
             'testimonials' => [],

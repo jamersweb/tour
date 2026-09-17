@@ -141,6 +141,8 @@ class PublicWebRoutesTest extends TestCase
         $page = BusTourPage::current();
         $page->update([
             'hero_title' => 'Editable Panoramic Bus Heading',
+            'choice_media_image_path' => 'bus-tour-page/choice/admin-bus.jpg',
+            'choice_media_video_path' => 'bus-tour-page/videos/admin-bus.mp4',
             'private_image_path' => 'bus-tour-page/private/admin-private-bus.jpg',
         ]);
 
@@ -150,6 +152,8 @@ class PublicWebRoutesTest extends TestCase
         $response->assertInertia(fn (Assert $page) => $page
             ->component('BusTour')
             ->where('pageContent.hero.title', 'Editable Panoramic Bus Heading')
+            ->where('pageContent.choice.mediaImageUrl', 'https://acutetourism.ae/uploads/bus-tour-page/choice/admin-bus.jpg')
+            ->where('pageContent.choice.mediaVideoUrl', 'https://acutetourism.ae/uploads/bus-tour-page/videos/admin-bus.mp4')
             ->where('pageContent.privateSection.imageUrl', 'https://acutetourism.ae/uploads/bus-tour-page/private/admin-private-bus.jpg')
         );
     }

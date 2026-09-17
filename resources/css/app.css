@@ -17197,6 +17197,7 @@ textarea {
 }
 
 .acute-choice-media {
+    position: relative;
     display: grid;
     min-height: 540px;
     place-items: center;
@@ -17205,9 +17206,15 @@ textarea {
         linear-gradient(135deg, rgba(6, 26, 99, 0.88), rgba(11, 44, 143, 0.58)),
         url('https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=1300&q=85') center/cover no-repeat;
     box-shadow: var(--acute-shadow);
+    overflow: hidden;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 
 .acute-video-card {
+    position: relative;
+    z-index: 2;
     max-width: 420px;
     padding: 32px;
     border: 1px solid rgba(255, 255, 255, 0.24);
@@ -17215,6 +17222,17 @@ textarea {
     color: #fff;
     text-align: center;
     backdrop-filter: blur(14px);
+}
+
+.acute-choice-video {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 820px);
+    aspect-ratio: 16 / 9;
+    max-height: 460px;
+    object-fit: cover;
+    background: #07165c;
+    box-shadow: 0 28px 72px rgba(3, 12, 45, 0.32);
 }
 
 .acute-play-icon {

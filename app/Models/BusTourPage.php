@@ -25,6 +25,10 @@ class BusTourPage extends Model
         'choice_media_label',
         'choice_media_title',
         'choice_media_copy',
+        'choice_media_image_path',
+        'choice_media_image_url',
+        'choice_media_video_path',
+        'choice_media_video_url',
         'choice_lines',
         'choice_primary_cta_label',
         'choice_secondary_cta_label',
@@ -110,6 +114,44 @@ class BusTourPage extends Model
         return MediaUrl::normalize($this->private_image_url);
     }
 
+    public function getChoiceMediaImagePathAttribute(?string $value): ?string
+    {
+        return UploadPath::normalize($value);
+    }
+
+    public function setChoiceMediaImagePathAttribute(mixed $value): void
+    {
+        $this->attributes['choice_media_image_path'] = UploadPath::normalize($value);
+    }
+
+    public function getChoiceMediaVideoPathAttribute(?string $value): ?string
+    {
+        return UploadPath::normalize($value);
+    }
+
+    public function setChoiceMediaVideoPathAttribute(mixed $value): void
+    {
+        $this->attributes['choice_media_video_path'] = UploadPath::normalize($value);
+    }
+
+    public function getChoiceMediaImageResolvedUrlAttribute(): ?string
+    {
+        if ($this->choice_media_image_path) {
+            return MediaUrl::upload($this->choice_media_image_path);
+        }
+
+        return MediaUrl::normalize($this->choice_media_image_url);
+    }
+
+    public function getChoiceMediaVideoResolvedUrlAttribute(): ?string
+    {
+        if ($this->choice_media_video_path) {
+            return MediaUrl::upload($this->choice_media_video_path);
+        }
+
+        return MediaUrl::normalize($this->choice_media_video_url);
+    }
+
     public function publicPayload(): array
     {
         return [
@@ -132,6 +174,8 @@ class BusTourPage extends Model
                 'mediaLabel' => $this->choice_media_label,
                 'mediaTitle' => $this->choice_media_title,
                 'mediaCopy' => $this->choice_media_copy,
+                'mediaImageUrl' => $this->choice_media_image_resolved_url,
+                'mediaVideoUrl' => $this->choice_media_video_resolved_url,
                 'lines' => $this->choice_lines ?? [],
                 'primaryCtaLabel' => $this->choice_primary_cta_label,
                 'secondaryCtaLabel' => $this->choice_secondary_cta_label,

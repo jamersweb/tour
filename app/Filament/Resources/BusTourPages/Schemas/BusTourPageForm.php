@@ -48,6 +48,30 @@ class BusTourPageForm
                     TextInput::make('choice_media_label')->maxLength(180),
                     TextInput::make('choice_media_title')->maxLength(180),
                     Textarea::make('choice_media_copy')->rows(2)->columnSpanFull(),
+                    FileUpload::make('choice_media_image_path')
+                        ->label('Watch section image upload')
+                        ->image()
+                        ->disk('uploads')
+                        ->directory('bus-tour-page/choice')
+                        ->formatStateUsing(fn ($state) => MediaUpload::formatState($state))
+                        ->dehydrateStateUsing(fn ($state, $record) => MediaUpload::dehydrateState($state, $record?->choice_media_image_path))
+                        ->imageEditor(),
+                    TextInput::make('choice_media_image_url')
+                        ->label('Watch section image URL fallback')
+                        ->url()
+                        ->maxLength(255),
+                    FileUpload::make('choice_media_video_path')
+                        ->label('Watch section video upload')
+                        ->disk('uploads')
+                        ->directory('bus-tour-page/videos')
+                        ->acceptedFileTypes(['video/mp4', 'video/webm', 'video/quicktime'])
+                        ->maxSize(51200)
+                        ->formatStateUsing(fn ($state) => MediaUpload::formatState($state))
+                        ->dehydrateStateUsing(fn ($state, $record) => MediaUpload::dehydrateState($state, $record?->choice_media_video_path)),
+                    TextInput::make('choice_media_video_url')
+                        ->label('Watch section video URL fallback')
+                        ->url()
+                        ->maxLength(255),
                     Repeater::make('choice_lines')
                         ->schema([
                             TextInput::make('number')->required()->maxLength(10),

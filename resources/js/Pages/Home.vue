@@ -43,7 +43,7 @@ const topRatedCards = computed(() => (
 ).slice(0, 10));
 const serviceCards = computed(() => props.serviceFocus.slice(0, 4).map((item, index) => ({
     ...item,
-    imageUrl: [
+    imageUrl: item.imageUrl || [
         props.featuredExperiences?.[0]?.heroImageUrl
             || 'https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=1200&q=80',
         props.packages?.[0]?.heroImageUrl

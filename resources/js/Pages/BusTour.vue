@@ -250,6 +250,16 @@ function plainBackgroundStyle(url) {
     };
 }
 
+function choiceMediaStyle(url) {
+    if (!url) {
+        return {};
+    }
+
+    return {
+        backgroundImage: `linear-gradient(135deg, rgba(6, 26, 99, 0.82), rgba(11, 44, 143, 0.46)), url('${url}')`,
+    };
+}
+
 function openMedia(index) {
     activeMediaIndex.value = index;
 }
@@ -411,8 +421,17 @@ onBeforeUnmount(() => {
                     </div>
                 </div>
                 <div class="acute-choice-stage">
-                    <div class="acute-choice-media" role="img" :aria-label="content.choice?.mediaLabel || 'Luxury panoramic bus tour media area'">
-                        <div class="acute-video-card">
+                    <div class="acute-choice-media" role="img" :aria-label="content.choice?.mediaLabel || 'Luxury panoramic bus tour media area'" :style="choiceMediaStyle(content.choice?.mediaImageUrl)">
+                        <video
+                            v-if="content.choice?.mediaVideoUrl"
+                            class="acute-choice-video"
+                            :src="content.choice.mediaVideoUrl"
+                            :poster="content.choice?.mediaImageUrl || undefined"
+                            controls
+                            playsinline
+                            preload="metadata"
+                        ></video>
+                        <div v-else class="acute-video-card">
                             <div class="acute-play-icon" aria-hidden="true"></div>
                             <strong>{{ content.choice?.mediaTitle || 'Watch the experience' }}</strong>
                             <span>{{ content.choice?.mediaCopy || 'Experience video area: bus interior, guest welcome, route moments and destination highlights.' }}</span>
