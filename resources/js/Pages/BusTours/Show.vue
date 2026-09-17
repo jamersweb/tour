@@ -13,6 +13,15 @@ const props = defineProps({
 
 const page = usePage();
 const listing = computed(() => props.listing || {});
+const galleryImages = computed(() => {
+    const images = [
+        ...(listing.value.galleryImageUrls || []),
+        listing.value.detailImageUrl,
+        listing.value.cardImageUrl,
+    ].filter(Boolean);
+
+    return [...new Set(images)];
+});
 const form = useForm({
     source: 'bus-tour-listing-page',
     name: '',
@@ -81,19 +90,29 @@ function submit() {
         <section class="acute-section">
             <div class="acute-container acute-private-grid">
                 <div>
-                    <div class="acute-eyebrow">Tour details</div>
+                    <div class="acute-eyebrow">Tour intro</div>
                     <h2 class="acute-heading">{{ listing.title }}</h2>
-                    <p class="acute-copy">{{ listing.bestFor || listing.copy }}</p>
+                    <p class="acute-copy">{{ listing.copy || listing.bestFor }}</p>
+                    <p v-if="listing.bestFor" class="acute-copy acute-copy--small"><strong>Best for:</strong> {{ listing.bestFor }}</p>
                     <div class="acute-tags">
                         <span v-for="tag in listing.tags || []" :key="tag">{{ tag }}</span>
                     </div>
                 </div>
-                <div v-if="listing.cardImageUrl" class="acute-private-image" :style="{ backgroundImage: `url('${listing.cardImageUrl}')` }"></div>
+                <div
+                    v-if="listing.detailImageUrl || listing.cardImageUrl"
+                    class="acute-private-image acute-listing-intro-image"
+                    :style="{ backgroundImage: `linear-gradient(to top, rgba(6, 26, 99, 0.28), transparent 48%), url('${listing.detailImageUrl || listing.cardImageUrl}')` }"
+                ></div>
             </div>
         </section>
 
         <section class="acute-section alt">
             <div class="acute-container">
+                <div class="acute-section-head acute-section-head--compact">
+                    <div class="acute-eyebrow">Tour details</div>
+                    <h2 class="acute-heading">What to expect on this route</h2>
+                    <p v-if="listing.tourDetails || listing.bestFor" class="acute-copy">{{ listing.tourDetails || listing.bestFor }}</p>
+                </div>
                 <div class="acute-info-cols">
                     <div class="acute-list">
                         <h4>Route highlights</h4>
@@ -111,15 +130,15 @@ function submit() {
             </div>
         </section>
 
-        <section v-if="listing.galleryImageUrls?.length" class="acute-section acute-media-showcase">
+        <section v-if="galleryImages.length" class="acute-section acute-media-showcase">
             <div class="acute-container">
                 <div class="acute-section-head">
                     <div class="acute-eyebrow">Gallery</div>
                     <h2 class="acute-heading">Experience images</h2>
                 </div>
-                <div class="acute-gallery-carousel__track acute-gallery-carousel__track--static">
+                <div class="acute-gallery-carousel__track acute-listing-gallery-carousel">
                     <div
-                        v-for="image in listing.galleryImageUrls"
+                        v-for="image in galleryImages"
                         :key="image"
                         class="acute-gallery-carousel__item"
                     >

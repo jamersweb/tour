@@ -24,8 +24,20 @@ class BusTourListingForm
                     TextInput::make('category_label')->label('Card label')->maxLength(160),
                     TextInput::make('price')->maxLength(120),
                     TextInput::make('panel_price')->label('Detail price')->maxLength(120),
-                    Textarea::make('short_description')->rows(3)->columnSpanFull(),
-                    Textarea::make('best_for')->rows(3)->columnSpanFull(),
+                    Textarea::make('short_description')
+                        ->label('Short intro')
+                        ->helperText('Shown as the short intro on the public detail page and tour cards.')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                    Textarea::make('tour_details')
+                        ->label('Tour details')
+                        ->helperText('Main detailed copy shown in the Tour Details section.')
+                        ->rows(5)
+                        ->columnSpanFull(),
+                    Textarea::make('best_for')
+                        ->label('Best for')
+                        ->rows(3)
+                        ->columnSpanFull(),
                 ])
                 ->columns(2),
             Section::make('Images')

@@ -17642,6 +17642,27 @@ textarea {
     padding: 0;
 }
 
+.acute-listing-gallery-carousel {
+    grid-auto-columns: minmax(320px, 62%);
+    padding: 4px 12vw 18px 2px;
+}
+
+.acute-listing-intro-image {
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.acute-section-head--compact {
+    max-width: 900px;
+    margin-bottom: 30px;
+}
+
+.acute-copy--small {
+    margin-top: 18px;
+    font-size: 16px;
+}
+
 .acute-gallery-carousel__item {
     position: relative;
     min-height: 390px;
@@ -18266,6 +18287,11 @@ textarea {
         padding-right: 14vw;
         padding-bottom: 12px;
         -webkit-overflow-scrolling: touch;
+    }
+
+    .acute-listing-gallery-carousel {
+        grid-auto-columns: minmax(290px, 88%);
+        overflow-x: auto;
     }
 
     .acute-gallery-carousel__item,

@@ -164,6 +164,7 @@ class PublicWebRoutesTest extends TestCase
             'panel_price' => 'AED 123 / person',
             'category_label' => 'Custom admin label',
             'short_description' => 'Custom admin package copy.',
+            'tour_details' => 'Custom tour details copy.',
             'best_for' => 'Custom best-fit copy.',
             'card_image_url' => 'https://example.com/card.jpg',
             'detail_image_url' => 'https://example.com/detail.jpg',
@@ -193,6 +194,7 @@ class PublicWebRoutesTest extends TestCase
         $detailResponse->assertInertia(fn (Assert $page) => $page
             ->component('BusTours/Show')
             ->where('listing.title', 'Editable Admin Bus Route')
+            ->where('listing.tourDetails', 'Custom tour details copy.')
             ->where('listing.detailImageUrl', 'https://example.com/detail.jpg')
         );
     }
