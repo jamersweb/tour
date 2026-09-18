@@ -152,7 +152,7 @@ class BusTourPageForm
                 ])
                 ->columns(2),
             Section::make('Gallery')
-                ->description('Add public image or video URLs. Uploaded media can be pasted here after upload.')
+                ->description('Upload image and video files from the admin panel. Public URLs remain available as a fallback.')
                 ->schema([
                     TextInput::make('gallery_eyebrow')->maxLength(120),
                     Textarea::make('gallery_title')->rows(2)->columnSpanFull(),
@@ -161,7 +161,29 @@ class BusTourPageForm
                         ->schema([
                             TextInput::make('title')->required()->maxLength(180),
                             Textarea::make('copy')->rows(2)->columnSpanFull(),
+                            FileUpload::make('image_uploads')
+                                ->label('Upload images')
+                                ->image()
+                                ->multiple()
+                                ->disk('uploads')
+                                ->directory('bus-tour-page/gallery')
+                                ->formatStateUsing(fn ($state) => MediaUpload::formatState($state))
+                                ->dehydrateStateUsing(fn ($state) => MediaUpload::dehydrateState($state, null))
+                                ->reorderable()
+                                ->imageEditor()
+                                ->columnSpanFull(),
                             TagsInput::make('images')->placeholder('Add image URL')->columnSpanFull(),
+                            FileUpload::make('video_uploads')
+                                ->label('Upload videos')
+                                ->multiple()
+                                ->disk('uploads')
+                                ->directory('bus-tour-page/gallery/videos')
+                                ->acceptedFileTypes(['video/mp4', 'video/webm', 'video/quicktime'])
+                                ->maxSize(51200)
+                                ->formatStateUsing(fn ($state) => MediaUpload::formatState($state))
+                                ->dehydrateStateUsing(fn ($state) => MediaUpload::dehydrateState($state, null))
+                                ->reorderable()
+                                ->columnSpanFull(),
                             TagsInput::make('videos')->placeholder('Add video URL')->columnSpanFull(),
                         ])
                         ->columns(1)

@@ -144,6 +144,16 @@ class PublicWebRoutesTest extends TestCase
             'choice_media_image_path' => 'bus-tour-page/choice/admin-bus.jpg',
             'choice_media_video_path' => 'bus-tour-page/videos/admin-bus.mp4',
             'private_image_path' => 'bus-tour-page/private/admin-private-bus.jpg',
+            'gallery_items' => [
+                [
+                    'title' => 'Uploaded bus media',
+                    'copy' => 'Admin uploaded gallery files.',
+                    'image_uploads' => ['bus-tour-page/gallery/uploaded-gallery.jpg'],
+                    'images' => ['https://example.com/fallback-gallery.jpg'],
+                    'video_uploads' => ['bus-tour-page/gallery/videos/uploaded-gallery.mp4'],
+                    'videos' => ['https://example.com/fallback-gallery.mp4'],
+                ],
+            ],
         ]);
 
         $response = $this->get('/luxury-bus-tour-dubai');
@@ -155,6 +165,10 @@ class PublicWebRoutesTest extends TestCase
             ->where('pageContent.choice.mediaImageUrl', 'https://acutetourism.ae/uploads/bus-tour-page/choice/admin-bus.jpg')
             ->where('pageContent.choice.mediaVideoUrl', 'https://acutetourism.ae/uploads/bus-tour-page/videos/admin-bus.mp4')
             ->where('pageContent.privateSection.imageUrl', 'https://acutetourism.ae/uploads/bus-tour-page/private/admin-private-bus.jpg')
+            ->where('pageContent.gallery.items.0.images.0', 'https://acutetourism.ae/uploads/bus-tour-page/gallery/uploaded-gallery.jpg')
+            ->where('pageContent.gallery.items.0.images.1', 'https://example.com/fallback-gallery.jpg')
+            ->where('pageContent.gallery.items.0.videos.0', 'https://acutetourism.ae/uploads/bus-tour-page/gallery/videos/uploaded-gallery.mp4')
+            ->where('pageContent.gallery.items.0.videos.1', 'https://example.com/fallback-gallery.mp4')
         );
     }
 

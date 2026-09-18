@@ -152,6 +152,26 @@ class BusTourPage extends Model
         return MediaUrl::normalize($this->choice_media_video_url);
     }
 
+    public function setGalleryItemsAttribute(mixed $value): void
+    {
+        if (! is_array($value)) {
+            $this->attributes['gallery_items'] = $value === null ? null : json_encode($value);
+
+            return;
+        }
+
+        $this->attributes['gallery_items'] = json_encode(collect($value)
+            ->map(function (mixed $item): array {
+                $item = is_array($item) ? $item : [];
+                $item['image_uploads'] = UploadPath::normalizeArray($item['image_uploads'] ?? [], preserveExternal: false);
+                $item['video_uploads'] = UploadPath::normalizeArray($item['video_uploads'] ?? [], preserveExternal: false);
+
+                return $item;
+            })
+            ->values()
+            ->all());
+    }
+
     public function publicPayload(): array
     {
         return [
@@ -216,7 +236,7 @@ class BusTourPage extends Model
                 'eyebrow' => $this->gallery_eyebrow,
                 'title' => $this->gallery_title,
                 'copy' => $this->gallery_copy,
-                'items' => $this->gallery_items ?? [],
+                'items' => $this->publicGalleryItems(),
                 'note' => $this->gallery_note,
             ],
             'enquiry' => [
@@ -240,6 +260,45 @@ class BusTourPage extends Model
                 'ctaLabel' => $this->sticky_cta_label,
             ],
         ];
+    }
+
+    protected function publicGalleryItems(): array
+    {
+        return collect($this->gallery_items ?? [])
+            ->map(function (mixed $item): array {
+                $item = is_array($item) ? $item : [];
+                $uploadedImages = collect($item['image_uploads'] ?? [])
+                    ->map(fn ($path) => MediaUrl::upload(UploadPath::normalize($path, preserveExternal: false)))
+                    ->filter()
+                    ->values()
+                    ->all();
+
+                $uploadedVideos = collect($item['video_uploads'] ?? [])
+                    ->map(fn ($path) => MediaUrl::upload(UploadPath::normalize($path, preserveExternal: false)))
+                    ->filter()
+                    ->values()
+                    ->all();
+
+                $urlImages = collect($item['images'] ?? [])
+                    ->map(fn ($url) => MediaUrl::normalize($url))
+                    ->filter()
+                    ->values()
+                    ->all();
+
+                $urlVideos = collect($item['videos'] ?? [])
+                    ->map(fn ($url) => MediaUrl::normalize($url))
+                    ->filter()
+                    ->values()
+                    ->all();
+
+                $item['images'] = array_values(array_unique([...$uploadedImages, ...$urlImages]));
+                $item['videos'] = array_values(array_unique([...$uploadedVideos, ...$urlVideos]));
+                unset($item['image_uploads'], $item['video_uploads']);
+
+                return $item;
+            })
+            ->values()
+            ->all();
     }
 
     public static function defaults(): array
