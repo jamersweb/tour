@@ -1,0 +1,32 @@
+<?php
+
+return [
+    'temporary_file_upload' => [
+        'disk' => env('LIVEWIRE_TEMPORARY_FILE_UPLOAD_DISK'),
+        'rules' => ['required', 'file', 'max:102400'],
+        'directory' => null,
+        'middleware' => null,
+        'preview_mimes' => [
+            'png',
+            'gif',
+            'bmp',
+            'svg',
+            'wav',
+            'mp4',
+            'mov',
+            'avi',
+            'wmv',
+            'webm',
+            'mp3',
+            'm4a',
+            'jpg',
+            'jpeg',
+            'mpga',
+            'webp',
+            'heic',
+            'wma',
+        ],
+        'max_upload_time' => 20,
+        'cleanup' => true,
+    ],
+];

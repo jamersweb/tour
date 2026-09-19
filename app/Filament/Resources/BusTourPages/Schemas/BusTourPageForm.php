@@ -163,14 +163,13 @@ class BusTourPageForm
                             Textarea::make('copy')->rows(2)->columnSpanFull(),
                             FileUpload::make('image_uploads')
                                 ->label('Upload images')
-                                ->image()
                                 ->multiple()
                                 ->disk('uploads')
                                 ->directory('bus-tour-page/gallery')
+                                ->helperText('Upload JPG, PNG, WebP, or HEIC images. Use the URL field below only for externally hosted images.')
                                 ->formatStateUsing(fn ($state) => MediaUpload::formatState($state))
                                 ->dehydrateStateUsing(fn ($state) => MediaUpload::dehydrateState($state, null))
                                 ->reorderable()
-                                ->imageEditor()
                                 ->columnSpanFull(),
                             TagsInput::make('images')->placeholder('Add image URL')->columnSpanFull(),
                             FileUpload::make('video_uploads')
@@ -178,8 +177,8 @@ class BusTourPageForm
                                 ->multiple()
                                 ->disk('uploads')
                                 ->directory('bus-tour-page/gallery/videos')
-                                ->acceptedFileTypes(['video/mp4', 'video/webm', 'video/quicktime'])
                                 ->maxSize(51200)
+                                ->helperText('Upload MP4, WebM, or MOV videos up to 50 MB each. Use the URL field below only for externally hosted videos.')
                                 ->formatStateUsing(fn ($state) => MediaUpload::formatState($state))
                                 ->dehydrateStateUsing(fn ($state) => MediaUpload::dehydrateState($state, null))
                                 ->reorderable()
