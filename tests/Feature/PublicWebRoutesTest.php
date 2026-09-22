@@ -9,9 +9,12 @@ use App\Models\Collection;
 use App\Models\Experience;
 use App\Models\Package;
 use App\Models\StaticPage;
+use App\Models\User;
+use App\Filament\Resources\BusTourPages\Pages\EditBusTourPage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Inertia\Testing\AssertableInertia as Assert;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class PublicWebRoutesTest extends TestCase
@@ -170,6 +173,50 @@ class PublicWebRoutesTest extends TestCase
             ->where('pageContent.gallery.items.0.videos.0', 'https://acutetourism.ae/uploads/bus-tour-page/gallery/videos/uploaded-gallery.mp4')
             ->where('pageContent.gallery.items.0.videos.1', 'https://example.com/fallback-gallery.mp4')
         );
+    }
+
+    public function test_admin_can_save_bus_tour_page_with_gallery_upload_paths(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $page = BusTourPage::current();
+
+        $page->update([
+            'gallery_items' => [
+                [
+                    'title' => 'Legacy uploaded media',
+                    'copy' => 'Existing gallery media.',
+                    'image_uploads' => ['bus-tour-page/gallery/legacy-image.jpg'],
+                    'video_uploads' => ['bus-tour-page/gallery/videos/legacy-video.mp4'],
+                    'images' => [],
+                    'videos' => [],
+                ],
+            ],
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(EditBusTourPage::class, ['record' => $page->getKey()])
+            ->fillForm([
+                'gallery_items' => [
+                    [
+                        'title' => 'Saved uploaded media',
+                        'copy' => 'Existing gallery media.',
+                        'uploaded_images' => ['bus-tour-page/gallery/legacy-image.jpg'],
+                        'uploaded_videos' => ['bus-tour-page/gallery/videos/legacy-video.mp4'],
+                        'images' => [],
+                        'videos' => [],
+                    ],
+                ],
+            ])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $page->refresh();
+
+        $this->assertSame('Saved uploaded media', $page->gallery_items[0]['title']);
+        $this->assertSame(['bus-tour-page/gallery/legacy-image.jpg'], $page->gallery_items[0]['uploaded_images']);
+        $this->assertSame(['bus-tour-page/gallery/videos/legacy-video.mp4'], $page->gallery_items[0]['uploaded_videos']);
+        $this->assertArrayNotHasKey('image_uploads', $page->gallery_items[0]);
+        $this->assertArrayNotHasKey('video_uploads', $page->gallery_items[0]);
     }
 
     public function test_bus_tour_listings_are_admin_managed_visible_and_have_detail_pages(): void
