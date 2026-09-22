@@ -163,8 +163,15 @@ class BusTourPage extends Model
         $this->attributes['gallery_items'] = json_encode(collect($value)
             ->map(function (mixed $item): array {
                 $item = is_array($item) ? $item : [];
-                $item['image_uploads'] = UploadPath::normalizeArray($item['image_uploads'] ?? [], preserveExternal: false);
-                $item['video_uploads'] = UploadPath::normalizeArray($item['video_uploads'] ?? [], preserveExternal: false);
+                $item['uploaded_images'] = UploadPath::normalizeArray(
+                    $item['uploaded_images'] ?? $item['image_uploads'] ?? [],
+                    preserveExternal: false,
+                );
+                $item['uploaded_videos'] = UploadPath::normalizeArray(
+                    $item['uploaded_videos'] ?? $item['video_uploads'] ?? [],
+                    preserveExternal: false,
+                );
+                unset($item['image_uploads'], $item['video_uploads']);
 
                 return $item;
             })
@@ -267,13 +274,19 @@ class BusTourPage extends Model
         return collect($this->gallery_items ?? [])
             ->map(function (mixed $item): array {
                 $item = is_array($item) ? $item : [];
-                $uploadedImages = collect($item['image_uploads'] ?? [])
+                $uploadedImages = collect([
+                    ...($item['uploaded_images'] ?? []),
+                    ...($item['image_uploads'] ?? []),
+                ])
                     ->map(fn ($path) => MediaUrl::upload(UploadPath::normalize($path, preserveExternal: false)))
                     ->filter()
                     ->values()
                     ->all();
 
-                $uploadedVideos = collect($item['video_uploads'] ?? [])
+                $uploadedVideos = collect([
+                    ...($item['uploaded_videos'] ?? []),
+                    ...($item['video_uploads'] ?? []),
+                ])
                     ->map(fn ($path) => MediaUrl::upload(UploadPath::normalize($path, preserveExternal: false)))
                     ->filter()
                     ->values()
@@ -293,7 +306,7 @@ class BusTourPage extends Model
 
                 $item['images'] = array_values(array_unique([...$uploadedImages, ...$urlImages]));
                 $item['videos'] = array_values(array_unique([...$uploadedVideos, ...$urlVideos]));
-                unset($item['image_uploads'], $item['video_uploads']);
+                unset($item['uploaded_images'], $item['uploaded_videos'], $item['image_uploads'], $item['video_uploads']);
 
                 return $item;
             })

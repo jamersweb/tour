@@ -161,8 +161,8 @@ class BusTourPageForm
                         ->schema([
                             TextInput::make('title')->required()->maxLength(180),
                             Textarea::make('copy')->rows(2)->columnSpanFull(),
-                            FileUpload::make('image_uploads')
-                                ->label('Upload images')
+                            FileUpload::make('uploaded_images')
+                                ->label('Gallery image uploads')
                                 ->multiple()
                                 ->disk('uploads')
                                 ->directory('bus-tour-page/gallery')
@@ -172,8 +172,8 @@ class BusTourPageForm
                                 ->reorderable()
                                 ->columnSpanFull(),
                             TagsInput::make('images')->placeholder('Add image URL')->columnSpanFull(),
-                            FileUpload::make('video_uploads')
-                                ->label('Upload videos')
+                            FileUpload::make('uploaded_videos')
+                                ->label('Gallery video uploads')
                                 ->multiple()
                                 ->disk('uploads')
                                 ->directory('bus-tour-page/gallery/videos')

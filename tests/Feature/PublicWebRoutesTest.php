@@ -148,9 +148,9 @@ class PublicWebRoutesTest extends TestCase
                 [
                     'title' => 'Uploaded bus media',
                     'copy' => 'Admin uploaded gallery files.',
-                    'image_uploads' => ['bus-tour-page/gallery/uploaded-gallery.jpg'],
+                    'uploaded_images' => ['bus-tour-page/gallery/uploaded-gallery.jpg'],
                     'images' => ['https://example.com/fallback-gallery.jpg'],
-                    'video_uploads' => ['bus-tour-page/gallery/videos/uploaded-gallery.mp4'],
+                    'uploaded_videos' => ['bus-tour-page/gallery/videos/uploaded-gallery.mp4'],
                     'videos' => ['https://example.com/fallback-gallery.mp4'],
                 ],
             ],
