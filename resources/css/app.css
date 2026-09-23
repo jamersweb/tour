@@ -17225,14 +17225,14 @@ textarea {
 }
 
 .acute-choice-video {
-    position: relative;
+    position: absolute;
+    inset: 0;
     z-index: 1;
-    width: min(100%, 820px);
-    aspect-ratio: 16 / 9;
-    max-height: 460px;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
     background: #07165c;
-    box-shadow: 0 28px 72px rgba(3, 12, 45, 0.32);
+    box-shadow: none;
 }
 
 .acute-play-icon {
