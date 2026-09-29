@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\BusTourPages\Schemas;
 
 use App\Filament\Support\MediaUpload;
+use App\Rules\MediaUrlOrPath;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TagsInput;
@@ -58,7 +59,7 @@ class BusTourPageForm
                         ->imageEditor(),
                     TextInput::make('choice_media_image_url')
                         ->label('Watch section image URL fallback')
-                        ->url()
+                        ->rules([new MediaUrlOrPath])
                         ->maxLength(255),
                     FileUpload::make('choice_media_video_path')
                         ->label('Watch section video upload')
@@ -70,7 +71,7 @@ class BusTourPageForm
                         ->dehydrateStateUsing(fn ($state, $record) => MediaUpload::dehydrateState($state, $record?->choice_media_video_path)),
                     TextInput::make('choice_media_video_url')
                         ->label('Watch section video URL fallback')
-                        ->url()
+                        ->rules([new MediaUrlOrPath])
                         ->maxLength(255),
                     Repeater::make('choice_lines')
                         ->schema([
@@ -126,7 +127,7 @@ class BusTourPageForm
                         ->imageEditor(),
                     TextInput::make('private_image_url')
                         ->label('Private image URL fallback')
-                        ->url()
+                        ->rules([new MediaUrlOrPath])
                         ->maxLength(255),
                     Repeater::make('private_lines')
                         ->schema([

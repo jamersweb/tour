@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\BusTourListings\Schemas;
 
 use App\Filament\Support\MediaUpload;
+use App\Rules\MediaUrlOrPath;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
@@ -53,7 +54,7 @@ class BusTourListingForm
                         ->imageEditor(),
                     TextInput::make('card_image_url')
                         ->label('Card image URL')
-                        ->url()
+                        ->rules([new MediaUrlOrPath])
                         ->maxLength(255),
                     FileUpload::make('detail_image_path')
                         ->label('Detail page hero image')
@@ -65,7 +66,7 @@ class BusTourListingForm
                         ->imageEditor(),
                     TextInput::make('detail_image_url')
                         ->label('Detail image URL')
-                        ->url()
+                        ->rules([new MediaUrlOrPath])
                         ->maxLength(255),
                     FileUpload::make('gallery_images')
                         ->label('Gallery uploads')

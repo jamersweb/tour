@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\StaticPages\Schemas;
 
 use App\Filament\Support\MediaUpload;
+use App\Rules\MediaUrlOrPath;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TagsInput;
@@ -48,7 +49,7 @@ class StaticPageForm
                         ->formatStateUsing(fn ($state) => MediaUpload::formatState($state))
                         ->dehydrateStateUsing(fn ($state, $record) => MediaUpload::dehydrateState($state, $record?->hero_image_path))
                         ->imageEditor(),
-                    TextInput::make('hero_image_url')->label('Hero image URL')->url()->maxLength(255),
+                    TextInput::make('hero_image_url')->label('Hero image URL')->rules([new MediaUrlOrPath])->maxLength(255),
                 ])
                 ->columns(3),
             Section::make('Sidebar / Highlight Card')

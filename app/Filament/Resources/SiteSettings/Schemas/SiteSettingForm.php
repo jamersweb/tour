@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\SiteSettings\Schemas;
 
+use App\Rules\MediaUrlOrPath;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -24,8 +25,16 @@ class SiteSettingForm
                         ->maxLength(100)
                         ->helperText('Schema.org type like TravelAgency or LocalBusiness.'),
                     TextInput::make('website_url')->url()->maxLength(255),
-                    TextInput::make('logo_url')->url()->maxLength(255)->label('Header logo URL'),
-                    TextInput::make('footer_logo_url')->url()->maxLength(255)->label('Footer logo URL'),
+                    TextInput::make('logo_url')
+                        ->rules([new MediaUrlOrPath])
+                        ->maxLength(255)
+                        ->label('Header logo URL')
+                        ->helperText('Use a local path such as /images/logo.png or a full https:// URL.'),
+                    TextInput::make('footer_logo_url')
+                        ->rules([new MediaUrlOrPath])
+                        ->maxLength(255)
+                        ->label('Footer logo URL')
+                        ->helperText('Use a local path such as /images/logo.png or a full https:// URL.'),
                     TagsInput::make('social_links')
                         ->placeholder('Add a public social profile URL')
                         ->columnSpanFull(),

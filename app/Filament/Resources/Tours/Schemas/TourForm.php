@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Tours\Schemas;
 
 use App\Filament\Support\MediaUpload;
+use App\Rules\MediaUrlOrPath;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
@@ -56,7 +57,7 @@ class TourForm
                         ->imageEditor(),
                     TextInput::make('hero_video_url')
                         ->label('Hero video URL')
-                        ->url()
+                        ->rules([new MediaUrlOrPath])
                         ->maxLength(255),
                     FileUpload::make('gallery_images')
                         ->label('Gallery images')
@@ -219,5 +220,4 @@ class TourForm
                 ->columns(2),
         ]);
     }
-
 }

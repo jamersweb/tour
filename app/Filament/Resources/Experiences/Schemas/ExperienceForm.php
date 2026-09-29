@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Experiences\Schemas;
 
 use App\Filament\Support\MediaUpload;
+use App\Rules\MediaUrlOrPath;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
@@ -75,7 +76,7 @@ class ExperienceForm
                             ->imageEditor(),
                         TextInput::make('hero_video_url')
                             ->label('Hero video URL')
-                            ->url()
+                            ->rules([new MediaUrlOrPath])
                             ->maxLength(255)
                             ->helperText('Optional MP4 or hosted video URL for the top media area.'),
                         FileUpload::make('gallery_images')
@@ -269,5 +270,4 @@ class ExperienceForm
                     ->columns(2),
             ]);
     }
-
 }

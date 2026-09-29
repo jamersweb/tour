@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Packages\Schemas;
 
 use App\Filament\Support\MediaUpload;
+use App\Rules\MediaUrlOrPath;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -38,7 +39,7 @@ class PackageForm
                         ->imageEditor(),
                     TextInput::make('hero_video_url')
                         ->label('Hero video URL')
-                        ->url()
+                        ->rules([new MediaUrlOrPath])
                         ->maxLength(255)
                         ->helperText('Optional MP4 or hosted video URL for the top media area.'),
                     FileUpload::make('gallery_images')

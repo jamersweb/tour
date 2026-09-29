@@ -181,6 +181,9 @@ class PublicWebRoutesTest extends TestCase
         $page = BusTourPage::current();
 
         $page->update([
+            'choice_media_image_url' => '/images/bus.jpg',
+            'choice_media_video_url' => '/videos/bus.mp4',
+            'private_image_url' => '/images/private-bus.jpg',
             'gallery_items' => [
                 [
                     'title' => 'Legacy uploaded media',
@@ -213,6 +216,9 @@ class PublicWebRoutesTest extends TestCase
         $page->refresh();
 
         $this->assertSame('Saved uploaded media', $page->gallery_items[0]['title']);
+        $this->assertSame('/images/bus.jpg', $page->choice_media_image_url);
+        $this->assertSame('/videos/bus.mp4', $page->choice_media_video_url);
+        $this->assertSame('/images/private-bus.jpg', $page->private_image_url);
         $this->assertSame(['bus-tour-page/gallery/legacy-image.jpg'], $page->gallery_items[0]['uploaded_images']);
         $this->assertSame(['bus-tour-page/gallery/videos/legacy-video.mp4'], $page->gallery_items[0]['uploaded_videos']);
         $this->assertArrayNotHasKey('image_uploads', $page->gallery_items[0]);
